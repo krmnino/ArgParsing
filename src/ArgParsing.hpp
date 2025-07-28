@@ -46,8 +46,7 @@ class ArgParsing{
     ArgParsing();
     ArgParsing(const ArgParsing&) = delete;
     ArgParsing& operator=(const ArgParsing&) = delete;
-    bool abbr_arg_exists(std::string&);
-    size_t get_index_in_arg_table(std::string&, bool);
+    int get_index_in_arg_table(std::string&, bool);
 
     public:
     static ArgParsing* ArgParsing_get_instance(){

@@ -8,16 +8,7 @@ ArgParsing::ArgParsing() {
     this->is_table_set = false;
 };
 
-bool ArgParsing::abbr_arg_exists(std::string& abbr_arg){
-    for(size_t i = 0; i < this->arg_table.size(); i++){
-        if(this->arg_table[i].abbr_form == abbr_arg){
-            return true;
-        }
-    }
-    return false;
-}
-
-size_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
+int ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(is_abbr_input){
             if(this->arg_table[i].abbr_form == arg_key){
@@ -42,6 +33,7 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     if(this->is_table_set){
         return -1;
     }
+    // Copy array contents over to std::vector
     this->arg_table.assign(arg_table_ptr, arg_table_ptr + n_entries);
     // Check for duplicate abbreviated form identifiers
     for(size_t i = 0; i < this->arg_table.size(); i++){
@@ -111,16 +103,18 @@ void ArgParsing::arg_begin(){
 void ArgParsing::arg_abbr_form(){
     char* curr;
     std::string abbr_arg;
-    size_t arg_table_idx;
+    int arg_table_idx;
     curr = this->argv[this->argc_idx];
     if(strlen(curr) == 2){
-        // Search abbreviated identifier in table
         abbr_arg = std::string(1, this->argv[this->argc_idx][1]);
-        if(!this->abbr_arg_exists(abbr_arg)){
+        // Search for abbreviated identifier in argument table 
+        // If not found, returned index is -1 and set error state
+        arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
+        if(arg_table_idx == -1){
             this->state = APState::ERROR;
             return;
         }
-        arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
+        // Check the argument data type and update the state
         if(this->arg_table[arg_table_idx].data_type == APDataType::FLAG){
             this->arg_table[arg_table_idx].value = "1";
             this->state = APState::ARGV_BEGIN;
@@ -128,18 +122,20 @@ void ArgParsing::arg_abbr_form(){
         else{
             this->state = APState::ARGV_VALUE;
         }
-        this->argc_idx++;
     }
     else{
-        // Loop through group of abbreviated identifiers in table
+        // Loop through group of abbreviated form identifiers in table
         // All identifiers must be of FLAG type
         for(size_t i = 1; i < strlen(this->argv[this->argc_idx]); i++){
             abbr_arg = std::string(1, this->argv[this->argc_idx][i]);
-            if(!this->abbr_arg_exists(abbr_arg)){
+            // Search for abbreviated identifier in argument table
+            // If not found, returned index is -1 and set error state
+            arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
+            if(arg_table_idx == -1){
                 this->state = APState::ERROR;
                 return;
             }
-            arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
+            // Since it is a group of identifiers, we can only accept arguments of type FLAG
             if(this->arg_table[arg_table_idx].data_type != APDataType::FLAG){
                 this->state = APState::ERROR;
                 return;    
@@ -147,8 +143,8 @@ void ArgParsing::arg_abbr_form(){
             this->arg_table[arg_table_idx].value = "1";
         }
         this->state = APState::ARGV_BEGIN;
-        this->argc_idx++;
     }
+    this->argc_idx++;
 }
 
 void ArgParsing::arg_full_form(){
