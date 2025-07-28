@@ -43,6 +43,28 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
         return -1;
     }
     this->arg_table.assign(arg_table_ptr, arg_table_ptr + n_entries);
+    // Check for duplicate abbreviated form identifiers
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        if(this->arg_table[i].abbr_form == ""){
+            continue;
+        }
+        for(size_t j = i + 1; j < this->arg_table.size(); j++){
+            if(this->arg_table[i].abbr_form == this->arg_table[j].abbr_form){
+                return -1;
+            }
+        }
+    }
+    // Check for duplicate full form identifiers
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        for(size_t j = i + 1; j < this->arg_table.size(); j++){
+            if(i == j){
+                continue;
+            }
+            if(this->arg_table[i].full_form == this->arg_table[j].full_form){
+                return -1;
+            }
+        }
+    }
     is_table_set = true;
     return 0;
 }
@@ -57,7 +79,7 @@ void ArgParsing::parse(){
             this->arg_begin();
         }
         else if(this->state == APState::ARGV_VALUE){
-            this->arg_begin();
+            
         }
     }
 }
