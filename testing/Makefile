@@ -12,5 +12,8 @@ compile:
 link: 
 	g++ -o argparsing $(OBJ_FILES)
 
+test:
+	g++ -g -std=c++17 -o argtest ../src/ArgParsing.cpp Test.cpp
+
 clean:
-	rm argparsing *.o ../src/*.gch
+	rm argparsing argtest *.o ../src/*.gch
