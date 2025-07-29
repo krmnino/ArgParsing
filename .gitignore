@@ -1,3 +1,4 @@
 testing/argparsing
+testing/argtest
 testing/*.o
 testing/.vscode
