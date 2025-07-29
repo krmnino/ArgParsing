@@ -18,7 +18,7 @@ enum class APDataType {
     NONE,
     FLAG,
     NUMBER,
-    STRING
+    TEXT
 };
 
 struct APTableEntry {
@@ -37,16 +37,18 @@ class ArgParsing{
     std::vector<APTableEntry> arg_table;
     static ArgParsing* ap_ptr;
     char** argv;
-    size_t argc_idx;
-    size_t eval_arg_idx;
+    size_t argv_idx;
     APState state;
     int argc;
+    int eval_arg_idx;
     bool is_table_set;
 
     ArgParsing();
     ArgParsing(const ArgParsing&) = delete;
     ArgParsing& operator=(const ArgParsing&) = delete;
     int get_index_in_arg_table(std::string&, bool);
+    bool is_valid_hex(std::string&);
+    bool is_valid_dec(std::string&);
 
     public:
     static ArgParsing* ArgParsing_get_instance(){
@@ -68,6 +70,7 @@ class ArgParsing{
     void arg_begin();
     void arg_abbr_form();
     void arg_full_form();
+    void arg_value();
     void display_arg_table();
 
 };

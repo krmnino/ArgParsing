@@ -4,7 +4,8 @@ ArgParsing::ArgParsing() {
     this->state = APState::ARGV_BEGIN;
     this->argc = 0;
     this->argv = nullptr;
-    this->argc_idx = 1;
+    this->argv_idx = 1;
+    this->eval_arg_idx = 0;
     this->is_table_set = false;
 };
 
@@ -61,8 +62,44 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     return 0;
 }
 
+bool ArgParsing::is_valid_hex(std::string& input){
+    std::string input_copy = input;
+    bool valid = true;
+    // A hex number must always start with '0x'
+    if(input_copy[0] != '0' || input_copy[1] != 'x'){
+        return false;
+    }
+    input_copy = input_copy.substr(2);
+    // Check each character is a hex digit
+    for(size_t i = 0; i < input_copy.size() && valid; i++){
+        if(!((input_copy[i] >= '0' && input_copy[i] <= '9') ||
+             (input_copy[i] >= 'A' && input_copy[i] <= 'F') ||
+             (input_copy[i] >= 'a' && input_copy[i] <= 'f'))){
+            valid = false;
+        }
+    }
+    return valid;
+}
+
+bool ArgParsing::is_valid_dec(std::string& input){
+    std::string input_copy = input;
+    size_t i;
+    bool valid = true;
+    // Might be a negative number. If so, skip the minus sign
+    if(input_copy[0] == '-'){
+        input_copy = input_copy.substr(1);
+    }
+    // Check each character is a decimal digit
+    for(size_t i = 0; i < input_copy.size() && valid; i++){
+        if(!(input_copy[i] >= '0' && input_copy[i] <= '9')){
+            valid = false;
+        }
+    }
+    return valid;
+}
+
 void ArgParsing::parse(){
-    while(this->argc_idx < this->argc){
+    while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
             std::cout << "ERROR!" << std::endl;
             break;
@@ -71,16 +108,15 @@ void ArgParsing::parse(){
             this->arg_begin();
         }
         else if(this->state == APState::ARGV_VALUE){
-            
+            this->arg_value();
         }
     }
 }
 
 void ArgParsing::arg_begin(){
-    char* curr;
     // An identifier cannot be less than 2 characters in length
-    curr = this->argv[argc_idx];
-    if(strlen(curr) < 2){
+    std::string curr = this->argv[argv_idx];
+    if(curr.size() < 2){
         this->state = APState::ERROR;
         return;
     }
@@ -101,22 +137,20 @@ void ArgParsing::arg_begin(){
 }
 
 void ArgParsing::arg_abbr_form(){
-    char* curr;
     std::string abbr_arg;
-    int arg_table_idx;
-    curr = this->argv[this->argc_idx];
-    if(strlen(curr) == 2){
-        abbr_arg = std::string(1, this->argv[this->argc_idx][1]);
+    std::string curr = this->argv[this->argv_idx];
+    if(curr.size() == 2){
+        abbr_arg = std::string(1, this->argv[this->argv_idx][1]);
         // Search for abbreviated identifier in argument table 
         // If not found, returned index is -1 and set error state
-        arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
-        if(arg_table_idx == -1){
+        this->eval_arg_idx = this->get_index_in_arg_table(abbr_arg, true);
+        if(this->eval_arg_idx == -1){
             this->state = APState::ERROR;
             return;
         }
         // Check the argument data type and update the state
-        if(this->arg_table[arg_table_idx].data_type == APDataType::FLAG){
-            this->arg_table[arg_table_idx].value = "1";
+        if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
+            this->arg_table[this->eval_arg_idx].value = "1";
             this->state = APState::ARGV_BEGIN;
         }
         else{
@@ -126,29 +160,67 @@ void ArgParsing::arg_abbr_form(){
     else{
         // Loop through group of abbreviated form identifiers in table
         // All identifiers must be of FLAG type
-        for(size_t i = 1; i < strlen(this->argv[this->argc_idx]); i++){
-            abbr_arg = std::string(1, this->argv[this->argc_idx][i]);
+        for(size_t i = 1; i < strlen(this->argv[this->argv_idx]); i++){
+            abbr_arg = std::string(1, this->argv[this->argv_idx][i]);
             // Search for abbreviated identifier in argument table
             // If not found, returned index is -1 and set error state
-            arg_table_idx = this->get_index_in_arg_table(abbr_arg, true);
-            if(arg_table_idx == -1){
+            this->eval_arg_idx = this->get_index_in_arg_table(abbr_arg, true);
+            if(this->eval_arg_idx == -1){
                 this->state = APState::ERROR;
                 return;
             }
             // Since it is a group of identifiers, we can only accept arguments of type FLAG
-            if(this->arg_table[arg_table_idx].data_type != APDataType::FLAG){
+            if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
                 this->state = APState::ERROR;
                 return;    
             }
-            this->arg_table[arg_table_idx].value = "1";
+            this->arg_table[this->eval_arg_idx].value = "1";
         }
         this->state = APState::ARGV_BEGIN;
     }
-    this->argc_idx++;
+    this->argv_idx++;
 }
 
 void ArgParsing::arg_full_form(){
+    // TODO
+}
 
+void ArgParsing::arg_value(){
+    std::string value = this->argv[this->argv_idx];
+    switch(this->arg_table[this->eval_arg_idx].data_type){
+    case APDataType::NUMBER:
+        // Check if it is a hexadecimal value.
+        // If so, validate it. Otherwise validate it as decimal
+        if(value.size() >= 2){
+            if(this->is_valid_hex(value)){
+                this->arg_table[this->eval_arg_idx].value = value;
+            }
+            else if(this->is_valid_dec(value)){
+                this->arg_table[this->eval_arg_idx].value = value;
+            }
+            else{
+                this->state = APState::ERROR;
+                return;
+            }
+        }
+        else{
+            if(this->is_valid_dec(value)){
+                this->arg_table[this->eval_arg_idx].value = value;
+            }
+            else{
+                this->state = APState::ERROR;
+                return;
+            }
+        }
+        break;
+    case APDataType::TEXT:
+        this->arg_table[this->eval_arg_idx].value = value;
+        break;
+    default:
+        break;
+    }
+    this->state = APState::ARGV_BEGIN;
+    this->argv_idx++;
 }
 
 void ArgParsing::display_arg_table(){
@@ -164,8 +236,8 @@ void ArgParsing::display_arg_table(){
         case APDataType::NUMBER:
             data_type_str = "NUMBER";
             break;        
-        case APDataType::STRING:
-            data_type_str = "STRING";
+        case APDataType::TEXT:
+            data_type_str = "TEXT";
             break;        
         default:
             data_type_str = "NONE";
