@@ -27,6 +27,7 @@ struct APTableEntry {
     std::string full_form;
     APDataType data_type;
     bool is_required;
+    bool initialized = false;
 };
 typedef struct APTableEntry APTableEntry;
 

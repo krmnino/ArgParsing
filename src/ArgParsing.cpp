@@ -101,6 +101,7 @@ bool ArgParsing::is_valid_dec(std::string& input){
 void ArgParsing::parse(){
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
+            // TODO
             std::cout << "ERROR!" << std::endl;
             break;
         }
@@ -126,7 +127,7 @@ void ArgParsing::arg_begin(){
         return;
     }
     // Whether the parameter identifier is in full or abbreviated form 
-    if(curr[1] == '-'){\
+    if(curr[1] == '-'){
         this->state = APState::ARGV_FULL_ID;
         this->arg_full_form();
     }
@@ -147,6 +148,11 @@ void ArgParsing::arg_abbr_form(){
         if(this->eval_arg_idx == -1){
             this->state = APState::ERROR;
             return;
+        }
+        // Check the current argument hasn't been passed more than once 
+        if(this->arg_table[this->eval_arg_idx].initialized){
+            this->state = APState::ERROR;
+            return;    
         }
         // Check the argument data type and update the state
         if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
@@ -169,20 +175,50 @@ void ArgParsing::arg_abbr_form(){
                 this->state = APState::ERROR;
                 return;
             }
+            // Check the current argument hasn't been passed more than once
+            if(this->arg_table[this->eval_arg_idx].initialized){
+                this->state = APState::ERROR;
+                return;    
+            }
             // Since it is a group of identifiers, we can only accept arguments of type FLAG
             if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
                 this->state = APState::ERROR;
                 return;    
             }
             this->arg_table[this->eval_arg_idx].value = "1";
+            this->arg_table[this->eval_arg_idx].initialized = true;
         }
         this->state = APState::ARGV_BEGIN;
     }
+    this->arg_table[this->eval_arg_idx].initialized = true;
     this->argv_idx++;
 }
 
 void ArgParsing::arg_full_form(){
-    // TODO
+    std::string full_arg = this->argv[this->argv_idx];
+    full_arg = full_arg.substr(2);
+    // Search for full identifier in argument table
+    // If not found, returned index is -1 and set error state
+    this->eval_arg_idx = this->get_index_in_arg_table(full_arg, false);
+    if(this->eval_arg_idx == -1){
+        this->state = APState::ERROR;
+        return;
+    }
+    // Check the current argument hasn't been passed more than once
+    if(this->arg_table[this->eval_arg_idx].initialized){
+        this->state = APState::ERROR;
+        return;    
+    }
+    // Check the argument data type and update the state
+    if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
+        this->arg_table[this->eval_arg_idx].value = "1";
+        this->state = APState::ARGV_BEGIN;
+    }
+    else{
+        this->state = APState::ARGV_VALUE;
+    }
+    this->arg_table[this->eval_arg_idx].initialized = true;
+    this->argv_idx++;
 }
 
 void ArgParsing::arg_value(){
