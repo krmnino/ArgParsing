@@ -13,7 +13,7 @@ link:
 	g++ -o argparsing $(OBJ_FILES)
 
 test:
-	g++ -g -std=c++17 -o argtest ../src/ArgParsing.cpp Test.cpp
+	g++ -g -std=c++17 -D DEBUG -o argtest ../src/ArgParsing.cpp Test.cpp
 
 clean:
 	rm argparsing argtest *.o ../src/*.gch

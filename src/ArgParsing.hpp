@@ -14,6 +14,16 @@ enum class APState {
     ARGV_VALUE,
 };
 
+enum class APErrRsn {
+    BAD_FORMAT,
+    MISSING_REQUIRED,
+    UNKNOWN_ARGUMENT,
+    REPEATED_ARGUMENT,
+    MUST_BE_FLAG,
+    BAD_NUMERIC_VALUE,
+};
+
+
 enum class APDataType {
     NONE,
     FLAG,
@@ -21,12 +31,13 @@ enum class APDataType {
     TEXT
 };
 
+
 struct APTableEntry {
     std::string value;
     std::string abbr_form;
     std::string full_form;
     APDataType data_type;
-    bool is_required;
+    bool required;
     bool initialized = false;
 };
 typedef struct APTableEntry APTableEntry;
@@ -36,10 +47,12 @@ typedef struct APTableEntry APTableEntry;
 class ArgParsing{
     private:
     std::vector<APTableEntry> arg_table;
+    std::vector<std::string> err_msg_data;
     static ArgParsing* ap_ptr;
     char** argv;
     size_t argv_idx;
     APState state;
+    APErrRsn reason;
     int argc;
     int eval_arg_idx;
     bool is_table_set;
@@ -50,6 +63,7 @@ class ArgParsing{
     int get_index_in_arg_table(std::string&, bool);
     bool is_valid_hex(std::string&);
     bool is_valid_dec(std::string&);
+    void display_error_msg();
 
     public:
     static ArgParsing* ArgParsing_get_instance(){
@@ -67,12 +81,14 @@ class ArgParsing{
 
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
-    void parse();
+    int parse();
     void arg_begin();
     void arg_abbr_form();
     void arg_full_form();
     void arg_value();
+    #ifdef DEBUG
     void display_arg_table();
+    #endif
 
 };
 

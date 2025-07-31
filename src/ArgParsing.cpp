@@ -97,12 +97,31 @@ bool ArgParsing::is_valid_dec(std::string& input){
     }
     return valid;
 }
+void ArgParsing::display_error_msg(){
+    switch (this->reason){
+    case APErrRsn::BAD_FORMAT:
+        std::cerr << "ERROR: argument format provided is not valid." << std::endl;
+        break;
+    case APErrRsn::MISSING_REQUIRED:    
+        std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
+        break;
+    case APErrRsn::UNKNOWN_ARGUMENT:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
+        break;
+    case APErrRsn::REPEATED_ARGUMENT:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
+        break;
+    case APErrRsn::MUST_BE_FLAG:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
+        break;
+    default:
+        break;
+    }
+}
 
-void ArgParsing::parse(){
+int ArgParsing::parse(){
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
-            // TODO
-            std::cout << "ERROR!" << std::endl;
             break;
         }
         else if(this->state == APState::ARGV_BEGIN){
@@ -112,6 +131,23 @@ void ArgParsing::parse(){
             this->arg_value();
         }
     }
+    if(this->state == APState::ERROR){
+        this->display_error_msg();
+        return -1;
+    }
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        if(this->arg_table[i].required && !this->arg_table[i].initialized){
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::MISSING_REQUIRED;
+            this->err_msg_data.push_back("--" + this->arg_table[i].full_form);
+            break;
+        }
+    }
+    if(this->state == APState::ERROR){
+        this->display_error_msg();
+        return -1;
+    }
+    return 0;
 }
 
 void ArgParsing::arg_begin(){
@@ -119,11 +155,13 @@ void ArgParsing::arg_begin(){
     std::string curr = this->argv[argv_idx];
     if(curr.size() < 2){
         this->state = APState::ERROR;
+        this->reason = APErrRsn::BAD_FORMAT;
         return;
     }
     // Parameter identifiers must always start with a single dash (-)
     if(curr[0] != '-'){
         this->state = APState::ERROR;
+        this->reason = APErrRsn::BAD_FORMAT;
         return;
     }
     // Whether the parameter identifier is in full or abbreviated form 
@@ -147,11 +185,15 @@ void ArgParsing::arg_abbr_form(){
         this->eval_arg_idx = this->get_index_in_arg_table(abbr_arg, true);
         if(this->eval_arg_idx == -1){
             this->state = APState::ERROR;
+            this->reason = APErrRsn::UNKNOWN_ARGUMENT;
+            this->err_msg_data.push_back("-" + abbr_arg);
             return;
         }
         // Check the current argument hasn't been passed more than once 
         if(this->arg_table[this->eval_arg_idx].initialized){
             this->state = APState::ERROR;
+            this->reason = APErrRsn::REPEATED_ARGUMENT;
+            this->err_msg_data.push_back("-" + abbr_arg);
             return;    
         }
         // Check the argument data type and update the state
@@ -173,16 +215,22 @@ void ArgParsing::arg_abbr_form(){
             this->eval_arg_idx = this->get_index_in_arg_table(abbr_arg, true);
             if(this->eval_arg_idx == -1){
                 this->state = APState::ERROR;
+                this->reason = APErrRsn::UNKNOWN_ARGUMENT;
+                this->err_msg_data.push_back("-" + abbr_arg);
                 return;
             }
             // Check the current argument hasn't been passed more than once
             if(this->arg_table[this->eval_arg_idx].initialized){
                 this->state = APState::ERROR;
+                this->reason = APErrRsn::REPEATED_ARGUMENT;
+                this->err_msg_data.push_back("-" + abbr_arg);
                 return;    
             }
             // Since it is a group of identifiers, we can only accept arguments of type FLAG
             if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
                 this->state = APState::ERROR;
+                this->reason = APErrRsn::MUST_BE_FLAG;
+                this->err_msg_data.push_back("-" + abbr_arg);
                 return;    
             }
             this->arg_table[this->eval_arg_idx].value = "1";
@@ -202,11 +250,15 @@ void ArgParsing::arg_full_form(){
     this->eval_arg_idx = this->get_index_in_arg_table(full_arg, false);
     if(this->eval_arg_idx == -1){
         this->state = APState::ERROR;
+        this->reason = APErrRsn::UNKNOWN_ARGUMENT;
+        this->err_msg_data.push_back("--" + full_arg);
         return;
     }
     // Check the current argument hasn't been passed more than once
     if(this->arg_table[this->eval_arg_idx].initialized){
         this->state = APState::ERROR;
+        this->reason = APErrRsn::REPEATED_ARGUMENT;
+        this->err_msg_data.push_back("--" + full_arg);
         return;    
     }
     // Check the argument data type and update the state
@@ -236,6 +288,9 @@ void ArgParsing::arg_value(){
             }
             else{
                 this->state = APState::ERROR;
+                this->reason = APErrRsn::BAD_NUMERIC_VALUE;
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
+                this->err_msg_data.push_back(value);
                 return;
             }
         }
@@ -245,6 +300,9 @@ void ArgParsing::arg_value(){
             }
             else{
                 this->state = APState::ERROR;
+                this->reason = APErrRsn::BAD_NUMERIC_VALUE;
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
+                this->err_msg_data.push_back(value);
                 return;
             }
         }
@@ -259,9 +317,11 @@ void ArgParsing::arg_value(){
     this->argv_idx++;
 }
 
+#ifdef DEBUG
 void ArgParsing::display_arg_table(){
     std::string data_type_str;
-    std::string is_required_str;
+    std::string required_str;
+    std::string initialized_str;
     for(size_t i = 0; i < this->arg_table.size(); i++){
         std::cout << "Abbreviated Form: " << this->arg_table[i].abbr_form << std::endl;
         std::cout << "Full Form:        " << this->arg_table[i].abbr_form << std::endl;
@@ -281,13 +341,21 @@ void ArgParsing::display_arg_table(){
         }
         std::cout << "Data Type:        " << data_type_str << std::endl;
         std::cout << "Value:            " << this->arg_table[i].value << std::endl;
-        if(this->arg_table[i].is_required){
-            is_required_str = "TRUE";
+        if(this->arg_table[i].required){
+            required_str = "TRUE";
         }
         else{
-            is_required_str = "FALSE";
+            required_str = "FALSE";
         }
-        std::cout << "Is required?:     " <<  is_required_str << std::endl;
+        std::cout << "Is required?:     " <<  required_str << std::endl;
+        if(this->arg_table[i].initialized){
+            initialized_str = "TRUE";
+        }
+        else{
+            initialized_str = "FALSE";
+        }
+        std::cout << "Is initialized?:     " <<  initialized_str << std::endl;
         std::cout << "--------------------------------" << std::endl;
     }
 }
+#endif
