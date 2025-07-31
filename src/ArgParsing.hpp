@@ -14,6 +14,7 @@ enum class APState {
     ARGV_VALUE,
 };
 
+
 enum class APErrRsn {
     BAD_FORMAT,
     MISSING_REQUIRED,
@@ -41,7 +42,6 @@ struct APTableEntry {
     bool initialized = false;
 };
 typedef struct APTableEntry APTableEntry;
-
 
 
 class ArgParsing{
