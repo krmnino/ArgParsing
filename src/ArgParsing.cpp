@@ -97,58 +97,6 @@ bool ArgParsing::is_valid_dec(std::string& input){
     }
     return valid;
 }
-void ArgParsing::display_error_msg(){
-    switch (this->reason){
-    case APErrRsn::BAD_FORMAT:
-        std::cerr << "ERROR: argument format provided is not valid." << std::endl;
-        break;
-    case APErrRsn::MISSING_REQUIRED:    
-        std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
-        break;
-    case APErrRsn::UNKNOWN_ARGUMENT:    
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
-        break;
-    case APErrRsn::REPEATED_ARGUMENT:    
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
-        break;
-    case APErrRsn::MUST_BE_FLAG:    
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
-        break;
-    default:
-        break;
-    }
-}
-
-int ArgParsing::parse(){
-    while(this->argv_idx < this->argc){
-        if(this->state == APState::ERROR){
-            break;
-        }
-        else if(this->state == APState::ARGV_BEGIN){
-            this->arg_begin();
-        }
-        else if(this->state == APState::ARGV_VALUE){
-            this->arg_value();
-        }
-    }
-    if(this->state == APState::ERROR){
-        this->display_error_msg();
-        return -1;
-    }
-    for(size_t i = 0; i < this->arg_table.size(); i++){
-        if(this->arg_table[i].required && !this->arg_table[i].initialized){
-            this->state = APState::ERROR;
-            this->reason = APErrRsn::MISSING_REQUIRED;
-            this->err_msg_data.push_back("--" + this->arg_table[i].full_form);
-            break;
-        }
-    }
-    if(this->state == APState::ERROR){
-        this->display_error_msg();
-        return -1;
-    }
-    return 0;
-}
 
 void ArgParsing::arg_begin(){
     // An identifier cannot be less than 2 characters in length
@@ -315,6 +263,59 @@ void ArgParsing::arg_value(){
     }
     this->state = APState::ARGV_BEGIN;
     this->argv_idx++;
+}
+
+void ArgParsing::display_error_msg(){
+    switch (this->reason){
+    case APErrRsn::BAD_FORMAT:
+        std::cerr << "ERROR: argument format provided is not valid." << std::endl;
+        break;
+    case APErrRsn::MISSING_REQUIRED:    
+        std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
+        break;
+    case APErrRsn::UNKNOWN_ARGUMENT:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
+        break;
+    case APErrRsn::REPEATED_ARGUMENT:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
+        break;
+    case APErrRsn::MUST_BE_FLAG:    
+        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
+        break;
+    default:
+        break;
+    }
+}
+
+int ArgParsing::parse(){
+    while(this->argv_idx < this->argc){
+        if(this->state == APState::ERROR){
+            break;
+        }
+        else if(this->state == APState::ARGV_BEGIN){
+            this->arg_begin();
+        }
+        else if(this->state == APState::ARGV_VALUE){
+            this->arg_value();
+        }
+    }
+    if(this->state == APState::ERROR){
+        this->display_error_msg();
+        return -1;
+    }
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        if(this->arg_table[i].required && !this->arg_table[i].initialized){
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::MISSING_REQUIRED;
+            this->err_msg_data.push_back("--" + this->arg_table[i].full_form);
+            break;
+        }
+    }
+    if(this->state == APState::ERROR){
+        this->display_error_msg();
+        return -1;
+    }
+    return 0;
 }
 
 #ifdef DEBUG

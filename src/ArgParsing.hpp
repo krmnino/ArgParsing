@@ -40,6 +40,8 @@ struct APTableEntry {
     APDataType data_type;
     bool required;
     bool initialized = false;
+    APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
+                 abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required) {}
 };
 typedef struct APTableEntry APTableEntry;
 
@@ -63,8 +65,12 @@ class ArgParsing{
     int get_index_in_arg_table(std::string&, bool);
     bool is_valid_hex(std::string&);
     bool is_valid_dec(std::string&);
+    void arg_begin();
+    void arg_abbr_form();
+    void arg_full_form();
+    void arg_value();
     void display_error_msg();
-
+    
     public:
     static ArgParsing* ArgParsing_get_instance(){
         if(ap_ptr == nullptr){
@@ -82,10 +88,6 @@ class ArgParsing{
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
     int parse();
-    void arg_begin();
-    void arg_abbr_form();
-    void arg_full_form();
-    void arg_value();
     #ifdef DEBUG
     void display_arg_table();
     #endif
