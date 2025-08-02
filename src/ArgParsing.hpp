@@ -88,6 +88,7 @@ class ArgParsing{
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
     int parse();
+    std::string get_arg_value(std::string, bool);
     #ifdef DEBUG
     void display_arg_table();
     #endif

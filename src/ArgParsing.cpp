@@ -318,6 +318,22 @@ int ArgParsing::parse(){
     return 0;
 }
 
+std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        if(is_abbr_input){
+            if(this->arg_table[i].abbr_form == arg_key){
+                return this->arg_table[i].value;
+            }
+        }
+        else{
+            if(this->arg_table[i].full_form == arg_key){
+                return this->arg_table[i].value;
+            }    
+        }
+    }
+    return "";
+}
+
 #ifdef DEBUG
 void ArgParsing::display_arg_table(){
     std::string data_type_str;
