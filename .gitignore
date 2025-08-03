@@ -1,3 +1,5 @@
+bin
+res
 testing/argparsing
 testing/argtest
 testing/*.o
