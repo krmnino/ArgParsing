@@ -11,10 +11,10 @@ if [ ! -d ../res ]; then
 fi 
 
 # Unpack and build Randomizer
-RandomizerVer=1.0
+RandomizerVer=1.1
 wget -O ../res/Randomizer_v$RandomizerVer.tar.gz https://github.com/krmnino/Randomizer/archive/refs/tags/v$RandomizerVer.tar.gz
 tar -xvzf ../res/Randomizer_v$RandomizerVer.tar.gz --directory ../res
-rm -r ../res/Randomizer_v1.0.tar.gz
+rm -r ../res/Randomizer_v$RandomizerVer.tar.gz
 cd ../res/Randomizer-$RandomizerVer/src
 sh Initialize.sh
 cd -
