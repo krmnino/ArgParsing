@@ -26,22 +26,27 @@ enum class APErrRsn {
 
 
 enum class APDataType {
-    NONE,
-    FLAG,
-    NUMBER,
-    TEXT
+    TEXT   = 0x00000001,
+    NUMBER = 0x00000002,
+    FLAG   = 0x00000004,
 };
-
+#ifdef DEBUG
+#define MAX_TYPES (uint32_t)3
+#endif
 
 struct APTableEntry {
-    std::string value;
     std::string abbr_form;
     std::string full_form;
+    std::string value;
     APDataType data_type;
     bool required;
-    bool initialized = false;
+    bool initialized;
     APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
-                 abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required) {}
+                 abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
+    APTableEntry(std::string in_full_form, APDataType in_data_type, bool in_required) : 
+                 abbr_form(""), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
+    APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::TEXT), required(false), initialized(false) {}
+    ~APTableEntry() {}
 };
 typedef struct APTableEntry APTableEntry;
 
@@ -50,7 +55,9 @@ class ArgParsing{
     private:
     std::vector<APTableEntry> arg_table;
     std::vector<std::string> err_msg_data;
+    #ifndef DEBUG
     static ArgParsing* ap_ptr;
+    #endif
     char** argv;
     size_t argv_idx;
     APState state;
@@ -58,8 +65,11 @@ class ArgParsing{
     int argc;
     int eval_arg_idx;
     bool is_table_set;
-
+    
+    #ifndef DEBUG
     ArgParsing();
+    ~ArgParsing();
+    #endif
     ArgParsing(const ArgParsing&) = delete;
     ArgParsing& operator=(const ArgParsing&) = delete;
     int get_index_in_arg_table(std::string&, bool);
@@ -72,6 +82,7 @@ class ArgParsing{
     void display_error_msg();
     
     public:
+    #ifndef DEBUG
     static ArgParsing* ArgParsing_get_instance(){
         if(ap_ptr == nullptr){
             ap_ptr = new ArgParsing();
@@ -84,9 +95,14 @@ class ArgParsing{
             delete ap_ptr;
         }
     }
-
+    #else
+    ArgParsing();
+    ~ArgParsing();
+    #endif
+    
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
+    int set_arg_table(std::vector<APTableEntry>&);
     int parse();
     std::string get_arg_value(std::string, bool);
     #ifdef DEBUG

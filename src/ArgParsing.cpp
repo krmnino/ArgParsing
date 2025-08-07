@@ -7,7 +7,9 @@ ArgParsing::ArgParsing() {
     this->argv_idx = 1;
     this->eval_arg_idx = 0;
     this->is_table_set = false;
-};
+}
+
+ArgParsing::~ArgParsing() {}
 
 int ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
     for(size_t i = 0; i < this->arg_table.size(); i++){
@@ -341,7 +343,7 @@ void ArgParsing::display_arg_table(){
     std::string initialized_str;
     for(size_t i = 0; i < this->arg_table.size(); i++){
         std::cout << "Abbreviated Form: " << this->arg_table[i].abbr_form << std::endl;
-        std::cout << "Full Form:        " << this->arg_table[i].abbr_form << std::endl;
+        std::cout << "Full Form:        " << this->arg_table[i].full_form << std::endl;
         switch (this->arg_table[i].data_type){
         case APDataType::FLAG:
             data_type_str = "FLAG";
