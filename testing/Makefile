@@ -1,19 +1,24 @@
-SRC_FILES = ../src/ArgParsing.cpp	\
+RD = ../res/
+BD = ../bin/
+
+SRC_FILES = ArgTableBuilder.cpp		\
 			Main.cpp
 
-OBJ_FILES = ArgParsing.o			\
+OBJ_FILES = ArgTableBuilder.o		\
 			Main.o
 
 all: compile link
 
 compile:
-	g++ -g -c -std=c++17 $(SRC_FILES) 
+	g++ -g -c -D DEBUG -std=c++17 $(SRC_FILES) 
 
 link: 
-	g++ -o argparsing $(OBJ_FILES)
+	g++ $(OBJ_FILES) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\
+					 -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
+					 -o $(BD)argparsing
 
 test:
-	g++ -g -std=c++17 -D DEBUG -o argtest ../src/ArgParsing.cpp Test.cpp
+	g++ -g -std=c++17 -D DEBUG ../src/ArgParsing.cpp Test.cpp -o $(BD)argtest
 
 clean:
-	rm argparsing argtest *.o ../src/*.gch
+	rm $(BD)argparsing $(BD)argtest *.o ../src/*.gch
