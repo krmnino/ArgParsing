@@ -1,0 +1,158 @@
+#include "ArgParsingTesting.hpp"
+
+ static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+int build_arg_table_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
+    APTableEntry new_entry;
+    std::string result_str;
+    uint32_t result_u32;
+    uint32_t attempt_counter;
+    uint32_t shifter;
+    bool result_bool;
+    bool invalid;
+
+    // APTableEntry.abbr_form -> Make it 50% of the time
+    result_bool = rnd->gen_bool();
+    if(result_bool){
+        invalid = false;
+        attempt_counter = 0;
+        while (true){
+            // If counter expired, stop trying and return to the caller
+            if(attempt_counter > BUILD_MAX_ATTEMPTS){
+                return -1;
+            }
+            result_str = rnd->gen_string(MAX_ABBR_FORM_ID_LEN, alphanum_dict);
+            // Prevent duplicates
+            for(size_t j = 0; j < arg_table.size(); j++){
+                if(result_str == arg_table[j].abbr_form){
+                    invalid = true;
+                    break;
+                }
+            }
+            if(!invalid){
+                new_entry.abbr_form = result_str;
+                break;
+            }
+            // Loop back and try again
+            invalid = false;
+            attempt_counter++;
+        }
+    }
+
+    // APTableEntry.full_form
+    invalid = false;
+    attempt_counter = 0;
+    while (true){
+        // If counter expired, stop trying and return to the caller
+        if(attempt_counter > BUILD_MAX_ATTEMPTS){
+            return -1;
+        }
+        result_u32 = rnd->gen_integral_range<uint32_t>(2, MAX_FULL_FORM_ID_LEN);
+        result_str = rnd->gen_string(result_u32, alphanum_dict);
+        // Prevent duplicates
+        for(size_t i = 0; i < arg_table.size(); i++){
+            if(result_str == arg_table[i].full_form || result_str.size() < 2){
+                invalid = true;
+                break;
+            }
+        }
+        if(!invalid){
+            new_entry.full_form = result_str;
+            break;
+        }
+        // Loop back and try again
+        invalid = false;
+        attempt_counter++;
+    }
+
+    // APTableEntry.data_type
+    attempt_counter = 0;
+    while(true){
+        if(attempt_counter > BUILD_MAX_ATTEMPTS){
+            return -1;
+        }
+        shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES);
+        if((enabled_data_types & (1 << shifter)) != 0){
+            break;
+        }
+        attempt_counter++;
+    }
+    new_entry.data_type = (APDataType)(1 << shifter);
+
+    // APTableEntry.required -> Make it not required 60% of the time
+    result_u32 = rnd->gen_integral_range<uint32_t>(1, 10);
+    if(result_u32 <= 6){
+        new_entry.required = false;
+    }
+    else{
+        new_entry.required = true;
+    }
+    arg_table.push_back(new_entry);
+
+    return 0;
+}
+
+int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
+    int attempt_counter;
+    uint32_t n_args = rnd->gen_integral_range<uint32_t>(0, 100);
+    uint32_t enabled_data_types = (uint32_t)APDataType::TEXT   |
+                                  (uint32_t)APDataType::FLAG   |
+                                  (uint32_t)APDataType::NUMBER;
+                                  
+    arg_table.reserve(n_args);
+    for(size_t i = 0; i < n_args; i++){
+        attempt_counter = 0;
+        while(true){
+            if(attempt_counter > BUILD_MAX_ATTEMPTS){
+                return -1;
+            }
+            if(build_arg_table_entry(rnd, arg_table, enabled_data_types) == 0){
+                break;
+            }
+            attempt_counter++;
+        }
+    }
+
+    return 0;
+}
+
+void display_arg_table(std::vector<APTableEntry>& arg_table){
+    std::string data_type_str;
+    std::string required_str;
+    std::string initialized_str;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        std::cout << "Abbreviated Form: " << arg_table[i].abbr_form << std::endl;
+        std::cout << "Full Form:        " << arg_table[i].full_form << std::endl;
+        switch (arg_table[i].data_type){
+        case APDataType::FLAG:
+            data_type_str = "FLAG";
+            break;        
+        case APDataType::NUMBER:
+            data_type_str = "NUMBER";
+            break;        
+        case APDataType::TEXT:
+            data_type_str = "TEXT";
+            break;        
+        default:
+            data_type_str = "NONE";
+            break;
+        }
+        std::cout << "Data Type:        " << data_type_str << std::endl;
+        std::cout << "Value:            " << arg_table[i].value << std::endl;
+        if(arg_table[i].required){
+            required_str = "TRUE";
+        }
+        else{
+            required_str = "FALSE";
+        }
+        std::cout << "Is required?:     " <<  required_str << std::endl;
+        if(arg_table[i].initialized){
+            initialized_str = "TRUE";
+        }
+        else{
+            initialized_str = "FALSE";
+        }
+        std::cout << "Is initialized?:     " <<  initialized_str << std::endl;
+        std::cout << "--------------------------------" << std::endl;
+    }
+}
