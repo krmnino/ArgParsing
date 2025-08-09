@@ -117,42 +117,67 @@ int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
 }
 
 void display_arg_table(std::vector<APTableEntry>& arg_table){
+    std::string idx_str;
+    std::string abbr_form_str;
+    std::string full_form_str;
     std::string data_type_str;
     std::string required_str;
     std::string initialized_str;
+    std::string value_str;
+    std::cout << " ";
+    std::cout << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("DATA TYPE", PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("REQUIRED", PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+    std::cout << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << std::endl;
+    std::cout << "-";
+    std::cout << space_padding("-", PRT_IDX_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_ABBR_FORM_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_DATA_TYPE_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_REQUIRED_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_INITIALIZED_STR_WIDTH, "-") << "-+-";
+    std::cout << space_padding("-", PRT_VALUE_STR_WIDTH, "-") << std::endl;
     for(size_t i = 0; i < arg_table.size(); i++){
-        std::cout << "Abbreviated Form: " << arg_table[i].abbr_form << std::endl;
-        std::cout << "Full Form:        " << arg_table[i].full_form << std::endl;
+        idx_str = std::to_string(i);
+        abbr_form_str = arg_table[i].abbr_form;
+        full_form_str = arg_table[i].full_form;
+        value_str = arg_table[i].value;
         switch (arg_table[i].data_type){
-        case APDataType::FLAG:
+            case APDataType::FLAG:
             data_type_str = "FLAG";
             break;        
-        case APDataType::NUMBER:
+            case APDataType::NUMBER:
             data_type_str = "NUMBER";
             break;        
-        case APDataType::TEXT:
+            case APDataType::TEXT:
             data_type_str = "TEXT";
             break;        
-        default:
+            default:
             data_type_str = "NONE";
             break;
         }
-        std::cout << "Data Type:        " << data_type_str << std::endl;
-        std::cout << "Value:            " << arg_table[i].value << std::endl;
         if(arg_table[i].required){
             required_str = "TRUE";
         }
         else{
             required_str = "FALSE";
         }
-        std::cout << "Is required?:     " <<  required_str << std::endl;
         if(arg_table[i].initialized){
             initialized_str = "TRUE";
         }
         else{
             initialized_str = "FALSE";
         }
-        std::cout << "Is initialized?:     " <<  initialized_str << std::endl;
-        std::cout << "--------------------------------" << std::endl;
+        std::cout << " ";
+        std::cout << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+        std::cout << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << std::endl;
     }
 }
