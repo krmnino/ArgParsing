@@ -1,11 +1,16 @@
 RD = ../res/
 BD = ../bin/
+SD = ../src/
 
-SRC_FILES = ArgTableBuilder.cpp		\
+SRC_FILES = $(SD)ArgParsing.cpp		\
+			ArgTableBuilder.cpp		\
+			ScenarioBuilder.cpp		\
 			Utils.cpp				\
 			Main.cpp
 
-OBJ_FILES = ArgTableBuilder.o		\
+OBJ_FILES = ArgParsing.o			\
+			ArgTableBuilder.o		\
+			ScenarioBuilder.o		\
 			Utils.o  				\
 			Main.o
 
@@ -16,7 +21,6 @@ compile:
 
 link: 
 	g++ $(OBJ_FILES) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\
-					 -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
 					 -o $(BD)argparsing
 
 test:
