@@ -1,6 +1,37 @@
 #include "ArgParsingTesting.hpp"
 
- static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+
+int build_initial_arg_table(Randomizer* rnd, TestcaseData& tdata){
+    uint32_t attempt_counter;
+    uint32_t n_args = rnd->gen_integral_range<uint32_t>(0, 100);
+    uint32_t allowed_dtypes = (uint32_t)APDataType::TEXT   |
+                              (uint32_t)APDataType::FLAG   |
+                              (uint32_t)APDataType::NUMBER;
+                                  
+    // Empty the vector and reserve space
+    tdata.ini_argtab.clear();
+    tdata.ini_argtab.reserve(n_args);
+
+    // Allowed datatypes for testcase
+    tdata.allowed_data_types = allowed_dtypes;
+
+    for(size_t i = 0; i < n_args; i++){
+        attempt_counter = 0;
+        while(true){
+            if(attempt_counter > BUILD_MAX_ATTEMPTS){
+                return -1;
+            }
+            if(build_entry(rnd, tdata.ini_argtab, allowed_dtypes) == 0){
+                break;
+            }
+            attempt_counter++;
+        }
+    }
+
+    return 0;
+}
 
 int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
     APTableEntry new_entry;
@@ -88,30 +119,6 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
         new_entry.required = true;
     }
     arg_table.push_back(new_entry);
-
-    return 0;
-}
-
-int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
-    int attempt_counter;
-    uint32_t n_args = rnd->gen_integral_range<uint32_t>(0, 100);
-    uint32_t enabled_data_types = (uint32_t)APDataType::TEXT   |
-                                  (uint32_t)APDataType::FLAG   |
-                                  (uint32_t)APDataType::NUMBER;
-                                  
-    arg_table.reserve(n_args);
-    for(size_t i = 0; i < n_args; i++){
-        attempt_counter = 0;
-        while(true){
-            if(attempt_counter > BUILD_MAX_ATTEMPTS){
-                return -1;
-            }
-            if(build_entry(rnd, arg_table, enabled_data_types) == 0){
-                break;
-            }
-            attempt_counter++;
-        }
-    }
 
     return 0;
 }
