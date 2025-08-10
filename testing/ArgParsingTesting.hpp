@@ -16,9 +16,29 @@
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH 64
 
-int build_arg_table_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
+enum class Scenarios {
+    OK                    =  0x00000001,
+    MISSING_FIRST_DASH    =  0x00000002,
+    MISSING_REQUIRED_ARG  =  0x00000004,
+    UNKNOWN_ARGUMENT      =  0x00000008,
+    REPEATED_ARGUMENT     =  0x00000010,
+    MUST_BE_FLAG          =  0x00000020,
+    BAD_NUMERIC_VALUE     =  0x00000040,
+    EMPTY_ARG_LIST        =  0x00000080,
+    VALID_FLAG_GROUP      =  0x00000100,
+    INVALID_FLAG_GROUP    =  0x00000200,
+};
+
+
+// ArgTableBuilder.cpp
+int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 int build_arg_table(Randomizer*, std::vector<APTableEntry>&);
+bool contains_data_type(std::vector<APTableEntry>&, APDataType);
+bool contains_required(std::vector<APTableEntry>&);
+size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
 void display_arg_table(std::vector<APTableEntry>&);
+
+// Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
 
 #endif

@@ -2,7 +2,7 @@
 
  static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-int build_arg_table_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
+int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
     APTableEntry new_entry;
     std::string result_str;
     uint32_t result_u32;
@@ -106,7 +106,7 @@ int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
                 return -1;
             }
-            if(build_arg_table_entry(rnd, arg_table, enabled_data_types) == 0){
+            if(build_entry(rnd, arg_table, enabled_data_types) == 0){
                 break;
             }
             attempt_counter++;
@@ -114,6 +114,34 @@ int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     }
 
     return 0;
+}
+
+bool contains_data_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].data_type == input_data_type){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool contains_required(std::vector<APTableEntry>& arg_table){
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].required){
+            return true;
+        }
+    }
+    return false;
+}
+
+size_t count_args_by_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].data_type == input_data_type){
+            accumulator++;
+        }
+    }
+    return accumulator;
 }
 
 void display_arg_table(std::vector<APTableEntry>& arg_table){
