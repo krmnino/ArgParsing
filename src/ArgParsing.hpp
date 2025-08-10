@@ -61,9 +61,9 @@ class ArgParsing{
     #endif
     char** argv;
     size_t argv_idx;
+    size_t argc;
     APState state;
     APErrRsn reason;
-    int argc;
     int eval_arg_idx;
     bool is_table_set;
     

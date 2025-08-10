@@ -85,7 +85,6 @@ bool ArgParsing::is_valid_hex(std::string& input){
 
 bool ArgParsing::is_valid_dec(std::string& input){
     std::string input_copy = input;
-    size_t i;
     bool valid = true;
     // Might be a negative number. If so, skip the minus sign
     if(input_copy[0] == '-'){
