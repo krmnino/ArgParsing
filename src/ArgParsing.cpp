@@ -101,17 +101,12 @@ bool ArgParsing::is_valid_dec(std::string& input){
 }
 
 void ArgParsing::arg_begin(){
-    // An identifier cannot be less than 2 characters in length
+    // We guarantee that curr is not an empty string
     std::string curr = this->argv[argv_idx];
-    if(curr.size() < 2){
-        this->state = APState::ERROR;
-        this->reason = APErrRsn::BAD_FORMAT;
-        return;
-    }
-    // Parameter identifiers must always start with a single dash (-)
+    // If first char is not a dash, set error state
     if(curr[0] != '-'){
         this->state = APState::ERROR;
-        this->reason = APErrRsn::BAD_FORMAT;
+        this->reason = APErrRsn::MISSING_FIRST_DASH;
         return;
     }
     // Whether the parameter identifier is in full or abbreviated form 
@@ -269,10 +264,10 @@ void ArgParsing::arg_value(){
 
 void ArgParsing::display_error_msg(){
     switch (this->reason){
-    case APErrRsn::BAD_FORMAT:
-        std::cerr << "ERROR: argument format provided is not valid." << std::endl;
+    case APErrRsn::MISSING_FIRST_DASH:
+        std::cerr << "ERROR: all argument identifiers must start with a dash (-)." << std::endl;
         break;
-    case APErrRsn::MISSING_REQUIRED:    
+    case APErrRsn::MISSING_REQUIRED_ARG:    
         std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
@@ -308,7 +303,7 @@ int ArgParsing::parse(){
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(this->arg_table[i].required && !this->arg_table[i].initialized){
             this->state = APState::ERROR;
-            this->reason = APErrRsn::MISSING_REQUIRED;
+            this->reason = APErrRsn::MISSING_REQUIRED_ARG;
             this->err_msg_data.push_back("--" + this->arg_table[i].full_form);
             break;
         }

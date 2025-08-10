@@ -16,12 +16,13 @@ enum class APState {
 
 
 enum class APErrRsn {
-    BAD_FORMAT,
-    MISSING_REQUIRED,
-    UNKNOWN_ARGUMENT,
-    REPEATED_ARGUMENT,
-    MUST_BE_FLAG,
-    BAD_NUMERIC_VALUE,
+    OK                    =  0x00000001,
+    MISSING_FIRST_DASH    =  0x00000002,
+    MISSING_REQUIRED_ARG  =  0x00000004,
+    UNKNOWN_ARGUMENT      =  0x00000008,
+    REPEATED_ARGUMENT     =  0x00000010,
+    MUST_BE_FLAG          =  0x00000020,
+    BAD_NUMERIC_VALUE     =  0x00000040,
 };
 
 

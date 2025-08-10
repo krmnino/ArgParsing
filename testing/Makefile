@@ -2,9 +2,11 @@ RD = ../res/
 BD = ../bin/
 
 SRC_FILES = ArgTableBuilder.cpp		\
+			Utils.cpp				\
 			Main.cpp
 
 OBJ_FILES = ArgTableBuilder.o		\
+			Utils.o  				\
 			Main.o
 
 all: compile link
@@ -18,7 +20,7 @@ link:
 					 -o $(BD)argparsing
 
 test:
-	g++ -g -std=c++17 -D DEBUG ../src/ArgParsing.cpp Test.cpp -o $(BD)argtest
+	g++ -g -std=c++17 ../src/ArgParsing.cpp Test.cpp -o $(BD)argtest
 
 clean:
 	rm $(BD)argparsing $(BD)argtest *.o ../src/*.gch
