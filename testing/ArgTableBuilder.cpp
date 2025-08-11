@@ -151,6 +151,12 @@ size_t count_args_by_type(std::vector<APTableEntry>& arg_table, APDataType input
     return accumulator;
 }
 
+
+bool abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
+    return (arg_table[idx].abbr_form.size() == 0) ? false : true;
+}
+
+
 std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     std::stringstream buffer;
     std::string idx_str;

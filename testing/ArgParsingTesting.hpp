@@ -4,9 +4,12 @@
 #include "../src/ArgParsing.hpp"
 #include "../res/Randomizer.hpp"
 
+#include <sstream>
+
 #define MAX_ABBR_FORM_ID_LEN 1
 #define MAX_FULL_FORM_ID_LEN 10
 #define BUILD_MAX_ATTEMPTS 1000
+#define MAX_TEXT_ARG_LEN 128
 
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
@@ -16,7 +19,7 @@
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH 64
 
-enum class Scenarios {
+enum class ScenarioType {
     OK                    =  0x00000001,
     MISSING_FIRST_DASH    =  0x00000002,
     MISSING_REQUIRED_ARG  =  0x00000004,
@@ -30,15 +33,61 @@ enum class Scenarios {
 };
 
 
-// ArgTableBuilder.cpp
-int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
-int build_arg_table(Randomizer*, std::vector<APTableEntry>&);
-bool contains_data_type(std::vector<APTableEntry>&, APDataType);
-bool contains_required(std::vector<APTableEntry>&);
-size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
-void display_arg_table(std::vector<APTableEntry>&);
+class ScenarioData{
+    public:
+    std::vector<APTableEntry> res_argtab; // Result argument table
+    std::vector<APTableEntry> exp_argtab; // Expected argument table
+    std::string argv;
+    size_t n_args;
+    ScenarioType type;
+    ScenarioData() {}
+};
+
+
+class TestcaseData{
+    public:
+    std::vector<APTableEntry> ini_argtab; // Initial argument table
+    std::vector<ScenarioData> scenario;
+    uint32_t allowed_data_types;
+    TestcaseData() {}
+};
+
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
+
+
+// ArgTableBuilder.cpp
+int build_initial_arg_table(Randomizer*, TestcaseData&);
+int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
+bool contains_data_type(std::vector<APTableEntry>&, APDataType);
+bool contains_required(std::vector<APTableEntry>&);
+size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
+bool abbr_form_available(std::vector<APTableEntry>&, size_t);
+std::string arg_table_to_string(std::vector<APTableEntry>&);
+
+
+// ScenarioBuilder.cpp
+void build_scenario(Randomizer* rnd, ScenarioData&);
+void build_OK_scenario(Randomizer* rnd, ScenarioData&);
+void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
+
+
+// Template utility functions
+template<typename T> std::string integer_to_hex_string(T num){
+    std::stringstream buffer;
+    buffer << "0x" << std::hex << num;
+    std::cout << "<><>>>>" << buffer.str() << std::endl;
+    return buffer.str();
+}
 
 #endif
