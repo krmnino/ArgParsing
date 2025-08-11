@@ -17,7 +17,7 @@ OBJ_FILES = ArgParsing.o			\
 all: compile link
 
 compile:
-	g++ -g -c -D DEBUG -std=c++17 $(SRC_FILES) 
+	g++ -g -c -Wall -D DEBUG -std=c++17 $(SRC_FILES) 
 
 link: 
 	g++ $(OBJ_FILES) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\

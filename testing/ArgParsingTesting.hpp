@@ -37,7 +37,7 @@ class ScenarioData{
     public:
     std::vector<APTableEntry> res_argtab; // Result argument table
     std::vector<APTableEntry> exp_argtab; // Expected argument table
-    std::string argv;
+    std::vector<std::string> argv;
     size_t n_args;
     ScenarioType type;
     ScenarioData() {}
@@ -63,6 +63,7 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 bool contains_data_type(std::vector<APTableEntry>&, APDataType);
 bool contains_required(std::vector<APTableEntry>&);
 size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
+size_t count_required_args(std::vector<APTableEntry>&);
 bool abbr_form_available(std::vector<APTableEntry>&, size_t);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
 
@@ -86,7 +87,6 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 template<typename T> std::string integer_to_hex_string(T num){
     std::stringstream buffer;
     buffer << "0x" << std::hex << num;
-    std::cout << "<><>>>>" << buffer.str() << std::endl;
     return buffer.str();
 }
 
