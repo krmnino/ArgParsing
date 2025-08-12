@@ -45,6 +45,7 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
         }
         for(size_t j = i + 1; j < this->arg_table.size(); j++){
             if(this->arg_table[i].abbr_form == this->arg_table[j].abbr_form){
+                std::cout << "-" << this->arg_table[j].abbr_form << " is a duplicate abbreviated form argument identifier." << std::endl;
                 return -1;
             }
         }
@@ -56,12 +57,19 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
                 continue;
             }
             if(this->arg_table[i].full_form == this->arg_table[j].full_form){
+                std::cout << "--" << this->arg_table[j].full_form << " is a duplicate full form argument identifier." << std::endl;
                 return -1;
             }
         }
     }
     is_table_set = true;
     return 0;
+}
+
+int ArgParsing::set_arg_table(std::vector<APTableEntry>& arg_table){
+    size_t n_entries = arg_table.size();
+    APTableEntry* arg_table_ptr = arg_table.data();
+    return set_arg_table(arg_table_ptr, n_entries);
 }
 
 bool ArgParsing::is_valid_hex(std::string& input){
