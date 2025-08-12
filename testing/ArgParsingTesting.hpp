@@ -38,7 +38,9 @@ class ScenarioData{
     std::vector<APTableEntry> res_argtab; // Result argument table
     std::vector<APTableEntry> exp_argtab; // Expected argument table
     std::vector<std::string> argv;
+    char** argv_char;
     size_t n_args;
+    size_t argc;
     ScenarioType type;
     ScenarioData() {}
 };
@@ -81,6 +83,8 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
+int argv_char_allocate(ScenarioData&);
+int argv_char_free(ScenarioData&);
 
 
 // Template utility functions

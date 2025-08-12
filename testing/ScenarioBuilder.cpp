@@ -42,6 +42,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     
     // Loop through sequentially and initialize all the required arguments first
     n_initialized = 0;
+    scenario.argc = 0;
     for(size_t i = 0; i < scenario.exp_argtab.size(); i++){
         // If not required, then skip it
         if(!scenario.exp_argtab[i].required){
@@ -88,6 +89,19 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         scenario.argv.push_back(arg_id);
         if(scenario.exp_argtab[i].data_type != APDataType::FLAG){
             scenario.argv.push_back(value);
+        }
+
+        // Update argc appropiately
+        switch (scenario.exp_argtab[i].data_type){
+        case APDataType::NUMBER:
+        case APDataType::TEXT:
+            scenario.argc += 2;
+            break;
+        case APDataType::FLAG:
+            break;
+            scenario.argc++;
+        default:
+            break;
         }
 
         n_initialized++;
@@ -140,7 +154,20 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         if(scenario.exp_argtab[rand_idx].data_type != APDataType::FLAG){
             scenario.argv.push_back(value);
         }
-        
+
+        // Update argc appropiately
+        switch (scenario.exp_argtab[rand_idx].data_type){
+        case APDataType::NUMBER:
+        case APDataType::TEXT:
+            scenario.argc += 2;
+            break;
+        case APDataType::FLAG:
+            break;
+            scenario.argc++;
+        default:
+            break;
+        }
+
         n_initialized++;
     }
 }
@@ -240,4 +267,33 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     }
 
     return allowed_scenarios;
+}
+
+int argv_char_allocate(ScenarioData& scenario){
+    if(scenario.argv_char != nullptr){
+        return -1;
+    }
+    // Allocate the array of char pointers + 1 for the null terminator
+    scenario.argv_char = new char*[scenario.argv.size() + 1];
+    // Loop through the argv vector, allocate and copy over the individual strings
+    for(size_t i = 0; i < scenario.argv.size(); i++){
+        scenario.argv_char[i] = new char(scenario.argv[i].size() + 1);
+        strcpy(scenario.argv_char[i], scenario.argv[i].c_str());
+    }
+    // Set null terminator
+    scenario.argv_char[scenario.argv.size()] = nullptr;
+    return 0;
+}
+
+int argv_char_free(ScenarioData& scenario){
+    if(scenario.argv_char == nullptr){
+        return -1;
+    }
+    // Loop through the array deallocating strings one by one
+    for(size_t i = 0; scenario.argv_char[i] != nullptr; i++){
+        delete scenario.argv_char[i];
+    }
+    // Finally delete the whole array
+    delete scenario.argv_char;
+    return 0;
 }
