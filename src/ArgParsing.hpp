@@ -60,8 +60,8 @@ class ArgParsing{
     static ArgParsing* ap_ptr;
     #endif
     char** argv;
-    size_t argv_idx;
-    size_t argc;
+    int argv_idx;
+    int argc;
     APState state;
     APErrRsn reason;
     int eval_arg_idx;
