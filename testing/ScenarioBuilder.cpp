@@ -41,9 +41,13 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     uint32_t result_u32;
     bool use_hex;
     
+    // Add the placeholder program name for the first element of argv
+    scenario.argc = 0;
+    argv.push_back("PGM_PLACEHOLDER");
+    scenario.argc++;
+
     // Loop through sequentially and initialize all the required arguments first
     n_initialized = 0;
-    scenario.argc = 0;
     for(size_t i = 0; i < scenario.exp_argtab.size(); i++){
         // If not required, then skip it
         if(!scenario.exp_argtab[i].required){
@@ -99,8 +103,8 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            break;
             scenario.argc++;
+            break;
         default:
             break;
         }
@@ -163,8 +167,8 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            break;
             scenario.argc++;
+            break;
         default:
             break;
         }
