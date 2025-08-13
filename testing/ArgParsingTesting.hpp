@@ -37,12 +37,21 @@ class ScenarioData{
     public:
     std::vector<APTableEntry> res_argtab; // Result argument table
     std::vector<APTableEntry> exp_argtab; // Expected argument table
-    std::vector<std::string> argv;
-    char** argv_char;
+    char** argv;
     size_t n_args;
-    size_t argc;
+    int argc;
     ScenarioType type;
     ScenarioData() {}
+    ~ScenarioData() {
+        if(this->argv != nullptr){
+            // Loop through the array deallocating strings one by one
+            for(size_t i = 0; argv[i] != nullptr; i++){
+                delete[] this->argv[i];
+            }
+            // Finally delete the whole array
+            delete[] this->argv;
+        }
+    }
 };
 
 
@@ -52,6 +61,7 @@ class TestcaseData{
     std::vector<ScenarioData> scenario;
     uint32_t allowed_data_types;
     TestcaseData() {}
+    ~TestcaseData() {}
 };
 
 
@@ -83,8 +93,7 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
-int argv_char_allocate(ScenarioData&);
-int argv_char_free(ScenarioData&);
+void vector_to_char_array(std::vector<std::string>&, ScenarioData&);
 
 
 // Template utility functions
