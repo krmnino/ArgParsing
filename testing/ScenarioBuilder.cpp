@@ -31,6 +31,7 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
 }
 
 void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
+    std::vector<std::string> argv;
     std::stringstream buffer;
     std::string arg_id;
     std::string value;
@@ -86,9 +87,9 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         scenario.exp_argtab[i].value = value;
 
         // Update the argv vector with argument we just created
-        scenario.argv.push_back(arg_id);
+        argv.push_back(arg_id);
         if(scenario.exp_argtab[i].data_type != APDataType::FLAG){
-            scenario.argv.push_back(value);
+            argv.push_back(value);
         }
 
         // Update argc appropiately
@@ -150,9 +151,9 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         scenario.exp_argtab[rand_idx].value = value;
 
         // Update the argv vector with argument we just created
-        scenario.argv.push_back(arg_id);
+        argv.push_back(arg_id);
         if(scenario.exp_argtab[rand_idx].data_type != APDataType::FLAG){
-            scenario.argv.push_back(value);
+            argv.push_back(value);
         }
 
         // Update argc appropiately
@@ -170,6 +171,9 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
 
         n_initialized++;
     }
+
+    // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
+    vector_to_char_array(argv, scenario);
 }
 
 void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
@@ -269,31 +273,14 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     return allowed_scenarios;
 }
 
-int argv_char_allocate(ScenarioData& scenario){
-    if(scenario.argv_char != nullptr){
-        return -1;
-    }
+void vector_to_char_array(std::vector<std::string>& input_vect, ScenarioData& scenario){
     // Allocate the array of char pointers + 1 for the null terminator
-    scenario.argv_char = new char*[scenario.argv.size() + 1];
+    scenario.argv = new char*[input_vect.size() + 1];
     // Loop through the argv vector, allocate and copy over the individual strings
-    for(size_t i = 0; i < scenario.argv.size(); i++){
-        scenario.argv_char[i] = new char(scenario.argv[i].size() + 1);
-        strcpy(scenario.argv_char[i], scenario.argv[i].c_str());
+    for(size_t i = 0; i < input_vect.size(); i++){
+        scenario.argv[i] = new char[input_vect[i].size() + 1];
+        strcpy(scenario.argv[i], input_vect[i].c_str());
     }
     // Set null terminator
-    scenario.argv_char[scenario.argv.size()] = nullptr;
-    return 0;
-}
-
-int argv_char_free(ScenarioData& scenario){
-    if(scenario.argv_char == nullptr){
-        return -1;
-    }
-    // Loop through the array deallocating strings one by one
-    for(size_t i = 0; scenario.argv_char[i] != nullptr; i++){
-        delete scenario.argv_char[i];
-    }
-    // Finally delete the whole array
-    delete scenario.argv_char;
-    return 0;
+    scenario.argv[input_vect.size()] = nullptr;
 }
