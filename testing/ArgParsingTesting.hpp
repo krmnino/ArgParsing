@@ -17,7 +17,7 @@
 #define PRT_DATA_TYPE_STR_WIDTH 9
 #define PRT_REQUIRED_STR_WIDTH 8
 #define PRT_INITIALIZED_STR_WIDTH 11
-#define PRT_VALUE_STR_WIDTH 64
+#define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
 
 enum class ScenarioType {
     OK                    =  0x00000001,
