@@ -5,6 +5,8 @@
 #include "../res/Randomizer.hpp"
 
 #include <sstream>
+#include <memory>
+
 
 #define MAX_ABBR_FORM_ID_LEN 1
 #define MAX_FULL_FORM_ID_LEN 10
@@ -45,7 +47,7 @@ class ScenarioData{
     ~ScenarioData() {
         if(this->argv != nullptr){
             // Loop through the array deallocating strings one by one
-            for(size_t i = 0; argv[i] != nullptr; i++){
+            for(int i = 0; argv[i] != nullptr; i++){
                 delete[] this->argv[i];
             }
             // Finally delete the whole array
@@ -58,15 +60,18 @@ class ScenarioData{
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab; // Initial argument table
-    std::vector<ScenarioData> scenario;
+    ScenarioData* s_arr;
     uint32_t allowed_data_types;
     TestcaseData() {}
-    ~TestcaseData() {}
+    ~TestcaseData() {
+        delete[] this->s_arr;
+    }
 };
 
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
+std::string describe_argv(int, char**);
 
 
 // ArgTableBuilder.cpp
