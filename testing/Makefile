@@ -4,12 +4,14 @@ SD = ../src/
 
 SRC_FILES = $(SD)ArgParsing.cpp		\
 			ArgTableBuilder.cpp		\
+			TestcaseBuilder.cpp		\
 			ScenarioBuilder.cpp		\
 			Utils.cpp				\
 			Main.cpp
 
 OBJ_FILES = ArgParsing.o			\
 			ArgTableBuilder.o		\
+			TestcaseBuilder.o		\
 			ScenarioBuilder.o		\
 			Utils.o  				\
 			Main.o

@@ -83,6 +83,10 @@ bool abbr_form_available(std::vector<APTableEntry>&, size_t);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
 
 
+// TestcaseBuilder.cpp
+int build_testcase(Randomizer*, TestcaseData&, size_t, uint32_t);
+
+
 // ScenarioBuilder.cpp
 void build_scenario(Randomizer* rnd, ScenarioData&);
 void build_OK_scenario(Randomizer* rnd, ScenarioData&);
