@@ -5,8 +5,6 @@
 #include "../res/Randomizer.hpp"
 
 #include <sstream>
-#include <memory>
-
 
 #define MAX_ABBR_FORM_ID_LEN 1
 #define MAX_FULL_FORM_ID_LEN 10
