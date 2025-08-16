@@ -58,6 +58,8 @@ class ArgParsing{
     std::vector<std::string> err_msg_data;
     #ifndef DEBUG
     static ArgParsing* ap_ptr;
+    #else
+    std::string dbg_error_msg;
     #endif
     char** argv;
     int argv_idx;

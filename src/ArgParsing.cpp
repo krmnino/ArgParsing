@@ -272,19 +272,39 @@ void ArgParsing::arg_value(){
 void ArgParsing::display_error_msg(){
     switch (this->reason){
     case APErrRsn::MISSING_FIRST_DASH:
+        #ifndef DEBUG
         std::cerr << "ERROR: all argument identifiers must start with a dash (-)." << std::endl;
+        #else
+        this->dbg_error_msg = "ERROR: all argument identifiers must start with a dash (-).";
+        #endif
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
+        #ifndef DEBUG
         std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
+        #else
+        this->dbg_error_msg = "ERROR: the required argument " + err_msg_data[0] + " is missing.";
+        #endif
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
+        #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
+        #else
+        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is an unknown.";
+        #endif
         break;
     case APErrRsn::REPEATED_ARGUMENT:    
+        #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
+        #else
+        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is repeated.";
+        #endif
         break;
     case APErrRsn::MUST_BE_FLAG:    
+        #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
+        #else
+        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is of type FLAG and does not need a value.";
+        #endif
         break;
     default:
         break;
