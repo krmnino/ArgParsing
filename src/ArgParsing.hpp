@@ -102,17 +102,13 @@ class ArgParsing{
     ArgParsing();
     ~ArgParsing();
     void get_arg_table(std::vector<APTableEntry>&);
+    void display_arg_table();
     #endif
-    
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
     int set_arg_table(std::vector<APTableEntry>&);
     int parse();
     std::string get_arg_value(std::string, bool);
-    #ifdef DEBUG
-    void display_arg_table();
-    #endif
-
 };
 
 #endif
