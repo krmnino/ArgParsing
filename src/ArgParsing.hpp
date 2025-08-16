@@ -101,6 +101,7 @@ class ArgParsing{
     #else
     ArgParsing();
     ~ArgParsing();
+    void get_arg_table(std::vector<APTableEntry>&);
     #endif
     
     void set_input_args(int, char**);

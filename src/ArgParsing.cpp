@@ -7,6 +7,9 @@ ArgParsing::ArgParsing() {
     this->argv_idx = 1;
     this->eval_arg_idx = 0;
     this->is_table_set = false;
+    #ifdef DEBUG
+    this->dbg_error_msg = "";
+    #endif
 }
 
 ArgParsing::~ArgParsing() {}
@@ -359,6 +362,10 @@ std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
 }
 
 #ifdef DEBUG
+void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
+    target = this->arg_table;
+}
+
 void ArgParsing::display_arg_table(){
     std::string data_type_str;
     std::string required_str;
