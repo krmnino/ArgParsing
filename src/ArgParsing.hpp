@@ -16,13 +16,12 @@ enum class APState {
 
 
 enum class APErrRsn {
-    OK                    =  0x00000001,
-    MISSING_FIRST_DASH    =  0x00000002,
-    MISSING_REQUIRED_ARG  =  0x00000004,
-    UNKNOWN_ARGUMENT      =  0x00000008,
-    REPEATED_ARGUMENT     =  0x00000010,
-    MUST_BE_FLAG          =  0x00000020,
-    BAD_NUMERIC_VALUE     =  0x00000040,
+    MISSING_FIRST_DASH    =  0x00000001,
+    MISSING_REQUIRED_ARG  =  0x00000002,
+    UNKNOWN_ARGUMENT      =  0x00000004,
+    REPEATED_ARGUMENT     =  0x00000008,
+    MUST_BE_FLAG          =  0x00000010,
+    BAD_NUMERIC_VALUE     =  0x00000020,
 };
 
 
@@ -39,6 +38,12 @@ struct APTableEntry {
     std::string abbr_form;
     std::string full_form;
     std::string value;
+    union data{
+        std::string* text;
+        uint64_t number;
+        bool flag;
+    };
+    typedef union data data;
     APDataType data_type;
     bool required;
     bool initialized;
@@ -56,10 +61,9 @@ class ArgParsing{
     private:
     std::vector<APTableEntry> arg_table;
     std::vector<std::string> err_msg_data;
+    std::string error_msg;
     #ifndef DEBUG
     static ArgParsing* ap_ptr;
-    #else
-    std::string dbg_error_msg;
     #endif
     char** argv;
     int argv_idx;
@@ -102,6 +106,7 @@ class ArgParsing{
     ArgParsing();
     ~ArgParsing();
     void get_arg_table(std::vector<APTableEntry>&);
+    void get_error_msg(std::string&);
     void display_arg_table();
     #endif
     void set_input_args(int, char**);

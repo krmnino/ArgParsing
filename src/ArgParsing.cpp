@@ -8,7 +8,7 @@ ArgParsing::ArgParsing() {
     this->eval_arg_idx = 0;
     this->is_table_set = false;
     #ifdef DEBUG
-    this->dbg_error_msg = "";
+    this->error_msg = "";
     #endif
 }
 
@@ -278,40 +278,43 @@ void ArgParsing::display_error_msg(){
         #ifndef DEBUG
         std::cerr << "ERROR: all argument identifiers must start with a dash (-)." << std::endl;
         #else
-        this->dbg_error_msg = "ERROR: all argument identifiers must start with a dash (-).";
+        this->error_msg = "ERROR: all argument identifiers must start with a dash (-).";
         #endif
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
         #ifndef DEBUG
         std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
         #else
-        this->dbg_error_msg = "ERROR: the required argument " + err_msg_data[0] + " is missing.";
+        this->error_msg = "ERROR: the required argument " + err_msg_data[0] + " is missing.";
         #endif
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
         #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
         #else
-        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is an unknown.";
+        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is an unknown.";
         #endif
         break;
     case APErrRsn::REPEATED_ARGUMENT:    
         #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
         #else
-        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is repeated.";
+        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is repeated.";
         #endif
         break;
     case APErrRsn::MUST_BE_FLAG:    
         #ifndef DEBUG
         std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
         #else
-        this->dbg_error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is of type FLAG and does not need a value.";
+        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is of type FLAG and does not need a value.";
         #endif
         break;
     default:
         break;
     }
+    #ifndef DEBUG
+    std::cerr << this->error_msg << std::endl;
+    #endif
 }
 
 int ArgParsing::parse(){
@@ -364,6 +367,10 @@ std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
 #ifdef DEBUG
 void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     target = this->arg_table;
+}
+
+void ArgParsing::get_error_msg(std::string& target){
+    target = this->error_msg;
 }
 
 void ArgParsing::display_arg_table(){
