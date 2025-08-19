@@ -7,6 +7,9 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, size_t n_scenarios, uin
     uint32_t shifter;
     int ret;
     
+    // Set the number of scenarios for this testcase
+    tdata.n_scenarios = n_scenarios;
+
     // Attempt building a argument table and check scenarios that can be tested
     attempt_counter = 0;
     while(true){
