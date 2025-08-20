@@ -6,6 +6,7 @@ SRC_FILES = $(SD)ArgParsing.cpp		\
 			ArgTableBuilder.cpp		\
 			TestcaseBuilder.cpp		\
 			ScenarioBuilder.cpp		\
+			Validation.cpp			\
 			Utils.cpp				\
 			Main.cpp
 
@@ -13,6 +14,7 @@ OBJ_FILES = ArgParsing.o			\
 			ArgTableBuilder.o		\
 			TestcaseBuilder.o		\
 			ScenarioBuilder.o		\
+			Validation.o			\
 			Utils.o  				\
 			Main.o
 

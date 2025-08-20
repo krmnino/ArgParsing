@@ -3,7 +3,9 @@
 
 #include "../src/ArgParsing.hpp"
 #include "../res/Randomizer.hpp"
+#include "ErrorReporter.hpp"
 
+#include <iostream>
 #include <sstream>
 
 #define MAX_ABBR_FORM_ID_LEN 1
@@ -37,6 +39,8 @@ class ScenarioData{
     public:
     std::vector<APTableEntry> res_argtab; // Result argument table
     std::vector<APTableEntry> exp_argtab; // Expected argument table
+    std::string res_error_message;
+    std::string exp_error_message;
     char** argv;
     size_t n_args;
     int argc;
@@ -58,6 +62,7 @@ class ScenarioData{
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab; // Initial argument table
+    size_t n_scenarios;
     ScenarioData* s_arr;
     uint32_t allowed_data_types;
     TestcaseData() {}
@@ -69,6 +74,7 @@ class TestcaseData{
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
+std::string ScenarioType_to_string(ScenarioType);
 std::string describe_argv(int, char**);
 
 
@@ -101,6 +107,12 @@ void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 void vector_to_char_array(std::vector<std::string>&, ScenarioData&);
+
+
+// Validation.cpp
+void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
+void validate_OK_scenario(ErrorReporter*, ScenarioData&);
+void collect_ap_data(ScenarioData&, ArgParsing*);
 
 
 // Template utility functions

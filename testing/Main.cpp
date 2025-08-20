@@ -4,6 +4,7 @@
 #include <signal.h>
 
 Randomizer* Randomizer::rnd_ptr = nullptr;
+ErrorReporter* ErrorReporter::er_ptr = nullptr;
 static std::atomic_bool terminate = false;
 
 void terminating(int s){
@@ -14,8 +15,10 @@ int main(int argc, char* argv[]){
     ArgParsing* pgm_ap;
     ArgParsing* ap_test;
     Randomizer* rnd;
+    ErrorReporter* er;
     TestcaseData* testcase;
-    uint64_t counter;
+    std::string pgm_err_msg;
+    uint64_t pass_counter;
     uint64_t n_tests;
     uint64_t n_scenarios;
     uint32_t init_seed;
@@ -33,9 +36,11 @@ int main(int argc, char* argv[]){
     
     // Start the argument parser
     pgm_ap = new ArgParsing();
-    pgm_ap->set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
+    pgm_ap->set_arg_table(arg_table, sizeof(arg_table) / sizeof(arg_table[0]));
     pgm_ap->set_input_args(argc, argv);
     if(pgm_ap->parse() != 0){
+        pgm_ap->get_error_msg(pgm_err_msg);
+        std::cerr << pgm_err_msg << std::endl;
         return -1;
     }
 
@@ -43,8 +48,17 @@ int main(int argc, char* argv[]){
     init_seed = 1;
     rnd = Randomizer::get_instance(init_seed);
     if(rnd == nullptr){
+        std::cerr << "ERROR: Could not initialize Randomizer." << std::endl;
         return -1;
     }
+
+    // Start the ErrorReporter
+    er = ErrorReporter::get_instance();
+    if(er == nullptr){
+        std::cerr << "ERROR: Could not initialize ErrorReporter." << std::endl;
+        return -1;
+    }
+    er->log_everything(true);
 
     // Set up signal handler to stop program
     terminate = false;
@@ -54,7 +68,7 @@ int main(int argc, char* argv[]){
     sigIntHandler.sa_flags = 0;
     sigaction(SIGINT, &sigIntHandler, NULL);
 
-    counter = 0;
+    pass_counter = 0;
     n_tests = 1;
     n_scenarios = 1;
     infinite_loop = false;
@@ -70,7 +84,7 @@ int main(int argc, char* argv[]){
                                   //(uint32_t)ScenarioType::INVALID_FLAG_GROUP     ;
     
     // Main driver
-    while((counter < n_tests || infinite_loop) && !terminate){
+    while((pass_counter < n_tests || infinite_loop) && !terminate){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
         build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
@@ -79,13 +93,22 @@ int main(int argc, char* argv[]){
             ap_test->set_arg_table(testcase->ini_argtab);
             ap_test->set_input_args(testcase->s_arr[i].argc, testcase->s_arr[i].argv);
             ap_test->parse();
+            // Collect the data from the ArgParsing object 
+            collect_ap_data(testcase->s_arr[i], ap_test);
             delete ap_test;
         }
+        validate(er, rnd->get_root_seed(), pass_counter, *testcase);
         delete testcase;
-        counter++;
+        rnd->root_seed_next();
+        pass_counter++;
     }
+
+    std::cout << "TERMINATING... " << "Pass Counter: " << pass_counter << std::endl;
+    er->print_report();
 
     delete pgm_ap;
     Randomizer::end_instance();
+    ErrorReporter::end_instance();
+
     return 0;
 }
