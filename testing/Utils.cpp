@@ -12,6 +12,46 @@ std::string space_padding(std::string input_str, size_t width, std::string pad){
     return ret;
 }
 
+std::string ScenarioType_to_string(ScenarioType st){
+    std::string ret = "ScenarioType::";
+    switch (st){
+    case ScenarioType::OK:
+        ret += "OK";
+        break;
+    case ScenarioType::MISSING_FIRST_DASH:
+        ret += "MISSING_FIRST_DASH";
+        break;
+    case ScenarioType::MISSING_REQUIRED_ARG:
+        ret += "MISSING_REQUIRED_ARG";
+        break;
+    case ScenarioType::UNKNOWN_ARGUMENT:
+        ret += "UNKNOWN_ARGUMENT";
+        break;
+    case ScenarioType::REPEATED_ARGUMENT:
+        ret += "REPEATED_ARGUMENT";
+        break;
+    case ScenarioType::MUST_BE_FLAG:
+        ret += "MUST_BE_FLAG";
+        break;
+    case ScenarioType::BAD_NUMERIC_VALUE:
+        ret += "BAD_NUMERIC_VALUE";
+        break;
+    case ScenarioType::EMPTY_ARG_LIST:
+        ret += "EMPTY_ARG_LIST";
+        break;
+    case ScenarioType::VALID_FLAG_GROUP:
+        ret += "VALID_FLAG_GROUP";
+        break;
+    case ScenarioType::INVALID_FLAG_GROUP:
+        ret += "INVALID_FLAG_GROUP";
+        break;
+    default:
+        ret += "UNDEFINED";
+        break;
+    }
+    return ret;
+}
+
 std::string describe_argv(int input_argc, char** input_argv){
     if(input_argv == nullptr){
         return "";
