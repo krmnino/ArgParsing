@@ -32,7 +32,6 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
 
 void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     std::vector<std::string> argv;
-    std::stringstream buffer;
     std::string arg_id;
     std::string value;
     int64_t result_i64;
@@ -40,6 +39,9 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     size_t n_initialized;
     uint32_t result_u32;
     bool use_hex;
+
+    // Set expected error code
+    scenario.exp_error_message = "";
     
     // Add the placeholder program name for the first element of argv
     scenario.argc = 0;
