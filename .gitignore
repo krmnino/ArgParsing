@@ -1,6 +1,6 @@
 bin
 res
-testing/argparsing
+testing/Test.cpp
 testing/argtest
 testing/*.o
 testing/.vscode
