@@ -5,10 +5,10 @@
 
 Randomizer* Randomizer::rnd_ptr = nullptr;
 ErrorReporter* ErrorReporter::er_ptr = nullptr;
-static std::atomic_bool terminate = false;
+volatile sig_atomic_t running = true;
 
-void terminating(int s){
-    terminate = true;
+void terminating_handler(int s){
+    running = false;
 }
 
 int main(int argc, char* argv[]){
@@ -24,7 +24,6 @@ int main(int argc, char* argv[]){
     uint32_t init_seed;
     uint32_t user_allowed_scenario_types;
     bool infinite_loop;
-    bool terminate;
 
     // Program argument table 
     APTableEntry arg_table[] = {
@@ -58,20 +57,19 @@ int main(int argc, char* argv[]){
         std::cerr << "ERROR: Could not initialize ErrorReporter." << std::endl;
         return -1;
     }
-    er->log_everything(true);
+    er->log_everything(false);
 
     // Set up signal handler to stop program
-    terminate = false;
-    struct sigaction sigIntHandler;
-    sigIntHandler.sa_handler = terminating;
-    sigemptyset(&sigIntHandler.sa_mask);
-    sigIntHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigIntHandler, NULL);
-
+    struct sigaction sa_struct;
+    sa_struct.sa_handler = terminating_handler;
+    sigemptyset(&sa_struct.sa_mask);
+    sa_struct.sa_flags = 0;
+    sigaction(SIGINT, &sa_struct, NULL);
+    
     pass_counter = 0;
-    n_tests = 1;
-    n_scenarios = 1;
-    infinite_loop = false;
+    n_tests = 1000000;
+    n_scenarios = 1000;
+    infinite_loop = true;
     user_allowed_scenario_types = (uint32_t)ScenarioType::OK                     ;//|
                                   //(uint32_t)ScenarioType::MISSING_FIRST_DASH     |
                                   //(uint32_t)ScenarioType::MISSING_REQUIRED_ARG   |
@@ -84,7 +82,7 @@ int main(int argc, char* argv[]){
                                   //(uint32_t)ScenarioType::INVALID_FLAG_GROUP     ;
     
     // Main driver
-    while((pass_counter < n_tests || infinite_loop) && !terminate){
+    while((pass_counter < n_tests || infinite_loop) && running){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
         build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
@@ -101,6 +99,9 @@ int main(int argc, char* argv[]){
         delete testcase;
         rnd->root_seed_next();
         pass_counter++;
+        if(!running){
+            break;
+        }
     }
 
     std::cout << "TERMINATING... " << "Pass Counter: " << pass_counter << std::endl;
