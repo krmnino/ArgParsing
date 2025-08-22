@@ -76,6 +76,8 @@ class TestcaseData{
 std::string space_padding(std::string, size_t, std::string);
 std::string ScenarioType_to_string(ScenarioType);
 std::string describe_argv(int, char**);
+std::string APDataType_to_string(APDataType);
+std::string bool_to_string(bool);
 
 
 // ArgTableBuilder.cpp

@@ -70,3 +70,26 @@ std::string describe_argv(int input_argc, char** input_argv){
     }
     return buffer.str();
 }
+
+std::string APDataType_to_string(APDataType apdt){
+    std::string ret = "APDataType::";
+    switch (apdt){
+    case APDataType::TEXT:
+        ret += "TEXT";
+        break;
+    case APDataType::NUMBER:
+        ret += "NUMBER";
+        break;
+    case APDataType::FLAG:
+        ret += "FLAG";
+        break;
+    default:
+        ret += "UNDEFINED";
+        break;
+    }
+    return ret;
+}
+
+std::string bool_to_string(bool data){
+    return (data) ? "true" : "false";
+}
