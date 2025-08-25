@@ -12,12 +12,15 @@ void terminating_handler(int s){
 }
 
 int main(int argc, char* argv[]){
+    struct sigaction sa_struct;
+    std::string pgm_err_msg;
+    std::string seed_argval;
+    std::string trace_argval;
     ArgParsing* pgm_ap;
     ArgParsing* ap_test;
     Randomizer* rnd;
     ErrorReporter* er;
     TestcaseData* testcase;
-    std::string pgm_err_msg;
     uint64_t pass_counter;
     uint64_t n_tests;
     uint64_t n_scenarios;
@@ -44,7 +47,7 @@ int main(int argc, char* argv[]){
     }
 
     // Start the Randomizer
-    init_seed = 1;
+    init_seed = std::stoi(pgm_ap->get_arg_value("seed", false));
     rnd = Randomizer::get_instance(init_seed);
     if(rnd == nullptr){
         std::cerr << "ERROR: Could not initialize Randomizer." << std::endl;
@@ -57,21 +60,25 @@ int main(int argc, char* argv[]){
         std::cerr << "ERROR: Could not initialize ErrorReporter." << std::endl;
         return -1;
     }
-    er->log_everything(false);
-
+    
     // Set up signal handler to stop program
-    struct sigaction sa_struct;
     sa_struct.sa_handler = terminating_handler;
     sigemptyset(&sa_struct.sa_mask);
     sa_struct.sa_flags = 0;
     sigaction(SIGINT, &sa_struct, NULL);
     
-    pass_counter = 0;
-    n_tests = 1000000;
-    n_scenarios = 1000;
-    infinite_loop = true;
+    n_tests = std::stoi(pgm_ap->get_arg_value("n_tests", false));
+    // Ignore pass counter if n_tests is 0
+    if(n_tests == 0){
+        infinite_loop = true;
+    }
+    else{
+        infinite_loop = false;
+    }
+    n_scenarios = std::stoi(pgm_ap->get_arg_value("n_scenarios", false));
+
     user_allowed_scenario_types = (uint32_t)ScenarioType::OK                     ;//|
-                                  //(uint32_t)ScenarioType::MISSING_FIRST_DASH     |
+                                  //(uint32_t)ScenarioType::MISSING_FIRST_DASH     ;//|
                                   //(uint32_t)ScenarioType::MISSING_REQUIRED_ARG   |
                                   //(uint32_t)ScenarioType::UNKNOWN_ARGUMENT       |
                                   //(uint32_t)ScenarioType::REPEATED_ARGUMENT      |
@@ -80,6 +87,17 @@ int main(int argc, char* argv[]){
                                   //(uint32_t)ScenarioType::EMPTY_ARG_LIST         |
                                   //(uint32_t)ScenarioType::VALID_FLAG_GROUP       |
                                   //(uint32_t)ScenarioType::INVALID_FLAG_GROUP     ;
+
+    // Reset pass counter
+    pass_counter = 0;
+
+    // Allow tracing?
+    if(pgm_ap->get_arg_value("trace", false) == "1"){
+        er->log_everything(true);
+    }
+    else{
+        er->log_everything(false);
+    }
     
     // Main driver
     while((pass_counter < n_tests || infinite_loop) && running){
@@ -104,7 +122,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    std::cout << "TERMINATING... " << "Pass Counter: " << pass_counter << std::endl;
+    std::cout << "\nTERMINATING... " << "Pass Counter: " << pass_counter << std::endl;
     er->print_report();
 
     delete pgm_ap;
