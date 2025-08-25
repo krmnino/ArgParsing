@@ -74,10 +74,11 @@ class TestcaseData{
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
-std::string ScenarioType_to_string(ScenarioType);
 std::string describe_argv(int, char**);
+std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
+std::string arg_table_to_string(std::vector<APTableEntry>&);
 
 
 // ArgTableBuilder.cpp
@@ -88,7 +89,6 @@ bool contains_required(std::vector<APTableEntry>&);
 size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
 size_t count_required_args(std::vector<APTableEntry>&);
 bool abbr_form_available(std::vector<APTableEntry>&, size_t);
-std::string arg_table_to_string(std::vector<APTableEntry>&);
 
 
 // TestcaseBuilder.cpp
@@ -98,7 +98,7 @@ int build_testcase(Randomizer*, TestcaseData&, size_t, uint32_t);
 // ScenarioBuilder.cpp
 void build_scenario(Randomizer* rnd, ScenarioData&);
 void build_OK_scenario(Randomizer* rnd, ScenarioData&);
-void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData&);
 void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
@@ -114,6 +114,7 @@ void vector_to_char_array(std::vector<std::string>&, ScenarioData&);
 // Validation.cpp
 void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
 void validate_OK_scenario(ErrorReporter*, ScenarioData&);
+void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
 
 
