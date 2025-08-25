@@ -89,6 +89,7 @@ bool contains_required(std::vector<APTableEntry>&);
 size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
 size_t count_required_args(std::vector<APTableEntry>&);
 bool abbr_form_available(std::vector<APTableEntry>&, size_t);
+size_t count_abbr_form_args(std::vector<APTableEntry>&);
 
 
 // TestcaseBuilder.cpp

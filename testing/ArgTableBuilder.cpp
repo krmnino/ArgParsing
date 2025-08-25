@@ -164,3 +164,13 @@ size_t count_required_args(std::vector<APTableEntry>& arg_table){
 bool abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
     return (arg_table[idx].abbr_form.size() == 0) ? false : true;
 }
+
+size_t count_abbr_form_args(std::vector<APTableEntry>& arg_table){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(abbr_form_available(arg_table, i)){
+            accumulator++;
+        }
+    }
+    return accumulator;
+}
