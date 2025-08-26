@@ -78,8 +78,8 @@ int main(int argc, char* argv[]){
     n_scenarios = std::stoi(pgm_ap->get_arg_value("n_scenarios", false));
 
     user_allowed_scenario_types = (uint32_t)ScenarioType::OK                     |
-                                  (uint32_t)ScenarioType::MISSING_FIRST_DASH     ;//|
-                                  //(uint32_t)ScenarioType::MISSING_REQUIRED_ARG   |
+                                  (uint32_t)ScenarioType::MISSING_FIRST_DASH     |
+                                  (uint32_t)ScenarioType::MISSING_REQUIRED_ARG   ;//|
                                   //(uint32_t)ScenarioType::UNKNOWN_ARGUMENT       |
                                   //(uint32_t)ScenarioType::REPEATED_ARGUMENT      |
                                   //(uint32_t)ScenarioType::MUST_BE_FLAG           |

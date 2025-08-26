@@ -132,9 +132,13 @@ bool contains_data_type(std::vector<APTableEntry>& arg_table, APDataType input_d
     return false;
 }
 
+bool is_required_arg(std::vector<APTableEntry>& arg_table, size_t idx){
+    return (arg_table[idx].required) ? true : false;
+}
+
 bool contains_required(std::vector<APTableEntry>& arg_table){
     for(size_t i = 0; i < arg_table.size(); i++){
-        if(arg_table[i].required){
+        if(is_required_arg(arg_table, i)){
             return true;
         }
     }
@@ -161,14 +165,14 @@ size_t count_required_args(std::vector<APTableEntry>& arg_table){
     return accumulator;
 }
 
-bool abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
+bool is_abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
     return (arg_table[idx].abbr_form.size() == 0) ? false : true;
 }
 
 size_t count_abbr_form_args(std::vector<APTableEntry>& arg_table){
     size_t accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
-        if(abbr_form_available(arg_table, i)){
+        if(is_abbr_form_available(arg_table, i)){
             accumulator++;
         }
     }

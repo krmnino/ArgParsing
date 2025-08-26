@@ -85,10 +85,11 @@ std::string arg_table_to_string(std::vector<APTableEntry>&);
 int build_initial_arg_table(Randomizer*, TestcaseData&);
 int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 bool contains_data_type(std::vector<APTableEntry>&, APDataType);
+bool is_required_arg(std::vector<APTableEntry>&, size_t);
 bool contains_required(std::vector<APTableEntry>&);
 size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
 size_t count_required_args(std::vector<APTableEntry>&);
-bool abbr_form_available(std::vector<APTableEntry>&, size_t);
+bool is_abbr_form_available(std::vector<APTableEntry>&, size_t);
 size_t count_abbr_form_args(std::vector<APTableEntry>&);
 
 
@@ -116,6 +117,7 @@ void vector_to_char_array(std::vector<std::string>&, ScenarioData&);
 void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
 void validate_OK_scenario(ErrorReporter*, ScenarioData&);
 void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
+void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
 
 
