@@ -97,10 +97,10 @@ int build_testcase(Randomizer*, TestcaseData&, size_t, uint32_t);
 
 
 // ScenarioBuilder.cpp
-void build_scenario(Randomizer* rnd, ScenarioData&);
-void build_OK_scenario(Randomizer* rnd, ScenarioData&);
-void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData&);
-void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_scenario(Randomizer*, ScenarioData&);
+void build_OK_scenario(Randomizer*, ScenarioData&);
+void build_MISSING_FIRST_DASH_scenario(Randomizer*, ScenarioData&);
+void build_MISSING_REQUIRED_ARG_scenario(Randomizer*, ScenarioData&);
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);

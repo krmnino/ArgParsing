@@ -3,8 +3,7 @@
 void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
     case ScenarioType::OK:
-        scenario.n_args = rnd->gen_integral_range<size_t>(count_required_args(scenario.exp_argtab),
-                                                          scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<size_t>(count_required_args(scenario.exp_argtab),scenario.exp_argtab.size());
         build_OK_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
@@ -12,6 +11,8 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_MISSING_FIRST_DASH_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_REQUIRED_ARG:
+        scenario.n_args = rnd->gen_integral_range<size_t>(1, scenario.exp_argtab.size());
+        build_MISSING_REQUIRED_ARG_scenario(rnd, scenario);
         break;
     case ScenarioType::UNKNOWN_ARGUMENT:
         break;
@@ -205,7 +206,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     size_t n_initialized;
     size_t error_arg_n;
     uint32_t result_u32;
-    bool use_hex;
+    bool result_bool;
 
     // Set expected error code
     scenario.exp_error_message = "ERROR: all argument identifiers must start with a dash (-).";
@@ -243,14 +244,18 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
 
 
-        // If argument has abbreviated form, then use it
+        // If argument has abbreviated form, then use it if injecting error, or 50% of times normally
         if(abbr_form_available(scenario.exp_argtab, rand_idx)){
+            result_bool = rnd->gen_bool();
             // Skip the single dash
             if(n_initialized == error_arg_n){
                 arg_id = scenario.exp_argtab[rand_idx].abbr_form;
             }
-            else{
+            else if(result_bool){
                 arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
+            }
+            else{
+                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
             }
         }
         else{
@@ -260,8 +265,8 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
-            use_hex = rnd->gen_bool();
-            if(use_hex){
+            result_bool = rnd->gen_bool();
+            if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
             }
             else{
@@ -309,7 +314,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     vector_to_char_array(argv, scenario);
 }
 
-void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
+void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario){
 }
 
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
