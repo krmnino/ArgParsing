@@ -158,9 +158,9 @@ class ErrorReporter{
 
     void print_report(){
         std::cout << "================ (START OF REPORT) ================" << std::endl;
-        std::cout << "Total tests: " << this->test_counter << std::endl;
-        std::cout << "Successful tests: " << this->success_counter << std::endl;
-        std::cout << "Failed tests: " << this->error_counter << std::endl;
+        std::cout << "Total passes: " << this->test_counter << std::endl;
+        std::cout << "Successful passes: " << this->success_counter << std::endl;
+        std::cout << "Failed passes: " << this->error_counter << std::endl;
         std::cout << std::endl;
         for(size_t i = 0; i < this->logs_size; i++){
             std::cout << "START TEST: " << this->logs[i].test_id << std::endl;
