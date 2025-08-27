@@ -3,4 +3,5 @@ res
 testing/Test.cpp
 testing/argtest
 testing/*.o
+testing/*.dat
 testing/.vscode
