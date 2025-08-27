@@ -91,6 +91,7 @@ size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
 size_t count_required_args(std::vector<APTableEntry>&);
 bool is_abbr_form_available(std::vector<APTableEntry>&, size_t);
 size_t count_abbr_form_args(std::vector<APTableEntry>&);
+int32_t find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 
 
 // TestcaseBuilder.cpp

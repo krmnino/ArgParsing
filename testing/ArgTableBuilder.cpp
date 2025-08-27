@@ -178,3 +178,19 @@ size_t count_abbr_form_args(std::vector<APTableEntry>& arg_table){
     }
     return accumulator;
 }
+
+int32_t find_arg_index(std::vector<APTableEntry>& arg_table, std::string& arg_key, bool is_abbr_input){
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(is_abbr_input){
+            if(arg_table[i].abbr_form == arg_key){
+                return i;
+            }
+        }
+        else{
+            if(arg_table[i].full_form == arg_key){
+                return i;
+            }
+        }
+    }
+    return -1;
+}
