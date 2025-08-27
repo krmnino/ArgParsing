@@ -105,6 +105,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         scenario.exp_argtab[rand_idx].initialized = true; 
         n_initialized++;
     }
+
     // Shuffle the arguments since required ones where picked first
     rnd->shuffle<std::string>(arg_id_accumulator);
     
@@ -114,7 +115,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     scenario.argc++;
 
     // Loop through the arguments and set random values (for non-FLAG types only)
-    for(size_t i = 0; i < scenario.n_args; i++){
+    for(size_t i = 0; i < arg_id_accumulator.size(); i++){
         arg_id = arg_id_accumulator[i];
         // Find their index in the argument table
         if(arg_id[1] == '-'){
@@ -288,13 +289,15 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
 }
 
 void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario){
+    std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
+    std::string no_dashes_arg_id;
     std::string value;
     size_t rand_idx;
     size_t error_arg_idx;
     size_t n_initialized;
-    int64_t result_i64;
+    int32_t arg_table_idx;
     uint32_t result_u32;
     bool result_bool;
 
@@ -328,8 +331,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         if(!scenario.exp_argtab[i].required){
             continue;
         }
-
-        // If argument has abbreviated form, 50% chance of using it
+        // If argument has abbreviated form, then use it 50% of the times
         if(is_abbr_form_available(scenario.exp_argtab, i)){
             result_bool = rnd->gen_bool();
             if(result_bool){
@@ -342,66 +344,21 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         else{
             arg_id = "--" + scenario.exp_argtab[i].full_form;
         }
-    
-        // Generate data for arguments that need it
-        switch (scenario.exp_argtab[i].data_type){
-        case APDataType::NUMBER:
-            // 50% chance of either hex or decimal
-            result_bool = rnd->gen_bool();
-            result_i64 = rnd->gen_integral<int64_t>();
-            if(result_bool){
-                value = integer_to_hex_string(result_i64);
-            }
-            else{
-                value = std::to_string(result_i64);
-            }
-            break;
-        case APDataType::TEXT:
-            result_u32 = rnd->gen_integral_range<size_t>(1, MAX_TEXT_ARG_LEN);
-            value = rnd->gen_string(result_u32, nullptr);
-            break;    
-        case APDataType::FLAG:
-            value = "1";
-            break;    
-        default:
-            break;
-        }
-
-        // Update the expected argument table
+        // Add it to the a accumulator
+        arg_id_accumulator.push_back(arg_id);
+        // Mark randomly picked argument as initialized
         scenario.exp_argtab[i].initialized = true; 
-        scenario.exp_argtab[i].value = value;
-
-        // Update the argv vector with argument we just created
-        argv.push_back(arg_id);
-        if(scenario.exp_argtab[i].data_type != APDataType::FLAG){
-            argv.push_back(value);
-        }
-
-        // Update argc appropiately
-        switch (scenario.exp_argtab[i].data_type){
-        case APDataType::NUMBER:
-        case APDataType::TEXT:
-            scenario.argc += 2;
-            break;
-        case APDataType::FLAG:
-            scenario.argc++;
-            break;
-        default:
-            break;
-        }
-
         n_initialized++;
     }
 
     // Then loop and initialize any remaining non-required arguments
     while(n_initialized < scenario.n_args){
-        // Pick a random argument from the table
+        // Pick a random argument from the table, as long is not the error inject
         rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1); 
         if(scenario.exp_argtab[rand_idx].initialized || rand_idx == error_arg_idx){
             continue;
         }
-
-        // If argument has abbreviated form, use this form 50% of the times
+        // If argument has abbreviated form, then use it 50% of the times
         if(is_abbr_form_available(scenario.exp_argtab, rand_idx)){
             result_bool = rnd->gen_bool();
             if(result_bool){
@@ -414,9 +371,30 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         else{
             arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
         }
-    
+        // Add it to the a accumulator
+        arg_id_accumulator.push_back(arg_id);
+        // Mark randomly picked argument as initialized
+        scenario.exp_argtab[rand_idx].initialized = true; 
+        n_initialized++;
+    }
+
+    // Shuffle the arguments since required ones where picked first
+    rnd->shuffle<std::string>(arg_id_accumulator);
+
+    // Loop through the arguments and set random values (for non-FLAG types only)
+    for(size_t i = 0; i < arg_id_accumulator.size(); i++){
+        arg_id = arg_id_accumulator[i];
+        // Find their index in the argument table
+        if(arg_id[1] == '-'){
+            no_dashes_arg_id = arg_id.substr(2);
+            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
+        }
+        else{
+            no_dashes_arg_id = arg_id.substr(1);
+            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
+        }
         // Generate data for arguments that need it
-        switch (scenario.exp_argtab[rand_idx].data_type){
+        switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
             result_bool = rnd->gen_bool();
             if(result_bool){
@@ -436,19 +414,15 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         default:
             break;
         }
-
-        // Update the expected argument table
-        scenario.exp_argtab[rand_idx].initialized = true; 
-        scenario.exp_argtab[rand_idx].value = value;
-
+        // Set argument value
+        scenario.exp_argtab[arg_table_idx].value = value;
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
-        if(scenario.exp_argtab[rand_idx].data_type != APDataType::FLAG){
+        if(scenario.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
-
         // Update argc appropiately
-        switch (scenario.exp_argtab[rand_idx].data_type){
+        switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
         case APDataType::TEXT:
             scenario.argc += 2;
@@ -459,8 +433,6 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         default:
             break;
         }
-
-        n_initialized++;
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
