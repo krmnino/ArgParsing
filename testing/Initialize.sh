@@ -11,7 +11,7 @@ if [ ! -d ../res ]; then
 fi 
 
 # Unpack and build Randomizer
-RandomizerVer=1.2
+RandomizerVer=1.3
 wget -O ../res/Randomizer_v$RandomizerVer.tar.gz https://github.com/krmnino/Randomizer/archive/refs/tags/v$RandomizerVer.tar.gz
 tar -xvzf ../res/Randomizer_v$RandomizerVer.tar.gz --directory ../res
 rm -r ../res/Randomizer_v$RandomizerVer.tar.gz
