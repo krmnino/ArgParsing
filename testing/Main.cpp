@@ -22,8 +22,8 @@ int main(int argc, char* argv[]){
     ErrorReporter* er;
     TestcaseData* testcase;
     uint64_t pass_counter;
-    uint64_t n_tests;
-    uint64_t n_scenarios;
+    uint32_t n_tests;
+    uint32_t n_scenarios;
     uint32_t init_seed;
     uint32_t user_allowed_scenario_types;
     bool infinite_loop;
