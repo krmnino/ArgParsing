@@ -79,6 +79,7 @@ std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
+void vector_to_char_array(std::vector<std::string>&, char**&);
 size_t arg_table_count_data_type(std::vector<APTableEntry>&, APDataType);
 bool arg_table_is_required_arg(std::vector<APTableEntry>&, size_t);
 size_t arg_table_count_required(std::vector<APTableEntry>&);
@@ -110,7 +111,6 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
-void vector_to_char_array(std::vector<std::string>&, ScenarioData&);
 
 
 // Validation.cpp

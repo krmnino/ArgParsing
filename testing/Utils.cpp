@@ -163,6 +163,19 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     return buffer.str();
 }
 
+void vector_to_char_array(std::vector<std::string>& input_vect, char**& output_char_arr){
+    // Allocate the array of char pointers + 1 for the null terminator
+    output_char_arr = new char*[input_vect.size() + 1];
+    // Loop through the argv vector, allocate and copy over the individual strings
+    for(size_t i = 0; i < input_vect.size(); i++){
+        output_char_arr[i] = new char[input_vect[i].size() + 1];
+        strcpy(output_char_arr[i], input_vect[i].c_str());
+    }
+    // Set null terminator
+    output_char_arr[input_vect.size()] = nullptr;
+}
+
+
 size_t arg_table_count_data_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
     size_t accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){

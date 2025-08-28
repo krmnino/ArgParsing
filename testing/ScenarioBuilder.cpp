@@ -169,7 +169,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, scenario);
+    vector_to_char_array(argv, scenario.argv);
 }
 
 void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
@@ -285,7 +285,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, scenario);
+    vector_to_char_array(argv, scenario.argv);
 }
 
 void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario){
@@ -436,7 +436,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, scenario);
+    vector_to_char_array(argv, scenario.argv);
 }
 
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
@@ -531,16 +531,4 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     }
 
     return allowed_scenarios;
-}
-
-void vector_to_char_array(std::vector<std::string>& input_vect, ScenarioData& scenario){
-    // Allocate the array of char pointers + 1 for the null terminator
-    scenario.argv = new char*[input_vect.size() + 1];
-    // Loop through the argv vector, allocate and copy over the individual strings
-    for(size_t i = 0; i < input_vect.size(); i++){
-        scenario.argv[i] = new char[input_vect[i].size() + 1];
-        strcpy(scenario.argv[i], input_vect[i].c_str());
-    }
-    // Set null terminator
-    scenario.argv[input_vect.size()] = nullptr;
 }
