@@ -162,3 +162,67 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     }
     return buffer.str();
 }
+
+size_t arg_table_count_data_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].data_type == input_data_type){
+            accumulator++;
+        }
+    }
+    return accumulator;
+}
+
+bool arg_table_is_required_arg(std::vector<APTableEntry>& arg_table, size_t idx){
+    return (arg_table[idx].required) ? true : false;
+}
+
+size_t arg_table_count_required(std::vector<APTableEntry>& arg_table){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table_is_required_arg(arg_table, i)){
+            accumulator++;
+        }
+    }
+    return accumulator;
+}
+
+size_t arg_table_count_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].data_type == input_data_type){
+            accumulator++;
+        }
+    }
+    return accumulator;
+}
+
+bool arg_table_is_abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
+    return (arg_table[idx].abbr_form.size() == 0) ? false : true;
+}
+
+size_t arg_table_count_abbr_form(std::vector<APTableEntry>& arg_table){
+    size_t accumulator = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table_is_abbr_form_available(arg_table, i)){
+            accumulator++;
+        }
+    }
+    return accumulator;
+}
+
+int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::string& arg_key, bool is_abbr_input){
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(is_abbr_input){
+            if(arg_table[i].abbr_form == arg_key){
+                return i;
+            }
+        }
+        else{
+            if(arg_table[i].full_form == arg_key){
+                return i;
+            }
+        }
+    }
+    return -1;
+}

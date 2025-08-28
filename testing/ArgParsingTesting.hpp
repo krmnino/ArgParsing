@@ -79,19 +79,18 @@ std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
+size_t arg_table_count_data_type(std::vector<APTableEntry>&, APDataType);
+bool arg_table_is_required_arg(std::vector<APTableEntry>&, size_t);
+size_t arg_table_count_required(std::vector<APTableEntry>&);
+size_t arg_table_count_type(std::vector<APTableEntry>&, APDataType);
+bool arg_table_is_abbr_form_available(std::vector<APTableEntry>&, size_t);
+size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
+int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 
 
 // ArgTableBuilder.cpp
 int build_initial_arg_table(Randomizer*, TestcaseData&);
 int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
-bool contains_data_type(std::vector<APTableEntry>&, APDataType);
-bool is_required_arg(std::vector<APTableEntry>&, size_t);
-bool contains_required(std::vector<APTableEntry>&);
-size_t count_args_by_type(std::vector<APTableEntry>&, APDataType);
-size_t count_required_args(std::vector<APTableEntry>&);
-bool is_abbr_form_available(std::vector<APTableEntry>&, size_t);
-size_t count_abbr_form_args(std::vector<APTableEntry>&);
-int32_t find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 
 
 // TestcaseBuilder.cpp

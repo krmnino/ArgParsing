@@ -4,7 +4,7 @@
 void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
     case ScenarioType::OK:
-        scenario.n_args = rnd->gen_integral_range<size_t>(count_required_args(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
         build_OK_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
@@ -12,7 +12,7 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_MISSING_FIRST_DASH_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_REQUIRED_ARG:
-        scenario.n_args = rnd->gen_integral_range<size_t>(count_required_args(scenario.exp_argtab), scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
         build_MISSING_REQUIRED_ARG_scenario(rnd, scenario);
         break;
     case ScenarioType::UNKNOWN_ARGUMENT:
@@ -60,7 +60,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(is_abbr_form_available(scenario.exp_argtab, i)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
             result_bool = rnd->gen_bool();
             if(result_bool){
                 arg_id = "-" + scenario.exp_argtab[i].abbr_form;
@@ -87,7 +87,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
             result_bool = rnd->gen_bool();
             if(result_bool){
                 arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
@@ -120,11 +120,11 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Find their index in the argument table
         if(arg_id[1] == '-'){
             no_dashes_arg_id = arg_id.substr(2);
-            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
         }
         else{
             no_dashes_arg_id = arg_id.substr(1);
-            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[arg_table_idx].data_type){
@@ -192,7 +192,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     while(true){
         // Pick a random argument
         rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1);
-        if(is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
             error_arg_idx = rand_idx;
             // Find a spot when to inject it
             error_arg_n = rnd->gen_integral_range<size_t>(0, scenario.n_args - 1);
@@ -219,7 +219,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
 
         // If argument has abbreviated form, then use it if injecting error, or 50% of times normally
-        if(is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
             result_bool = rnd->gen_bool();
             // Skip the single dash
             if(n_initialized == error_arg_n){
@@ -310,7 +310,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
     while(true){
         // Pick a random argument
         rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1);
-        if(is_required_arg(scenario.exp_argtab, rand_idx)){
+        if(arg_table_is_required_arg(scenario.exp_argtab, rand_idx)){
             error_arg_idx = rand_idx;
             break;
         }
@@ -332,7 +332,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(is_abbr_form_available(scenario.exp_argtab, i)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
             result_bool = rnd->gen_bool();
             if(result_bool){
                 arg_id = "-" + scenario.exp_argtab[i].abbr_form;
@@ -359,7 +359,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
             result_bool = rnd->gen_bool();
             if(result_bool){
                 arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
@@ -387,11 +387,11 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         // Find their index in the argument table
         if(arg_id[1] == '-'){
             no_dashes_arg_id = arg_id.substr(2);
-            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
         }
         else{
             no_dashes_arg_id = arg_id.substr(1);
-            arg_table_idx = find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[arg_table_idx].data_type){
@@ -492,25 +492,25 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     // Scenarios::UNKNOWN_ARGUMENT is always allowed
     
     // Check if Scenarios::MISSING_FIRST_DASH scenario can be tested
-    if(count_abbr_form_args(arg_table) == 0){
+    if(arg_table_count_abbr_form(arg_table) == 0){
         mask = ~(uint32_t)ScenarioType::MISSING_FIRST_DASH;
         allowed_scenarios = allowed_scenarios & mask;
     }
 
     // Check if Scenarios::MISSING_REQUIRED_ARG scenario can be tested
-    if(!contains_required(arg_table)){
+    if(arg_table_count_required(arg_table) == 0){
         mask = ~(uint32_t)ScenarioType::MISSING_REQUIRED_ARG;
         allowed_scenarios = allowed_scenarios & mask;
     }
     
     // Check if Scenarios::MUST_BE_FLAG scenario can be tested
-    if(!contains_data_type(arg_table, APDataType::FLAG)){
+    if(arg_table_count_data_type(arg_table, APDataType::FLAG) == 0){
         mask = ~(uint32_t)ScenarioType::MUST_BE_FLAG;
         allowed_scenarios = allowed_scenarios & mask;
     }
     
     // Check if Scenarios::BAD_NUMERIC_VALUE scenario can be tested
-    if(!contains_data_type(arg_table, APDataType::NUMBER)){
+    if(arg_table_count_data_type(arg_table, APDataType::NUMBER) == 0){
         mask = ~(uint32_t)ScenarioType::BAD_NUMERIC_VALUE;
         allowed_scenarios = allowed_scenarios & mask;
     }
@@ -523,7 +523,7 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     
     // Check if Scenarios::VALID_FLAG_GROUP scenario can be tested
     // Check if Scenarios::INVALID_FLAG_GROUP scenario can be tested
-    if(count_args_by_type(arg_table, APDataType::FLAG) < 2){
+    if(arg_table_count_type(arg_table, APDataType::FLAG) < 2){
         mask = ~(uint32_t)ScenarioType::VALID_FLAG_GROUP;
         allowed_scenarios = allowed_scenarios & mask;
         mask = ~(uint32_t)ScenarioType::INVALID_FLAG_GROUP;
