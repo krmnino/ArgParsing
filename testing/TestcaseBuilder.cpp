@@ -1,6 +1,6 @@
 #include "ArgParsingTesting.hpp"
 
-int build_testcase(Randomizer* rnd, TestcaseData& tdata, size_t n_scenarios, uint32_t user_allowed_scenario_types){
+int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
     uint32_t scenario_type_pool;
     uint32_t picked_scenario_type;
     uint32_t attempt_counter;

@@ -104,7 +104,7 @@ int main(int argc, char* argv[]){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
         build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
-        for(size_t i = 0; i < n_scenarios; i++){
+        for(uint32_t i = 0; i < n_scenarios; i++){
             ap_test = new ArgParsing();
             ap_test->set_arg_table(testcase->ini_argtab);
             ap_test->set_input_args(testcase->s_arr[i].argc, testcase->s_arr[i].argv);

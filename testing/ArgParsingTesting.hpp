@@ -62,8 +62,8 @@ class ScenarioData{
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab; // Initial argument table
-    size_t n_scenarios;
     ScenarioData* s_arr;
+    uint32_t n_scenarios;
     uint32_t allowed_data_types;
     TestcaseData() {}
     ~TestcaseData() {
@@ -94,7 +94,7 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 
 
 // TestcaseBuilder.cpp
-int build_testcase(Randomizer*, TestcaseData&, size_t, uint32_t);
+int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 
 // ScenarioBuilder.cpp
