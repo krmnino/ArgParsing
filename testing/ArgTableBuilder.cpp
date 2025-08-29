@@ -102,7 +102,7 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
             return -1;
         }
-        shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES);
+        shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
         if((enabled_data_types & (1 << shifter)) != 0){
             break;
         }

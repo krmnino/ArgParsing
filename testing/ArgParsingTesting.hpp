@@ -21,6 +21,7 @@
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
 
+
 enum class ScenarioType {
     OK                    =  0x00000001,
     MISSING_FIRST_DASH    =  0x00000002,
@@ -103,7 +104,7 @@ void build_scenario(Randomizer*, ScenarioData&);
 void build_OK_scenario(Randomizer*, ScenarioData&);
 void build_MISSING_FIRST_DASH_scenario(Randomizer*, ScenarioData&);
 void build_MISSING_REQUIRED_ARG_scenario(Randomizer*, ScenarioData&);
-void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
+void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
 void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
@@ -118,6 +119,7 @@ void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
 void validate_OK_scenario(ErrorReporter*, ScenarioData&);
 void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
 void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
+void validate_UNKNOWN_ARGUMENT(ErrorReporter*, ScenarioData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
 
 

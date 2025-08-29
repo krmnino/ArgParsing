@@ -163,10 +163,10 @@ class ErrorReporter{
         std::cout << "Failed passes: " << this->error_counter << std::endl;
         std::cout << std::endl;
         for(size_t i = 0; i < this->logs_size; i++){
-            std::cout << "START TEST: " << this->logs[i].test_id << std::endl;
-            std::cout << "TEST RESULT: " << this->print_is_error(this->logs[i].is_error) << std::endl;
+            std::cout << "START TEST   : " << this->logs[i].test_id << std::endl;
+            std::cout << "TEST RESULT  : " << this->print_is_error(this->logs[i].is_error) << std::endl;
             std::cout << this->logs[i].text << std::endl;
-            std::cout << "END TEST: " << this->logs[i].test_id << std::endl;
+            std::cout << "END TEST     : " << this->logs[i].test_id << std::endl;
             std::cout << "---------------------------------------------------" << std::endl;
         }
         std::cout << "================= (END OF REPORT) =================" << std::endl;
