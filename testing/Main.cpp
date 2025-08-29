@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
     struct sigaction sa_struct;
     std::string pgm_err_msg;
     std::string seed_argval;
-    std::string trace_argval;
+    std::string types_argval;
     ArgParsing* pgm_ap;
     ArgParsing* ap_test;
     Randomizer* rnd;
@@ -31,8 +31,9 @@ int main(int argc, char* argv[]){
     // Program argument table 
     APTableEntry arg_table[] = {
         { "s", "seed"       , APDataType::NUMBER  , true  },
-        { "t", "n_tests"    , APDataType::NUMBER  , true  },
+        { "n", "n_tests"    , APDataType::NUMBER  , true  },
         { "c", "n_scenarios", APDataType::NUMBER  , true  },
+        { "t", "types"      , APDataType::NUMBER  , true  },
         { "r", "trace"      , APDataType::FLAG    , false },
     };
     
@@ -46,8 +47,21 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
+    // Read and validate seed argument
+    seed_argval = pgm_ap->get_arg_value("seed", false);
+    if(seed_argval.size() > 2 && seed_argval[0] == '0' && seed_argval[1] == 'x'){
+        seed_argval = seed_argval.substr(2);
+        init_seed = std::stoi(pgm_ap->get_arg_value("seed", false), nullptr, 16);
+    }
+    else{
+        init_seed = std::stoi(pgm_ap->get_arg_value("seed", false));
+    }
+    if(init_seed == 0){
+        std::cerr << "ERROR: seed value cannot be zero." << std::endl;
+        return -1;
+    }
+
     // Start the Randomizer
-    init_seed = std::stoi(pgm_ap->get_arg_value("seed", false));
     rnd = Randomizer::get_instance(init_seed);
     if(rnd == nullptr){
         std::cerr << "ERROR: Could not initialize Randomizer." << std::endl;
@@ -67,6 +81,7 @@ int main(int argc, char* argv[]){
     sa_struct.sa_flags = 0;
     sigaction(SIGINT, &sa_struct, NULL);
     
+    // Read n_tests argument
     n_tests = std::stoi(pgm_ap->get_arg_value("n_tests", false));
     // Ignore pass counter if n_tests is 0
     if(n_tests == 0){
@@ -75,18 +90,20 @@ int main(int argc, char* argv[]){
     else{
         infinite_loop = false;
     }
+    
+    // Read n_scenarios argument
     n_scenarios = std::stoi(pgm_ap->get_arg_value("n_scenarios", false));
-
-    user_allowed_scenario_types = (uint32_t)ScenarioType::OK                     |
-                                  (uint32_t)ScenarioType::MISSING_FIRST_DASH     |
-                                  (uint32_t)ScenarioType::MISSING_REQUIRED_ARG   ;//|
-                                  //(uint32_t)ScenarioType::UNKNOWN_ARGUMENT       |
-                                  //(uint32_t)ScenarioType::REPEATED_ARGUMENT      |
-                                  //(uint32_t)ScenarioType::MUST_BE_FLAG           |
-                                  //(uint32_t)ScenarioType::BAD_NUMERIC_VALUE      |
-                                  //(uint32_t)ScenarioType::EMPTY_ARG_LIST         |
-                                  //(uint32_t)ScenarioType::VALID_FLAG_GROUP       |
-                                  //(uint32_t)ScenarioType::INVALID_FLAG_GROUP     ;
+    
+    // Read and validate types argument
+    types_argval = pgm_ap->get_arg_value("types", false);
+    if(types_argval.size() > 2 && types_argval[0] == '0' && types_argval[1] == 'x'){
+        types_argval = types_argval.substr(2);
+    }
+    user_allowed_scenario_types = std::stoi(types_argval);
+    if(user_allowed_scenario_types == 0){
+        std::cerr << "ERROR: --types argument cannot be zero." << std::endl;
+        return -1;
+    }
 
     // Reset pass counter
     pass_counter = 0;
