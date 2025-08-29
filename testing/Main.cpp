@@ -98,8 +98,11 @@ int main(int argc, char* argv[]){
     types_argval = pgm_ap->get_arg_value("types", false);
     if(types_argval.size() > 2 && types_argval[0] == '0' && types_argval[1] == 'x'){
         types_argval = types_argval.substr(2);
+        user_allowed_scenario_types = std::stoi(types_argval, nullptr, 16);
     }
-    user_allowed_scenario_types = std::stoi(types_argval);
+    else{
+        user_allowed_scenario_types = std::stoi(types_argval);
+    }
     if(user_allowed_scenario_types == 0){
         std::cerr << "ERROR: --types argument cannot be zero." << std::endl;
         return -1;
@@ -126,7 +129,7 @@ int main(int argc, char* argv[]){
             ap_test->set_arg_table(testcase->ini_argtab);
             ap_test->set_input_args(testcase->s_arr[i].argc, testcase->s_arr[i].argv);
             ap_test->parse();
-            // Collect the data from the ArgParsing object 
+            // Collect the data from the ArgParsing object and delete ArgParsing object
             collect_ap_data(testcase->s_arr[i], ap_test);
             delete ap_test;
         }
