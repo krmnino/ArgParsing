@@ -23,6 +23,10 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_UNKNOWN_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::REPEATED_ARGUMENT:
+        // We need at least 1 argument to repeat it
+        // Extra room (+1) for unknown argument
+        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab) + 1, scenario.exp_argtab.size()) + 1;
+        build_REPEATED_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::MUST_BE_FLAG:
         break;
@@ -464,13 +468,11 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(scenario.n_args);
 
-    // True if using abbreviated form, false for full form
-    result_bool = rnd->gen_bool();
-
     // Try to generate an argument identifer that is not in the table
     n_initialized = 0;
     while(true){
-        // Abbreviated form
+        // True if using abbreviated form, false for full form
+        result_bool = rnd->gen_bool();
         if(result_bool){
             error_arg = rnd->gen_string(MAX_ABBR_FORM_ID_LEN, alphanum_dict);
             error_arg_idx = arg_table_find_arg_index(scenario.exp_argtab, error_arg, true);
@@ -610,6 +612,153 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
         // Update argc appropiately
         switch (arg_data_type){
+        case APDataType::NUMBER:
+        case APDataType::TEXT:
+            scenario.argc += 2;
+            break;
+        case APDataType::FLAG:
+            scenario.argc++;
+            break;
+        default:
+            break;
+        }
+    }
+
+    // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
+    vector_to_char_array(argv, scenario.argv);
+}
+
+void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
+    std::vector<std::string> arg_id_accumulator;
+    std::vector<std::string> argv;
+    std::string arg_id;
+    std::string no_dashes_arg_id;
+    std::string value;
+    size_t rand_idx;
+    size_t n_initialized;
+    size_t error_arg_n;
+    uint32_t result_u32;
+    int32_t arg_table_idx;
+    bool result_bool;
+   
+    // Make room in the accumulator argv
+    arg_id_accumulator.reserve(scenario.n_args);
+    
+    // Loop through sequentially and initialize all the required arguments first
+    n_initialized = 0;
+    for(size_t i = 0; i < scenario.exp_argtab.size(); i++){
+        // If not required, then skip it
+        if(!scenario.exp_argtab[i].required){
+            continue;
+        }
+        // If argument has abbreviated form, then use it 50% of the times
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
+            result_bool = rnd->gen_bool();
+            if(result_bool){
+                arg_id = "-" + scenario.exp_argtab[i].abbr_form;
+            }
+            else{
+                arg_id = "--" + scenario.exp_argtab[i].full_form;
+            }
+        }
+        else{
+            arg_id = "--" + scenario.exp_argtab[i].full_form;
+        }
+        // Add it to the a accumulator
+        arg_id_accumulator.push_back(arg_id);
+        // Mark randomly picked argument as initialized
+        scenario.exp_argtab[i].initialized = true; 
+        n_initialized++;
+    }
+
+    // Then loop and initialize any remaining non-required arguments (skipping the last one)
+    while(n_initialized < scenario.n_args - 1){
+        // Pick a random argument from the table
+        rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1); 
+        if(scenario.exp_argtab[rand_idx].initialized){
+            continue;
+        }
+        // If argument has abbreviated form, then use it 50% of the times
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+            result_bool = rnd->gen_bool();
+            if(result_bool){
+                arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
+            }
+            else{
+                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
+            }
+        }
+        else{
+            arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
+        }
+        // Add it to the a accumulator
+        arg_id_accumulator.push_back(arg_id);
+        // Mark randomly picked argument as initialized
+        scenario.exp_argtab[rand_idx].initialized = true; 
+        n_initialized++;
+    }
+
+    // Pick a random argument identifier from the accumulator and add it again
+    error_arg_n = rnd->gen_integral_range<size_t>(0, (n_initialized - 1));
+    arg_id_accumulator.push_back(arg_id_accumulator[error_arg_n]);
+    n_initialized++;
+    
+    // Set expected error code
+    scenario.exp_error_message = "ERROR: the provided argument " + arg_id_accumulator[error_arg_n] + " is repeated.";
+
+    // Shuffle the arguments since required ones where picked first
+    rnd->shuffle<std::string>(arg_id_accumulator);
+    
+    // Add the placeholder program name for the first element of argv
+    scenario.argc = 0;
+    argv.push_back("PGM_PLACEHOLDER");
+    scenario.argc++;
+
+
+    // Loop through the arguments and set random values (for non-FLAG types only)
+    for(size_t i = 0; i < arg_id_accumulator.size(); i++){
+        arg_id = arg_id_accumulator[i];
+        // Find their index in the argument table
+        if(arg_id[1] == '-'){
+            no_dashes_arg_id = arg_id.substr(2);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, false);
+        }
+        else{
+            no_dashes_arg_id = arg_id.substr(1);
+            arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
+        }
+        // Generate data for arguments that need it
+        switch (scenario.exp_argtab[arg_table_idx].data_type){
+        case APDataType::NUMBER:
+            result_bool = rnd->gen_bool();
+            if(result_bool){
+                value = integer_to_hex_string(rnd->gen_integral<int64_t>());
+            }
+            else{
+                value = std::to_string(rnd->gen_integral<int64_t>());
+            }
+            break;    
+        case APDataType::TEXT:
+            result_u32 = rnd->gen_integral_range<size_t>(1, MAX_TEXT_ARG_LEN);
+            value = rnd->gen_string(result_u32, nullptr);
+            break;    
+        case APDataType::FLAG:
+            value = "1";
+            break;    
+        default:
+            break;
+        }
+        // Set argument value (only for the non-repeated ones)
+        if(!scenario.exp_argtab[arg_table_idx].initialized){
+            scenario.exp_argtab[arg_table_idx].value = value;
+        }
+        // Update the argv vector with argument we just created
+        argv.push_back(arg_id);
+        if(scenario.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
+            argv.push_back(value);
+        }
+        // Update argc appropiately
+        switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
         case APDataType::TEXT:
             scenario.argc += 2;

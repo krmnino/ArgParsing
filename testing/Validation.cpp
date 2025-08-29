@@ -26,6 +26,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::UNKNOWN_ARGUMENT:
             validate_UNKNOWN_ARGUMENT(er, tc.s_arr[i]);
             break;
+        case ScenarioType::REPEATED_ARGUMENT:
+            validate_UNKNOWN_ARGUMENT(er, tc.s_arr[i]);
+            break;
         default:
         break;
         }
@@ -172,6 +175,35 @@ void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter* er, ScenarioData& sc)
 }
 
 void validate_UNKNOWN_ARGUMENT(ErrorReporter* er, ScenarioData& sc){
+    std::string buffer;
+    // Result vs. Expected error mesage
+    er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
+    er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");
+    if(sc.res_error_message != sc.exp_error_message){
+        er->mark_error();
+        er->log_it("!!! ERROR: error_message MISMATCH");
+    }
+    er->log_it(">>> START OF ARGV <<<");
+    er->log_it(describe_argv(sc.argc, sc.argv));
+    er->log_it(">>> END OF ARGV <<<");
+    // Result vs. Expected argument table size
+    er->log_it("Result   : size of result argtab = " + std::to_string(sc.res_argtab.size()));
+    er->log_it("Expected : size of result argtab = " + std::to_string(sc.exp_argtab.size()));
+    if(sc.res_argtab.size() != sc.exp_argtab.size()){
+        er->mark_error();
+        er->log_it("!!! ERROR: size of argtab MISMATCH");
+    }
+    er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
+    buffer = arg_table_to_string(sc.res_argtab);
+    er->log_it(buffer);
+    er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
+    er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
+    buffer = arg_table_to_string(sc.exp_argtab);
+    er->log_it(buffer);
+    er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
+}
+
+void validate_REPEATED_ARGUMENT(ErrorReporter* er, ScenarioData& sc){
     std::string buffer;
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");

@@ -38,7 +38,7 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
                 return -1;
             }
-            shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES);
+            shifter = rnd->gen_integral_range<uint32_t>(0, MAX_SCENARIO_TYPES - 1);
             picked_scenario_type = (1 << shifter);
             if((scenario_type_pool & picked_scenario_type) != 0){
                 break;
