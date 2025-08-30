@@ -138,6 +138,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
+            // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
@@ -248,6 +249,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
+            // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
@@ -405,6 +407,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
+            // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
@@ -583,6 +586,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Generate data for arguments that need it
         switch (arg_data_type){
         case APDataType::NUMBER:
+            // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
@@ -730,6 +734,7 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
+            // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 value = integer_to_hex_string(rnd->gen_integral<int64_t>());
