@@ -102,11 +102,6 @@ int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 // ScenarioBuilder.cpp
 void build_scenario(Randomizer*, ScenarioData&);
-void build_OK_scenario(Randomizer*, ScenarioData&);
-void build_MISSING_FIRST_DASH_scenario(Randomizer*, ScenarioData&);
-void build_MISSING_REQUIRED_ARG_scenario(Randomizer*, ScenarioData&);
-void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
-void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
 void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
@@ -117,12 +112,32 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 // Validation.cpp
 void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
-void validate_OK_scenario(ErrorReporter*, ScenarioData&);
-void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
-void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
-void validate_UNKNOWN_ARGUMENT(ErrorReporter*, ScenarioData&);
-void validate_REPEATED_ARGUMENT(ErrorReporter*, ScenarioData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
+
+
+// OK_Scenario.cpp
+void build_OK_scenario(Randomizer*, ScenarioData&);
+void validate_OK_scenario(ErrorReporter*, ScenarioData&);
+
+
+// MISSING_FIRST_DASH_Scenario.cpp
+void build_MISSING_FIRST_DASH_scenario(Randomizer*, ScenarioData&);
+void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
+
+
+// MISSING_REQUIRED_ARG_Scenario.cpp
+void build_MISSING_REQUIRED_ARG_scenario(Randomizer*, ScenarioData&);
+void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
+
+
+// UNKNOWN_ARGUMENT_Scenario.cpp
+void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
+void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
+
+
+// REPEATED_ARGUMENT_Scenario.cpp
+void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
+void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
 
 
 // Template utility functions

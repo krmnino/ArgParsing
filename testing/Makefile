@@ -2,20 +2,30 @@ RD = ../res/
 BD = ../bin/
 SD = ../src/
 
-SRC_FILES = $(SD)ArgParsing.cpp		\
-			ArgTableBuilder.cpp		\
-			TestcaseBuilder.cpp		\
-			ScenarioBuilder.cpp		\
-			Validation.cpp			\
-			Utils.cpp				\
+SRC_FILES = $(SD)ArgParsing.cpp					\
+			ArgTableBuilder.cpp					\
+			TestcaseBuilder.cpp					\
+			ScenarioBuilder.cpp					\
+			Validation.cpp						\
+			Utils.cpp							\
+			OK_Scenario.cpp						\
+			MISSING_FIRST_DASH_Scenario.cpp		\
+			MISSING_REQUIRED_ARG_Scenario.cpp	\
+			UNKNOWN_ARGUMENT_Scenario.cpp		\
+			REPEATED_ARGUMENT_Scenario.cpp		\
 			Main.cpp
 
-OBJ_FILES = ArgParsing.o			\
-			ArgTableBuilder.o		\
-			TestcaseBuilder.o		\
-			ScenarioBuilder.o		\
-			Validation.o			\
-			Utils.o  				\
+OBJ_FILES = ArgParsing.o						\
+			ArgTableBuilder.o					\
+			TestcaseBuilder.o					\
+			ScenarioBuilder.o					\
+			Validation.o						\
+			Utils.o  							\
+			OK_Scenario.o						\
+			MISSING_FIRST_DASH_Scenario.o		\
+			MISSING_REQUIRED_ARG_Scenario.o		\
+			UNKNOWN_ARGUMENT_Scenario.o			\
+			REPEATED_ARGUMENT_Scenario.o		\
 			Main.o
 
 all: compile link
