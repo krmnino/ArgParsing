@@ -36,11 +36,25 @@ void ArgParsing::set_input_args(int input_argc, char** input_argv){
 }
 
 int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     if(this->is_table_set){
         return -1;
     }
     // Copy array contents over to std::vector
     this->arg_table.assign(arg_table_ptr, arg_table_ptr + n_entries);
+
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        for(size_t j = 0; j < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); j++){
+            if(this->arg_table[i].abbr_form != "" && this->arg_table[i].abbr_form == valid_flag_values[j]){
+                std::cerr << "ERROR: -" << this->arg_table[i].abbr_form << " is not an allowed abbreviated form argument identifer." << std::endl;
+                return -1;
+            }
+            if(this->arg_table[i].full_form == valid_flag_values[j]){
+                std::cerr << "ERROR: --" << this->arg_table[i].full_form << " is not an allowed full form argument identifer." << std::endl;
+                return -1;
+            }
+        }
+    }
     // Check for duplicate abbreviated form identifiers
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(this->arg_table[i].abbr_form == ""){
@@ -48,7 +62,7 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
         }
         for(size_t j = i + 1; j < this->arg_table.size(); j++){
             if(this->arg_table[i].abbr_form == this->arg_table[j].abbr_form){
-                std::cout << "-" << this->arg_table[j].abbr_form << " is a duplicate abbreviated form argument identifier." << std::endl;
+                std::cerr << "ERROR: -" << this->arg_table[j].abbr_form << " is a duplicate abbreviated form argument identifier." << std::endl;
                 return -1;
             }
         }
@@ -60,7 +74,7 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
                 continue;
             }
             if(this->arg_table[i].full_form == this->arg_table[j].full_form){
-                std::cout << "--" << this->arg_table[j].full_form << " is a duplicate full form argument identifier." << std::endl;
+                std::cerr << "ERROR: --" << this->arg_table[j].full_form << " is a duplicate full form argument identifier." << std::endl;
                 return -1;
             }
         }
@@ -325,6 +339,7 @@ void ArgParsing::display_error_msg(){
 bool ArgParsing::validate_flag_value(std::string& value){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::string prev_arg_id;
+    std::string arg_id;
     int table_idx;
     bool found; 
     bool arg_value_fn_quick_exit; 
@@ -360,15 +375,15 @@ bool ArgParsing::validate_flag_value(std::string& value){
     // Check if it is a valid abbreviated/full form identifier that can be processed
     else if(value[0] == '-' && value.size() > 1){
         if(value.size() > 2 && value[1] == '-'){
-            value = value.substr(2);
-            table_idx = get_index_in_arg_table(value, false);
+            arg_id = value.substr(2);
+            table_idx = get_index_in_arg_table(arg_id, false);
         }
         else{
-            value = value.substr(1);
-            table_idx = get_index_in_arg_table(value, true);
+            arg_id = value.substr(1);
+            table_idx = get_index_in_arg_table(arg_id, true);
         }
-        // Value is a valid argument identifier, initialize the previous FLAG argument,
-        // then go analyze the next valid argument
+        // Value is actually a valid argument identifier, initialize the previous FLAG
+        // argument, then go analyze the next valid argument
         if(table_idx != -1){
             this->state = APState::ARGV_BEGIN;
             arg_value_fn_quick_exit = true;
@@ -376,16 +391,31 @@ bool ArgParsing::validate_flag_value(std::string& value){
         // Value cannot be an argument identifier, error out
         else{
             this->state = APState::ERROR;
-            this->reason = APErrRsn::MUST_BE_FLAG;
-            this->err_msg_data.push_back(this->prev_argv_element);
+            this->reason = APErrRsn::UNKNOWN_ARGUMENT;
+            this->err_msg_data.push_back(value);
             arg_value_fn_quick_exit = true;
         }
     }
     else{
-        this->state = APState::ERROR;
-        this->reason = APErrRsn::MUST_BE_FLAG;
-        this->err_msg_data.push_back(this->prev_argv_element);
-        arg_value_fn_quick_exit = true;
+        // Otherwise, it may be an argument identifier missing the dashes. If so, pass 
+        // the hot potato to the caller so they can figure out the error. Else, error out right away.
+        arg_id = value;
+        if(arg_id.size() == 1){
+            table_idx = get_index_in_arg_table(arg_id, true);
+        }
+        else{
+            table_idx = get_index_in_arg_table(arg_id, false);
+        }
+        if(table_idx != -1){
+            this->state = APState::ARGV_BEGIN;
+            arg_value_fn_quick_exit = true;
+        }
+        else{
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::MUST_BE_FLAG;
+            this->err_msg_data.push_back(this->prev_argv_element);
+            arg_value_fn_quick_exit = true;
+        }
     }
     return arg_value_fn_quick_exit;
 }
