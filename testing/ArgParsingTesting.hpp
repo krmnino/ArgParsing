@@ -102,11 +102,6 @@ int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 // ScenarioBuilder.cpp
 void build_scenario(Randomizer*, ScenarioData&);
-void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
-void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
-void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
-void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
-void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
@@ -131,13 +126,43 @@ void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
 
 
 // UNKNOWN_ARGUMENT_Scenario.cpp
-void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
+void build_UNKNOWN_ARGUMENT_scenario(Randomizer*, ScenarioData&);
 void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
 
 
 // REPEATED_ARGUMENT_Scenario.cpp
-void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData&);
+void build_REPEATED_ARGUMENT_scenario(Randomizer*, ScenarioData&);
 void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
+
+
+// REPEATED_ARGUMENT_Scenario.cpp
+void build_REPEATED_ARGUMENT_scenario(Randomizer*, ScenarioData&);
+void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
+
+
+// MUST_BE_FLAG_Scenario.cpp
+void build_MUST_BE_FLAG_scenario(Randomizer*, ScenarioData&);
+void validate_MUST_BE_FLAG_scenario(ErrorReporter*, ScenarioData&);
+
+
+// BAD_NUMERIC_VALUE_Scenario.cpp
+void build_BAD_NUMERIC_VALUE_scenario(Randomizer*, ScenarioData&);
+void validate_BAD_NUMERIC_VALUE_scenario(ErrorReporter*, ScenarioData&);
+
+
+// EMPTY_ARG_LIST_Scenario.cpp
+void build_EMPTY_ARG_LIST_scenario(Randomizer*, ScenarioData&);
+void validate_EMPTY_ARG_LIST_scenario(ErrorReporter*, ScenarioData&);
+
+
+// VALID_FLAG_GROUP_Scenario.cpp
+void build_VALID_FLAG_GROUP_scenario(Randomizer*, ScenarioData&);
+void validate_VALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
+
+
+// INVALID_FLAG_GROUP_Scenario.cpp
+void build_INVALID_FLAG_GROUP_scenario(Randomizer*, ScenarioData&);
+void validate_INVALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
 
 
 // Template utility functions
