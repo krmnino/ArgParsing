@@ -132,9 +132,9 @@ void ArgParsing::arg_begin(){
 
 void ArgParsing::arg_abbr_form(){
     std::string abbr_arg;
-    std::string curr = this->argv[this->argv_idx];
-    if(curr.size() == 2){
-        abbr_arg = std::string(1, this->argv[this->argv_idx][1]);
+    abbr_arg = this->argv[this->argv_idx];
+    if(abbr_arg.size() == 2){
+        abbr_arg = std::string(1, abbr_arg[1]);
         // Search for abbreviated identifier in argument table 
         // If not found, returned index is -1 and set error state
         this->eval_arg_idx = this->get_index_in_arg_table(abbr_arg, true);
@@ -151,14 +151,13 @@ void ArgParsing::arg_abbr_form(){
             this->err_msg_data.push_back("-" + abbr_arg);
             return;    
         }
-        // Check the argument data type and update the state
+        // Set FLAG argument value to true
         if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
             this->arg_table[this->eval_arg_idx].value = "1";
-            this->state = APState::ARGV_BEGIN;
         }
-        else{
-            this->state = APState::ARGV_VALUE;
-        }
+        // Set to initialized and update state
+        this->arg_table[this->eval_arg_idx].initialized = true;
+        this->state = APState::ARGV_VALUE;
     }
     else{
         // Loop through group of abbreviated form identifiers in table
@@ -193,7 +192,7 @@ void ArgParsing::arg_abbr_form(){
         }
         this->state = APState::ARGV_BEGIN;
     }
-    this->arg_table[this->eval_arg_idx].initialized = true;
+    this->prev_argv_element = this->argv[this->argv_idx];
     this->argv_idx++;
 }
 
@@ -215,21 +214,22 @@ void ArgParsing::arg_full_form(){
         this->reason = APErrRsn::REPEATED_ARGUMENT;
         this->err_msg_data.push_back("--" + full_arg);
         return;    
-    }
-    // Check the argument data type and update the state
+    }    
+    // Set FLAG argument value to true
     if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
         this->arg_table[this->eval_arg_idx].value = "1";
-        this->state = APState::ARGV_BEGIN;
     }
-    else{
-        this->state = APState::ARGV_VALUE;
-    }
+
+    // Set to initialized and update state
+    this->state = APState::ARGV_VALUE;
     this->arg_table[this->eval_arg_idx].initialized = true;
+    this->prev_argv_element = this->argv[this->argv_idx];
     this->argv_idx++;
 }
 
 void ArgParsing::arg_value(){
-    std::string value = this->argv[this->argv_idx];
+    std::string value;
+    value = this->argv[this->argv_idx];
     switch(this->arg_table[this->eval_arg_idx].data_type){
     case APDataType::NUMBER:
         // Check if it is a hexadecimal value.
@@ -265,10 +265,15 @@ void ArgParsing::arg_value(){
     case APDataType::TEXT:
         this->arg_table[this->eval_arg_idx].value = value;
         break;
+    case APDataType::FLAG:
+        if(this->validate_flag_value(value)){
+            return;
+        }
     default:
         break;
     }
     this->state = APState::ARGV_BEGIN;
+    this->prev_argv_element = this->argv[this->argv_idx];
     this->argv_idx++;
 }
 
@@ -317,6 +322,74 @@ void ArgParsing::display_error_msg(){
     #endif
 }
 
+bool ArgParsing::validate_flag_value(std::string& value){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    std::string prev_arg_id;
+    int table_idx;
+    bool found; 
+    bool arg_value_fn_quick_exit; 
+    arg_value_fn_quick_exit = false;
+    found = false;
+    for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
+        if(value == valid_flag_values[i]){
+            found = true;
+            break;
+        }
+    }
+    // Found a valid value match
+    if(found){
+        // Set value of previous FLAG argument based on the current value
+        // This will override the previously set value by arg_abbr_form() or arg_full_form()
+        if(this->prev_argv_element[1] == '-'){
+            prev_arg_id = this->prev_argv_element.substr(2);
+            table_idx = get_index_in_arg_table(prev_arg_id, false);
+            this->arg_table[table_idx].value = "1";
+        }
+        else{
+            prev_arg_id = this->prev_argv_element.substr(1);
+            table_idx = get_index_in_arg_table(prev_arg_id, true);
+            this->arg_table[table_idx].value = "1";
+        }
+        if(value == "1" || value == "true" || value == "TRUE"){
+            this->arg_table[table_idx].value = "1";
+        }
+        else{
+            this->arg_table[table_idx].value = "0";
+        }
+    }
+    // Check if it is a valid abbreviated/full form identifier that can be processed
+    else if(value[0] == '-' && value.size() > 1){
+        if(value.size() > 2 && value[1] == '-'){
+            value = value.substr(2);
+            table_idx = get_index_in_arg_table(value, false);
+        }
+        else{
+            value = value.substr(1);
+            table_idx = get_index_in_arg_table(value, true);
+        }
+        // Value is a valid argument identifier, initialize the previous FLAG argument,
+        // then go analyze the next valid argument
+        if(table_idx != -1){
+            this->state = APState::ARGV_BEGIN;
+            arg_value_fn_quick_exit = true;
+        }
+        // Value cannot be an argument identifier, error out
+        else{
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::MUST_BE_FLAG;
+            this->err_msg_data.push_back(this->prev_argv_element);
+            arg_value_fn_quick_exit = true;
+        }
+    }
+    else{
+        this->state = APState::ERROR;
+        this->reason = APErrRsn::MUST_BE_FLAG;
+        this->err_msg_data.push_back(this->prev_argv_element);
+        arg_value_fn_quick_exit = true;
+    }
+    return arg_value_fn_quick_exit;
+}
+
 int ArgParsing::parse(){
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
@@ -325,7 +398,7 @@ int ArgParsing::parse(){
         else if(this->state == APState::ARGV_BEGIN){
             this->arg_begin();
         }
-        else if(this->state == APState::ARGV_VALUE){
+        else if(this->state == APState::ARGV_VALUE || this->state == APState::ARGV_FLAG_VALUE){
             this->arg_value();
         }
     }

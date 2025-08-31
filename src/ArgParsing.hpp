@@ -5,6 +5,8 @@
 #include <vector>
 #include <string.h>
 
+#define VALID_FLAG_VALUES {"0", "1", "true", "false", "TRUE", "FALSE"}
+
 enum class APState {
     DONE,
     ERROR,
@@ -12,6 +14,7 @@ enum class APState {
     ARGV_ABBR_ID,
     ARGV_FULL_ID,
     ARGV_VALUE,
+    ARGV_FLAG_VALUE,
 };
 
 
@@ -62,6 +65,7 @@ class ArgParsing{
     std::vector<APTableEntry> arg_table;
     std::vector<std::string> err_msg_data;
     std::string error_msg;
+    std::string prev_argv_element;
     #ifndef DEBUG
     static ArgParsing* ap_ptr;
     #endif
@@ -86,7 +90,9 @@ class ArgParsing{
     void arg_abbr_form();
     void arg_full_form();
     void arg_value();
+    std::string& APErrRsn_to_string(APErrRsn);
     void display_error_msg();
+    bool validate_flag_value(std::string&);
     
     public:
     #ifndef DEBUG
