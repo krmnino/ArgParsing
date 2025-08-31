@@ -13,7 +13,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
     int32_t arg_table_idx;
     bool result_bool;
 
-    // Find which argument to inject error and when to do it
+    // Find which argument to inject error
     while(true){
         // Pick a random argument
         rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1);
@@ -39,14 +39,9 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[i].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[i].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[i].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[i].full_form;
@@ -66,14 +61,9 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
