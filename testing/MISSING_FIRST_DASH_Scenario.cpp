@@ -27,7 +27,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
             break;
         }
     }
-    
+
     // Set expected error code
     scenario.exp_error_message = "ERROR: all argument identifiers must start with a dash (-).";
 
@@ -46,24 +46,21 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
             }
         }
 
-        // If argument has abbreviated form, then use it if injecting error, or 50% of times normally
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        // Is it time to inject the error?
+        if(n_initialized == error_arg_n){
+            arg_id = scenario.exp_argtab[rand_idx].abbr_form;
+        }
+        else{
+            // If argument has abbreviated form, then use it 50% of the times
             result_bool = rnd->gen_bool();
-            // Skip the single dash
-            if(n_initialized == error_arg_n){
-                arg_id = scenario.exp_argtab[rand_idx].abbr_form;
-            }
-            else if(result_bool){
+            if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx) && result_bool){
                 arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
             }
             else{
                 arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
             }
         }
-        else{
-            arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
-        }
-    
+        
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
