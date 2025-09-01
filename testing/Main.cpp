@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
     Randomizer* rnd;
     ErrorReporter* er;
     TestcaseData* testcase;
-    uint64_t pass_counter;
+    uint64_t testcase_counter;
     uint32_t n_tests;
     uint32_t n_scenarios;
     uint32_t init_seed;
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]){
     }
 
     // Reset pass counter
-    pass_counter = 0;
+    testcase_counter = 0;
 
     // Allow tracing?
     if(pgm_ap->get_arg_value("trace", false) == "1"){
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]){
     }
     
     // Main driver
-    while((pass_counter < n_tests || infinite_loop) && running){
+    while((testcase_counter < n_tests || infinite_loop) && running){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
         build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
@@ -133,16 +133,16 @@ int main(int argc, char* argv[]){
             collect_ap_data(testcase->s_arr[i], ap_test);
             delete ap_test;
         }
-        validate(er, rnd->get_root_seed(), pass_counter, *testcase);
+        validate(er, rnd->get_root_seed(), testcase_counter, *testcase);
         delete testcase;
         rnd->root_seed_next();
-        pass_counter++;
+        testcase_counter++;
         if(!running){
             break;
         }
     }
 
-    std::cout << "\nTERMINATING... " << "Pass Counter: " << pass_counter << std::endl;
+    std::cout << "\nTERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
     er->print_report();
 
     delete pgm_ap;
