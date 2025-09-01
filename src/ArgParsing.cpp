@@ -449,7 +449,7 @@ int ArgParsing::parse(){
         else if(this->state == APState::ARGV_BEGIN){
             this->arg_begin();
         }
-        else if(this->state == APState::ARGV_VALUE || this->state == APState::ARGV_FLAG_VALUE){
+        else if(this->state == APState::ARGV_VALUE){
             this->arg_value();
         }
     }

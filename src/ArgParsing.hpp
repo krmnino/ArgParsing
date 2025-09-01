@@ -14,7 +14,6 @@ enum class APState {
     ARGV_ABBR_ID,
     ARGV_FULL_ID,
     ARGV_VALUE,
-    ARGV_FLAG_VALUE,
 };
 
 
