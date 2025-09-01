@@ -291,41 +291,62 @@ void ArgParsing::arg_value(){
     this->argv_idx++;
 }
 
+std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
+    switch (rsn){
+    case APErrRsn::MISSING_FIRST_DASH:
+        return "APErrRsn::MISSING_FIRST_DASH";
+    case APErrRsn::MISSING_REQUIRED_ARG:
+        return "APErrRsn::MISSING_REQUIRED_ARG";
+    case APErrRsn::UNKNOWN_ARGUMENT:
+        return "APErrRsn::UNKNOWN_ARGUMENT";
+    case APErrRsn::REPEATED_ARGUMENT:
+        return "APErrRsn::REPEATED_ARGUMENT";
+    case APErrRsn::MUST_BE_FLAG:
+        return "APErrRsn::MUST_BE_FLAG";
+    case APErrRsn::BAD_NUMERIC_VALUE:
+        return "APErrRsn::BAD_NUMERIC_VALUE";
+    default:
+        break;
+    }
+    return "APErrRsn::UNDEFINED";
+}
+
 void ArgParsing::display_error_msg(){
+    std::string rsn_str = APErrRsn_to_string(this->reason);
     switch (this->reason){
     case APErrRsn::MISSING_FIRST_DASH:
         #ifndef DEBUG
-        std::cerr << "ERROR: all argument identifiers must start with a dash (-)." << std::endl;
+        std::cerr << rsn_str << ": all argument identifiers must start with a dash (-)." << std::endl;
         #else
-        this->error_msg = "ERROR: all argument identifiers must start with a dash (-).";
+        this->error_msg = rsn_str + ": all argument identifiers must start with a dash (-).";
         #endif
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
         #ifndef DEBUG
-        std::cerr << "ERROR: the required argument " << err_msg_data[0] << " is missing." << std::endl;
+        std::cerr << rsn_str << ": the required argument " << err_msg_data[0] << " is missing." << std::endl;
         #else
-        this->error_msg = "ERROR: the required argument " + err_msg_data[0] + " is missing.";
+        this->error_msg = rsn_str + ": the required argument " + err_msg_data[0] + " is missing.";
         #endif
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
         #ifndef DEBUG
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
+        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
         #else
-        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is an unknown.";
+        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is an unknown.";
         #endif
         break;
     case APErrRsn::REPEATED_ARGUMENT:    
         #ifndef DEBUG
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
+        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
         #else
-        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is repeated.";
+        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is repeated.";
         #endif
         break;
     case APErrRsn::MUST_BE_FLAG:    
         #ifndef DEBUG
-        std::cerr << "ERROR: the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
+        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
         #else
-        this->error_msg = "ERROR: the provided argument " + err_msg_data[0] + " is of type FLAG and does not need a value.";
+        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
         #endif
         break;
     default:

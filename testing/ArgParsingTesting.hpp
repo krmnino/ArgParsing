@@ -81,6 +81,7 @@ std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
+std::string APErrRsn_to_string(APErrRsn);
 void vector_to_char_array(std::vector<std::string>&, char**&);
 size_t arg_table_count_data_type(std::vector<APTableEntry>&, APDataType);
 bool arg_table_is_required_arg(std::vector<APTableEntry>&, size_t);

@@ -163,6 +163,26 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     return buffer.str();
 }
 
+std::string APErrRsn_to_string(APErrRsn rsn){
+    switch (rsn){
+    case APErrRsn::MISSING_FIRST_DASH:
+        return "APErrRsn::MISSING_FIRST_DASH";
+    case APErrRsn::MISSING_REQUIRED_ARG:
+        return "APErrRsn::MISSING_REQUIRED_ARG";
+    case APErrRsn::UNKNOWN_ARGUMENT:
+        return "APErrRsn::UNKNOWN_ARGUMENT";
+    case APErrRsn::REPEATED_ARGUMENT:
+        return "APErrRsn::REPEATED_ARGUMENT";
+    case APErrRsn::MUST_BE_FLAG:
+        return "APErrRsn::MUST_BE_FLAG";
+    case APErrRsn::BAD_NUMERIC_VALUE:
+        return "APErrRsn::BAD_NUMERIC_VALUE";
+    default:
+        break;
+    }
+    return "APErrRsn::UNDEFINED";
+}
+
 void vector_to_char_array(std::vector<std::string>& input_vect, char**& output_char_arr){
     // Allocate the array of char pointers + 1 for the null terminator
     output_char_arr = new char*[input_vect.size() + 1];

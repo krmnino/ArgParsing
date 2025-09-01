@@ -90,7 +90,7 @@ class ArgParsing{
     void arg_abbr_form();
     void arg_full_form();
     void arg_value();
-    std::string& APErrRsn_to_string(APErrRsn);
+    std::string APErrRsn_to_string(APErrRsn);
     void display_error_msg();
     bool validate_flag_value(std::string&);
     

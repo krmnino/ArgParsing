@@ -29,7 +29,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     }
 
     // Set expected error code
-    scenario.exp_error_message = "ERROR: all argument identifiers must start with a dash (-).";
+    scenario.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
 
     // Initialize any arguments regardless if they are required or not
     n_initialized = 0;
@@ -60,7 +60,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
                 arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
             }
         }
-        
+
         // Generate data for arguments that need it
         switch (scenario.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:

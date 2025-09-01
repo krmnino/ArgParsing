@@ -24,7 +24,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
     }
 
     // Set expected error code
-    scenario.exp_error_message = "ERROR: the required argument --" + scenario.exp_argtab[rand_idx].full_form + " is missing.";
+    scenario.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_REQUIRED_ARG) + ": the required argument --" + scenario.exp_argtab[rand_idx].full_form + " is missing.";
 
     // Loop through sequentially and initialize all the required arguments first, except the one we picked for error injection
     n_initialized = 0;
