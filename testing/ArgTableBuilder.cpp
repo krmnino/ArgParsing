@@ -34,6 +34,7 @@ int build_initial_arg_table(Randomizer* rnd, TestcaseData& tdata){
 }
 
 int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APTableEntry new_entry;
     std::string result_str;
     uint32_t result_u32;
@@ -45,7 +46,6 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
     // APTableEntry.abbr_form -> Make it 50% of the time
     result_bool = rnd->gen_bool();
     if(result_bool){
-        invalid = false;
         attempt_counter = 0;
         while (true){
             // If counter expired, stop trying and return to the caller
@@ -53,9 +53,17 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
                 return -1;
             }
             result_str = rnd->gen_string(MAX_ABBR_FORM_ID_LEN, alphanum_dict);
+            invalid = false;
             // Prevent duplicates
             for(size_t j = 0; j < arg_table.size(); j++){
                 if(result_str == arg_table[j].abbr_form){
+                    invalid = true;
+                    break;
+                }
+            }
+            // No restricted identifier values
+            for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
+                if(result_str == valid_flag_values[i]){
                     invalid = true;
                     break;
                 }
@@ -65,13 +73,11 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
                 break;
             }
             // Loop back and try again
-            invalid = false;
             attempt_counter++;
         }
     }
 
     // APTableEntry.full_form
-    invalid = false;
     attempt_counter = 0;
     while (true){
         // If counter expired, stop trying and return to the caller
@@ -80,9 +86,17 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
         }
         result_u32 = rnd->gen_integral_range<uint32_t>(2, MAX_FULL_FORM_ID_LEN);
         result_str = rnd->gen_string(result_u32, alphanum_dict);
+        invalid = false;
         // Prevent duplicates
         for(size_t i = 0; i < arg_table.size(); i++){
             if(result_str == arg_table[i].full_form || result_str.size() < 2){
+                invalid = true;
+                break;
+            }
+        }
+        // No restricted identifier values
+        for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
+            if(result_str == valid_flag_values[i]){
                 invalid = true;
                 break;
             }
@@ -92,7 +106,6 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
             break;
         }
         // Loop back and try again
-        invalid = false;
         attempt_counter++;
     }
 
