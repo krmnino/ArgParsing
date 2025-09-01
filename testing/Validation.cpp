@@ -29,6 +29,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::REPEATED_ARGUMENT:
             validate_REPEATED_ARGUMENT_scenario(er, tc.s_arr[i]);
             break;
+        case ScenarioType::MUST_BE_FLAG:
+            validate_MUST_BE_FLAG_scenario(er, tc.s_arr[i]);
+            break;
         default:
         break;
         }

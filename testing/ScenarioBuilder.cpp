@@ -27,6 +27,8 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_REPEATED_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::MUST_BE_FLAG:
+        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        build_MUST_BE_FLAG_scenario(rnd, scenario);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
         break;
@@ -39,9 +41,6 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     default:
         break;
     }
-}
-
-void build_MUST_BE_FLAG_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
 }
 
 void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
