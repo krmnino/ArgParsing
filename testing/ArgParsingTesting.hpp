@@ -136,11 +136,6 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer*, ScenarioData&);
 void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
 
 
-// REPEATED_ARGUMENT_Scenario.cpp
-void build_REPEATED_ARGUMENT_scenario(Randomizer*, ScenarioData&);
-void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
-
-
 // MUST_BE_FLAG_Scenario.cpp
 void build_MUST_BE_FLAG_scenario(Randomizer*, ScenarioData&);
 void validate_MUST_BE_FLAG_scenario(ErrorReporter*, ScenarioData&);
