@@ -75,6 +75,9 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
     while(n_initialized < sc.n_args){
         // Pick a random argument from the table
         rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1); 
+        if(error_table_idx == (int32_t)rand_idx){
+            continue;
+        }
         if(sc.exp_argtab[rand_idx].initialized){
             continue;
         }
