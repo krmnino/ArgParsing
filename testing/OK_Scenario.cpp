@@ -33,7 +33,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         else{
             arg_id = "--" + scenario.exp_argtab[i].full_form;
         }
-        // Add it to the a accumulator
+        // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         // Mark randomly picked argument as initialized
         scenario.exp_argtab[i].initialized = true; 
@@ -55,7 +55,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         else{
             arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
         }
-        // Add it to the a accumulator
+        // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         // Mark randomly picked argument as initialized
         scenario.exp_argtab[rand_idx].initialized = true; 

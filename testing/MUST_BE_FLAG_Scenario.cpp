@@ -65,7 +65,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         else{
             arg_id = "--" + sc.exp_argtab[i].full_form;
         }
-        // Add it to the a accumulator
+        // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         sc.exp_argtab[i].initialized = true; 
         n_initialized++;
@@ -89,7 +89,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         else{
             arg_id = "--" + sc.exp_argtab[rand_idx].full_form;
         }
-        // Add it to the a accumulator
+        // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         // Mark randomly picked argument as initialized
         sc.exp_argtab[rand_idx].initialized = true; 
