@@ -258,8 +258,8 @@ void ArgParsing::arg_value(){
             else{
                 this->state = APState::ERROR;
                 this->reason = APErrRsn::BAD_NUMERIC_VALUE;
-                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 this->err_msg_data.push_back(value);
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 return;
             }
         }
@@ -270,8 +270,8 @@ void ArgParsing::arg_value(){
             else{
                 this->state = APState::ERROR;
                 this->reason = APErrRsn::BAD_NUMERIC_VALUE;
-                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 this->err_msg_data.push_back(value);
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 return;
             }
         }
@@ -347,6 +347,13 @@ void ArgParsing::display_error_msg(){
         std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
         #else
         this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
+        #endif
+        break;
+    case APErrRsn::BAD_NUMERIC_VALUE:    
+        #ifndef DEBUG
+        std::cerr << rsn_str << ": \"" << err_msg_data[0] << "\" provided to the argument " << err_msg_data[1] << " is not a valid numeric value.";
+        #else
+        this->error_msg = rsn_str + ": \"" + err_msg_data[0] + "\" provided to the argument " + err_msg_data[1] + " is not a valid numeric value.";
         #endif
         break;
     default:
