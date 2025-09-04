@@ -75,7 +75,7 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
     arg_id_accumulator.push_back(arg_id_accumulator[error_arg_n]);
     n_initialized++;
     
-    // Set expected error code
+    // Set expected error message 
     scenario.exp_error_message = APErrRsn_to_string(APErrRsn::REPEATED_ARGUMENT) + ": the provided argument " + arg_id_accumulator[error_arg_n] + " is repeated.";
 
     // Shuffle the arguments since required ones where picked first

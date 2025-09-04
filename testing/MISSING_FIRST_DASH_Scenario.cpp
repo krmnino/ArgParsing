@@ -28,7 +28,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
     }
 
-    // Set expected error code
+    // Set expected error message 
     scenario.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
 
     // Initialize any arguments regardless if they are required or not

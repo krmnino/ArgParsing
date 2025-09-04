@@ -12,7 +12,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
     int32_t arg_table_idx;
     bool result_bool;
    
-    // Set expected error code
+    // Set expected error message 
     scenario.exp_error_message = "";
 
     // Make room in the accumulator argv

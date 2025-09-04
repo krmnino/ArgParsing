@@ -51,7 +51,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
     shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
     error_arg_data_type = (APDataType)(1 << shifter);
 
-    // Set expected error code
+    // Set expected error message 
     scenario.exp_error_message = APErrRsn_to_string(APErrRsn::UNKNOWN_ARGUMENT) + ": the provided argument " + error_arg + " is an unknown.";
 
     // Loop through sequentially and initialize all the required arguments first

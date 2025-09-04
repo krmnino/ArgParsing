@@ -44,7 +44,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
     sc.exp_argtab[error_table_idx].initialized = true;
     n_initialized++;
 
-    // Set expected error code
+    // Set expected error message 
     sc.exp_error_message = APErrRsn_to_string(APErrRsn::MUST_BE_FLAG) + ": the provided argument " + arg_id + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
     
     // Loop through sequentially and initialize all the required arguments first
