@@ -31,6 +31,8 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_MUST_BE_FLAG_scenario(rnd, scenario);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
+        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        build_BAD_NUMERIC_VALUE_scenario(rnd, scenario);
         break;
     case ScenarioType::EMPTY_ARG_LIST:
         break;
