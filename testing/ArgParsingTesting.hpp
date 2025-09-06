@@ -12,6 +12,7 @@
 #define MAX_FULL_FORM_ID_LEN 10
 #define BUILD_MAX_ATTEMPTS 1000
 #define MAX_TEXT_ARG_LEN 128
+#define MAX_ARGS 100
 
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
@@ -44,7 +45,7 @@ class ScenarioData{
     std::string res_error_message;
     std::string exp_error_message;
     char** argv;
-    size_t n_args;
+    uint32_t n_args;
     int argc;
     ScenarioType type;
     ScenarioData() {}
@@ -93,12 +94,12 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool)
 
 
 // ArgTableBuilder.cpp
-int build_initial_arg_table(Randomizer*, std::vector<APTableEntry>&);
-int build_entry(Randomizer*, std::vector<APTableEntry>&);
+int32_t build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
+int32_t build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 
 // TestcaseBuilder.cpp
-int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
+int32_t build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 
 // ScenarioBuilder.cpp

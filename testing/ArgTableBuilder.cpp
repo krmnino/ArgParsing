@@ -3,9 +3,8 @@
 static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 
-int build_initial_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table){
+int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
     uint32_t attempt_counter;
-    uint32_t n_args = rnd->gen_integral_range<uint32_t>(0, 100);
                                   
     // Empty the vector and reserve space
     table.clear();
@@ -28,7 +27,7 @@ int build_initial_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table){
     return 0;
 }
 
-int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
+int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APTableEntry new_entry;
     std::string result_str;

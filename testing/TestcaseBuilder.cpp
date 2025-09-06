@@ -1,11 +1,13 @@
 #include "ArgParsingTesting.hpp"
 
-int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
+int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
     uint32_t scenario_type_pool;
     uint32_t picked_scenario_type;
     uint32_t attempt_counter;
     uint32_t shifter;
-    int ret;
+    uint32_t n_args;
+    int32_t ret;
+    bool invalid;
     
     // Set the number of scenarios for this testcase
     tdata.n_scenarios = n_scenarios;
@@ -13,17 +15,23 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
     // Attempt building a argument table and check scenarios that can be tested
     attempt_counter = 0;
     while(true){
+        invalid = false;
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
             return -1;
         }
-        ret = build_initial_arg_table(rnd, tdata.ini_argtab);
-        // If returned -1, try build another argument table
-        if(ret == -1){
-            continue;
+        n_args = rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
+        ret = build_arg_table(rnd, tdata.ini_argtab, n_args);
+        // If returned -1, set invalid on
+        if(ret != 0){
+            invalid = true;
         }
         scenario_type_pool = check_allowed_scenarios(tdata.ini_argtab, user_allowed_scenario_types);
-        // If returned scenario pool is zero/empty, try build another argument table
-        if(scenario_type_pool != 0x00000000){
+        // If returned scenario pool is zero/empty, set invalid on
+        if(scenario_type_pool == 0x00000000){
+            invalid = true;
+        }
+        // If invalid is not set, then stop right now
+        if(!invalid){
             break;
         }
         attempt_counter++;
