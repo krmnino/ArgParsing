@@ -3,27 +3,22 @@
 static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 
-int build_initial_arg_table(Randomizer* rnd, TestcaseData& tdata){
+int build_initial_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table){
     uint32_t attempt_counter;
     uint32_t n_args = rnd->gen_integral_range<uint32_t>(0, 100);
-    uint32_t allowed_dtypes = (uint32_t)APDataType::TEXT   |
-                              (uint32_t)APDataType::FLAG   |
-                              (uint32_t)APDataType::NUMBER;
                                   
     // Empty the vector and reserve space
-    tdata.ini_argtab.clear();
-    tdata.ini_argtab.reserve(n_args);
+    table.clear();
+    table.reserve(n_args);
 
-    // Allowed datatypes for testcase
-    tdata.allowed_data_types = allowed_dtypes;
-
+    // Attempt uilding entries one by one
     for(size_t i = 0; i < n_args; i++){
         attempt_counter = 0;
         while(true){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
                 return -1;
             }
-            if(build_entry(rnd, tdata.ini_argtab, allowed_dtypes) == 0){
+            if(build_entry(rnd, table) == 0){
                 break;
             }
             attempt_counter++;
@@ -33,7 +28,7 @@ int build_initial_arg_table(Randomizer* rnd, TestcaseData& tdata){
     return 0;
 }
 
-int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t enabled_data_types){
+int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APTableEntry new_entry;
     std::string result_str;
@@ -110,17 +105,7 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
     }
 
     // APTableEntry.data_type
-    attempt_counter = 0;
-    while(true){
-        if(attempt_counter > BUILD_MAX_ATTEMPTS){
-            return -1;
-        }
-        shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
-        if((enabled_data_types & (1 << shifter)) != 0){
-            break;
-        }
-        attempt_counter++;
-    }
+    shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
     new_entry.data_type = (APDataType)(1 << shifter);
 
     // APTableEntry.required -> Make it not required 60% of the time

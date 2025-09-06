@@ -93,8 +93,8 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool)
 
 
 // ArgTableBuilder.cpp
-int build_initial_arg_table(Randomizer*, TestcaseData&);
-int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
+int build_initial_arg_table(Randomizer*, std::vector<APTableEntry>&);
+int build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 
 // TestcaseBuilder.cpp

@@ -16,7 +16,7 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
             return -1;
         }
-        ret = build_initial_arg_table(rnd, tdata);
+        ret = build_initial_arg_table(rnd, tdata.ini_argtab);
         // If returned -1, try build another argument table
         if(ret == -1){
             continue;
