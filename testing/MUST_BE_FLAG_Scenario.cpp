@@ -96,7 +96,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         n_initialized++;
     }
 
-    // Shuffle the arguments since required ones where picked first
+    // Shuffle the arguments since required ones were picked first
     rnd->shuffle<std::string>(arg_id_accumulator);
 
     // Add the placeholder program name for the first element of argv

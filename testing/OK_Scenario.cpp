@@ -62,7 +62,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& scenario){
         n_initialized++;
     }
 
-    // Shuffle the arguments since required ones where picked first
+    // Shuffle the arguments since required ones were picked first
     rnd->shuffle<std::string>(arg_id_accumulator);
     
     // Add the placeholder program name for the first element of argv
