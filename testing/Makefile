@@ -15,6 +15,7 @@ SRC_FILES = $(SD)ArgParsing.cpp					\
 			REPEATED_ARGUMENT_Scenario.cpp		\
 			MUST_BE_FLAG_Scenario.cpp			\
 			BAD_NUMERIC_VALUE_Scenario.cpp		\
+			EMPTY_ARG_LIST_Scenario.cpp			\
 			Main.cpp
 
 OBJ_FILES = ArgParsing.o						\
@@ -30,6 +31,7 @@ OBJ_FILES = ArgParsing.o						\
 			REPEATED_ARGUMENT_Scenario.o		\
 			MUST_BE_FLAG_Scenario.o				\
 			BAD_NUMERIC_VALUE_Scenario.o		\
+			EMPTY_ARG_LIST_Scenario.o			\
 			Main.o
 
 all: compile link

@@ -4,37 +4,39 @@
 void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
     case ScenarioType::OK:
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
         build_OK_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
-        scenario.n_args = rnd->gen_integral_range<size_t>(1, scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(1, scenario.exp_argtab.size());
         build_MISSING_FIRST_DASH_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_REQUIRED_ARG:
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
         build_MISSING_REQUIRED_ARG_scenario(rnd, scenario);
         break;
     case ScenarioType::UNKNOWN_ARGUMENT:
         // Extra room (+1) for unknown argument
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size()) + 1;
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size()) + 1;
         build_UNKNOWN_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::REPEATED_ARGUMENT:
         // We need at least 1 argument to repeat it
         // Extra room (+1) for unknown argument
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab) + 1, scenario.exp_argtab.size()) + 1;
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab) + 1, scenario.exp_argtab.size()) + 1;
         build_REPEATED_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::MUST_BE_FLAG:
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
         build_MUST_BE_FLAG_scenario(rnd, scenario);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
-        scenario.n_args = rnd->gen_integral_range<size_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
         build_BAD_NUMERIC_VALUE_scenario(rnd, scenario);
         break;
     case ScenarioType::EMPTY_ARG_LIST:
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(1, MAX_ARGS);
+        build_EMPTY_ARG_LIST_scenario(rnd, scenario);
         break;
     case ScenarioType::VALID_FLAG_GROUP:
         break;
@@ -60,6 +62,7 @@ void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t input_allowed_scenarios){
     uint32_t mask;
     uint32_t allowed_scenarios;
+    size_t valid_args_for_group;
     
     // Allow everything first
     allowed_scenarios = (uint32_t)ScenarioType::OK                     |
@@ -119,7 +122,13 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     
     // Check if Scenarios::VALID_FLAG_GROUP scenario can be tested
     // Check if Scenarios::INVALID_FLAG_GROUP scenario can be tested
-    if(arg_table_count_type(arg_table, APDataType::FLAG) < 2){
+    valid_args_for_group = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].abbr_form != "" && arg_table[i].data_type == APDataType::FLAG){
+            valid_args_for_group++;
+        }
+    }
+    if(valid_args_for_group < 2){
         mask = ~(uint32_t)ScenarioType::VALID_FLAG_GROUP;
         allowed_scenarios = allowed_scenarios & mask;
         mask = ~(uint32_t)ScenarioType::INVALID_FLAG_GROUP;

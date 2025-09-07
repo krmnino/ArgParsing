@@ -35,6 +35,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::BAD_NUMERIC_VALUE:
             validate_BAD_NUMERIC_VALUE_scenario(er, tc.s_arr[i]);
             break;
+        case ScenarioType::EMPTY_ARG_LIST:
+            validate_EMPTY_ARG_LIST_scenario(er, tc.s_arr[i]);
+            break;
         default:
         break;
         }
