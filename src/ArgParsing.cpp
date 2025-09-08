@@ -370,9 +370,12 @@ bool ArgParsing::validate_flag_value(std::string& value){
     std::string arg_id;
     int table_idx;
     bool found; 
+    bool group_id; 
     bool arg_value_fn_quick_exit; 
+    
     arg_value_fn_quick_exit = false;
     found = false;
+    group_id = false;
     for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
         if(value == valid_flag_values[i]){
             found = true;
@@ -406,13 +409,16 @@ bool ArgParsing::validate_flag_value(std::string& value){
             arg_id = value.substr(2);
             table_idx = get_index_in_arg_table(arg_id, false);
         }
-        else{
+        else if(value.size() == 2){
             arg_id = value.substr(1);
             table_idx = get_index_in_arg_table(arg_id, true);
         }
+        else{
+            group_id = true;
+        }
         // Value is actually a valid argument identifier, initialize the previous FLAG
         // argument, then go analyze the next valid argument
-        if(table_idx != -1){
+        if(table_idx != -1 || group_id){
             this->state = APState::ARGV_BEGIN;
             arg_value_fn_quick_exit = true;
         }
