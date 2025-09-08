@@ -14,7 +14,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
     uint32_t result_u32;
     uint32_t shifter;
     int32_t arg_table_idx;
-    int error_arg_idx;
+    int32_t error_arg_idx;
     APDataType error_arg_data_type;
     APDataType arg_data_type;
     bool result_bool;

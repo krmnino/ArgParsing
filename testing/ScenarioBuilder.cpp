@@ -4,7 +4,7 @@
 void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
     case ScenarioType::OK:
-        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
         build_OK_scenario(rnd, scenario);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
@@ -27,11 +27,11 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_REPEATED_ARGUMENT_scenario(rnd, scenario);
         break;
     case ScenarioType::MUST_BE_FLAG:
-        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
         build_MUST_BE_FLAG_scenario(rnd, scenario);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
-        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab),scenario.exp_argtab.size());
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
         build_BAD_NUMERIC_VALUE_scenario(rnd, scenario);
         break;
     case ScenarioType::EMPTY_ARG_LIST:
@@ -39,24 +39,14 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_EMPTY_ARG_LIST_scenario(rnd, scenario);
         break;
     case ScenarioType::VALID_FLAG_GROUP:
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(2, scenario.exp_argtab.size());
+        build_VALID_FLAG_GROUP_scenario(rnd, scenario);
         break;
     case ScenarioType::INVALID_FLAG_GROUP:
         break;
     default:
         break;
     }
-}
-
-void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
-}
-
-void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
-}
-
-void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
-}
-
-void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, std::vector<APTableEntry>&){
 }
 
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t input_allowed_scenarios){

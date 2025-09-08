@@ -38,6 +38,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::EMPTY_ARG_LIST:
             validate_EMPTY_ARG_LIST_scenario(er, tc.s_arr[i]);
             break;
+        case ScenarioType::VALID_FLAG_GROUP:
+            validate_VALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
+            break;
         default:
         break;
         }
