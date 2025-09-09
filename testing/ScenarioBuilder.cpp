@@ -43,6 +43,8 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         build_VALID_FLAG_GROUP_scenario(rnd, scenario);
         break;
     case ScenarioType::INVALID_FLAG_GROUP:
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(2, scenario.exp_argtab.size());
+        build_INVALID_FLAG_GROUP_scenario(rnd, scenario);
         break;
     default:
         break;

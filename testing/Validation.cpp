@@ -41,6 +41,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::VALID_FLAG_GROUP:
             validate_VALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
             break;
+        case ScenarioType::INVALID_FLAG_GROUP:
+            validate_INVALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
+            break;
         default:
         break;
         }
