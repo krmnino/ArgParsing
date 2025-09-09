@@ -158,7 +158,7 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
             }
             break;    
         case APDataType::TEXT:
-            result_u32 = rnd->gen_integral_range<size_t>(1, MAX_TEXT_ARG_LEN);
+            result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
