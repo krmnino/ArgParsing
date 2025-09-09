@@ -5,9 +5,9 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
     for(size_t i = 0; i < tc.n_scenarios; i++){
         buffer = "ArgParsingTesting - " + ScenarioType_to_string(tc.s_arr[i].type);
         er->begin_test(buffer);
-        buffer = "SEED         : " + std::to_string(seed);
+        buffer = "SEED             : " + std::to_string(seed);
         er->log_it(buffer);
-        buffer = "PASS COUNTER : " + std::to_string(tc_counter);
+        buffer = "TESTCASE COUNTER : " + std::to_string(tc_counter);
         er->log_it(buffer);
         er->log_it(">>> START OF INITIAL ARGUMENT TABLE <<<");
         buffer = arg_table_to_string(tc.ini_argtab);

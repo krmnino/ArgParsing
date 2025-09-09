@@ -5,8 +5,10 @@
 #include "../res/Randomizer.hpp"
 #include "ErrorReporter.hpp"
 
+#include <atomic>
 #include <iostream>
 #include <sstream>
+#include <signal.h>
 
 #define MAX_ABBR_FORM_ID_LEN 1
 #define MAX_FULL_FORM_ID_LEN 10

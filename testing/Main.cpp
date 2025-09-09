@@ -1,8 +1,5 @@
 #include "ArgParsingTesting.hpp"
 
-#include <atomic>
-#include <signal.h>
-
 Randomizer* Randomizer::rnd_ptr = nullptr;
 ErrorReporter* ErrorReporter::er_ptr = nullptr;
 volatile sig_atomic_t running = true;
