@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <signal.h>
+#include <unordered_map>
 
 #define MAX_ABBR_FORM_ID_LEN 1
 #define MAX_FULL_FORM_ID_LEN 10
@@ -37,6 +38,16 @@ enum class ScenarioType {
     EMPTY_ARG_LIST        =  0x00000080,
     VALID_FLAG_GROUP      =  0x00000100,
     INVALID_FLAG_GROUP    =  0x00000200,
+};
+
+
+static std::unordered_map<std::string, std::string> valid_flag_values_dict = {
+    {"0"     , "0" },
+    {"false" , "0" },
+    {"FALSE" , "0" },
+    {"1"     , "1" },
+    {"true"  , "1" },
+    {"TRUE"  , "1" },
 };
 
 
