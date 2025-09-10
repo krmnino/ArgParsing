@@ -1,15 +1,18 @@
 #include "ArgParsingTesting.hpp"
 
 void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string value;
+    std::string flag_value;
     size_t rand_idx;
     size_t error_arg_idx;
     size_t n_initialized;
     size_t error_arg_n;
     uint32_t result_u32;
     bool result_bool;
+        bool use_flag_value;
 
     // Add the placeholder program name for the first element of argv
     scenario.argc = 0;
@@ -62,6 +65,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
 
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (scenario.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
@@ -78,8 +82,17 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
-            break;    
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
+            break;     
         default:
             break;
         }
@@ -93,6 +106,9 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         if(scenario.exp_argtab[rand_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(scenario.exp_argtab[rand_idx].data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
 
         // Update argc appropiately
         switch (scenario.exp_argtab[rand_idx].data_type){
@@ -101,7 +117,12 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            scenario.argc++;
+            if(use_flag_value){
+                scenario.argc += 2;
+            }
+            else{
+                scenario.argc++;
+            }
             break;
         default:
             break;

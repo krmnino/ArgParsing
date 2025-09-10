@@ -28,17 +28,20 @@ std::string generate_bad_number(Randomizer* rnd){
 }
 
 void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     size_t rand_idx;
     size_t n_initialized;
     uint32_t result_u32;
     int32_t error_table_idx;
     int32_t arg_table_idx;
     bool result_bool;
+    bool use_flag_value;
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -139,6 +142,7 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
             arg_table_idx = arg_table_find_arg_index(sc.exp_argtab, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (sc.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
             // It is time to inject the error
@@ -162,8 +166,17 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
-            break;    
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
+            break;      
         default:
             break;
         }
@@ -174,6 +187,10 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
         if(sc.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(sc.exp_argtab[arg_table_idx].data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (sc.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
@@ -181,7 +198,12 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
             sc.argc += 2;
             break;
         case APDataType::FLAG:
-            sc.argc++;
+            if(use_flag_value){
+                sc.argc += 2;
+            }
+            else{
+                sc.argc++;
+            }
             break;
         default:
             break;

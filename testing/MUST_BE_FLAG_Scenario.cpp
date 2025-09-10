@@ -7,6 +7,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     size_t rand_idx;
     size_t n_initialized;
     uint32_t result_u32;
@@ -17,6 +18,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
     APDataType arg_data_type;
     bool result_bool;
     bool invalid;
+    bool use_flag_value;
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -136,6 +138,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
 
         // Generate data for arguments that need it
         while(true){
+            use_flag_value = false;
             switch (arg_data_type){
             case APDataType::NUMBER:
                 // Pick between hex or decimal
@@ -152,12 +155,26 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
                 value = rnd->gen_string(result_u32, nullptr);
                 break;    
             case APDataType::FLAG:
-                value = "1";
+                use_flag_value = rnd->gen_bool();
+                // Whether to include a value for FLAG argument or not
+                if(use_flag_value){
+                    result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                    flag_value = valid_flag_values[result_u32];
+                    value = valid_flag_values_dict.at(flag_value);
+                }
+                else{
+                    value = "1";
+                }
                 break;    
             default:
                 break;
             }
 
+            // If current argument is not the inject error argument, exit right away
+            if(arg_table_idx != error_table_idx){
+                break;
+            }
+            
             // Validate picked value for argument, this is done to isolate testing to just MUST_BE_FLAG
             invalid = false;
             // Value's first character cannot be a dash (-)
@@ -165,12 +182,10 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
                 invalid = true;
             }
             // Value cannot match one of the valid FLAG values (only applies for FLAG argument injecting the error)
-            if(arg_table_idx == error_table_idx){
-                for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
-                    if(value == valid_flag_values[i]){
-                        invalid = true;
-                        break;
-                    }
+            for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
+                if(value == valid_flag_values[i]){
+                    invalid = true;
+                    break;
                 }
             }
             // Value should not match any of the argument identifiers
@@ -183,11 +198,16 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         }
         // Set argument value
         sc.exp_argtab[arg_table_idx].value = value;
+        
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(arg_data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(arg_data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (arg_data_type){
         case APDataType::NUMBER:
@@ -195,7 +215,12 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
             sc.argc += 2;
             break;
         case APDataType::FLAG:
-            sc.argc++;
+            if(use_flag_value){
+                sc.argc += 2;
+            }
+            else{
+                sc.argc++;
+            }
             break;
         default:
             break;

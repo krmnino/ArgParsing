@@ -1,17 +1,20 @@
 #include "ArgParsingTesting.hpp"
 
 void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     size_t rand_idx;
     size_t error_arg_idx;
     size_t n_initialized;
     uint32_t result_u32;
     int32_t arg_table_idx;
     bool result_bool;
+    bool use_flag_value;
 
     // Find which argument to inject error
     while(true){
@@ -96,6 +99,7 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
@@ -112,18 +116,33 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
             break;    
         default:
             break;
         }
+
         // Set argument value
         scenario.exp_argtab[arg_table_idx].value = value;
+
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(scenario.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(scenario.exp_argtab[arg_table_idx].data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
@@ -131,7 +150,12 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& scenario
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            scenario.argc++;
+            if(use_flag_value){
+                scenario.argc += 2;
+            }
+            else{
+                scenario.argc++;
+            }
             break;
         default:
             break;

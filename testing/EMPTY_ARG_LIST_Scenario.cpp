@@ -1,12 +1,14 @@
 #include "ArgParsingTesting.hpp"
 
 void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<APTableEntry> non_empty_table;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     size_t n_initialized;
     uint32_t attempt_counter;
     uint32_t result_u32;
@@ -14,6 +16,7 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
     int32_t ret;
     bool result_bool;
     bool invalid;
+    bool use_flag_value;
     
     // Generate non-empty argument table 
     attempt_counter = 0;
@@ -75,6 +78,7 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
             arg_table_idx = arg_table_find_arg_index(non_empty_table, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (non_empty_table[arg_table_idx].data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
@@ -91,16 +95,30 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
             break;    
         default:
             break;
         }
+
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(non_empty_table[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(non_empty_table[arg_table_idx].data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (non_empty_table[arg_table_idx].data_type){
         case APDataType::NUMBER:
@@ -108,7 +126,12 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
             sc.argc += 2;
             break;
         case APDataType::FLAG:
-            sc.argc++;
+            if(use_flag_value){
+                sc.argc += 2;
+            }
+            else{
+                sc.argc++;
+            }
             break;
         default:
             break;

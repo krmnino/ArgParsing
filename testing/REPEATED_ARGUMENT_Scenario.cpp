@@ -1,17 +1,20 @@
 #include "ArgParsingTesting.hpp"
 
 void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     size_t rand_idx;
     size_t n_initialized;
     size_t error_arg_n;
     uint32_t result_u32;
     int32_t arg_table_idx;
     bool result_bool;
+    bool use_flag_value;
    
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(scenario.n_args);
@@ -24,14 +27,9 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[i].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[i].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[i].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[i].full_form;
@@ -51,14 +49,9 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
@@ -100,6 +93,7 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             arg_table_idx = arg_table_find_arg_index(scenario.exp_argtab, no_dashes_arg_id, true);
         }
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
@@ -116,20 +110,35 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
-            break;    
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
+            break;   
         default:
             break;
         }
+
         // Set argument value (only for the non-repeated ones)
         if(!scenario.exp_argtab[arg_table_idx].initialized){
             scenario.exp_argtab[arg_table_idx].value = value;
         }
+
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(scenario.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(scenario.exp_argtab[arg_table_idx].data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (scenario.exp_argtab[arg_table_idx].data_type){
         case APDataType::NUMBER:
@@ -137,7 +146,12 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            scenario.argc++;
+            if(use_flag_value){
+                scenario.argc += 2;
+            }
+            else{
+                scenario.argc++;
+            }
             break;
         default:
             break;

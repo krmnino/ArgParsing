@@ -3,11 +3,13 @@
 static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
     std::string value;
+    std::string flag_value;
     std::string error_arg;
     size_t rand_idx;
     size_t n_initialized;
@@ -18,6 +20,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
     APDataType error_arg_data_type;
     APDataType arg_data_type;
     bool result_bool;
+    bool use_flag_value;
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(scenario.n_args);
@@ -61,14 +64,9 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[i].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[i].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, i) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[i].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[i].full_form;
@@ -88,14 +86,9 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
-            }
-            else{
-                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
-            }
+        result_bool = rnd->gen_bool();
+        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx) && result_bool){
+            arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
         }
         else{
             arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
@@ -135,6 +128,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             arg_data_type = scenario.exp_argtab[arg_table_idx].data_type;
         }
         // Generate data for arguments that need it
+        use_flag_value = false;
         switch (arg_data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
@@ -151,20 +145,35 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             value = rnd->gen_string(result_u32, nullptr);
             break;    
         case APDataType::FLAG:
-            value = "1";
+            use_flag_value = rnd->gen_bool();
+            // Whether to include a value for FLAG argument or not
+            if(use_flag_value){
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                flag_value = valid_flag_values[result_u32];
+                value = valid_flag_values_dict.at(flag_value);
+            }
+            else{
+                value = "1";
+            }
             break;    
         default:
             break;
         }
+        
         // Set argument value (only for valid arguments)
         if(arg_id != error_arg){
             scenario.exp_argtab[arg_table_idx].value = value;
         }
+
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(arg_data_type != APDataType::FLAG){
             argv.push_back(value);
         }
+        else if(arg_data_type == APDataType::FLAG && use_flag_value){
+            argv.push_back(flag_value);
+        }
+
         // Update argc appropiately
         switch (arg_data_type){
         case APDataType::NUMBER:
@@ -172,7 +181,12 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& scenario){
             scenario.argc += 2;
             break;
         case APDataType::FLAG:
-            scenario.argc++;
+            if(use_flag_value){
+                scenario.argc += 2;
+            }
+            else{
+                scenario.argc++;
+            }
             break;
         default:
             break;
