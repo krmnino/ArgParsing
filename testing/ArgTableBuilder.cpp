@@ -1,8 +1,5 @@
 #include "ArgParsingTesting.hpp"
 
-static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-
 int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
     uint32_t attempt_counter;
                                   
@@ -28,6 +25,7 @@ int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint
 }
 
 int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
+    const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APTableEntry new_entry;
     std::string result_str;

@@ -1,8 +1,7 @@
 #include "ArgParsingTesting.hpp"
 
-static const char* alphanum_dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, ScenarioData& sc){
+    const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> arg_id_accumulator;
     std::vector<std::string> argv;

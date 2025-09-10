@@ -1,6 +1,6 @@
 #include "ArgParsingTesting.hpp"
 
-void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
+void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     std::vector<std::string> argv;
     std::string arg_id;
@@ -15,58 +15,58 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         bool use_flag_value;
 
     // Add the placeholder program name for the first element of argv
-    scenario.argc = 0;
+    sc.argc = 0;
     argv.push_back("PGM_PLACEHOLDER");
-    scenario.argc++;
+    sc.argc++;
     
     // Find which argument to inject error and when to do it
     while(true){
         // Pick a random argument
-        rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1);
-        if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx)){
+        rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1);
+        if(arg_table_is_abbr_form_available(sc.exp_argtab, rand_idx)){
             error_arg_idx = rand_idx;
             // Find a spot when to inject it
-            error_arg_n = rnd->gen_integral_range<size_t>(0, scenario.n_args - 1);
+            error_arg_n = rnd->gen_integral_range<size_t>(0, sc.n_args - 1);
             break;
         }
     }
 
     // Set expected error message 
-    scenario.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
+    sc.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
 
     // Initialize any arguments regardless if they are required or not
     n_initialized = 0;
-    while(n_initialized < scenario.n_args){
+    while(n_initialized < sc.n_args){
         // Is it time to inject the error? If so, get the index from earlier
         if(n_initialized == error_arg_n){
             rand_idx = error_arg_idx;
         }
         else{
             // Pick a random argument from the table
-            rand_idx = rnd->gen_integral_range<size_t>(0, scenario.exp_argtab.size() - 1); 
-            if(scenario.exp_argtab[rand_idx].initialized || rand_idx == error_arg_idx){
+            rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1); 
+            if(sc.exp_argtab[rand_idx].initialized || rand_idx == error_arg_idx){
                 continue;
             }
         }
 
         // Is it time to inject the error?
         if(n_initialized == error_arg_n){
-            arg_id = scenario.exp_argtab[rand_idx].abbr_form;
+            arg_id = sc.exp_argtab[rand_idx].abbr_form;
         }
         else{
             // If argument has abbreviated form, then use it 50% of the times
             result_bool = rnd->gen_bool();
-            if(arg_table_is_abbr_form_available(scenario.exp_argtab, rand_idx) && result_bool){
-                arg_id = "-" + scenario.exp_argtab[rand_idx].abbr_form;
+            if(arg_table_is_abbr_form_available(sc.exp_argtab, rand_idx) && result_bool){
+                arg_id = "-" + sc.exp_argtab[rand_idx].abbr_form;
             }
             else{
-                arg_id = "--" + scenario.exp_argtab[rand_idx].full_form;
+                arg_id = "--" + sc.exp_argtab[rand_idx].full_form;
             }
         }
 
         // Generate data for arguments that need it
         use_flag_value = false;
-        switch (scenario.exp_argtab[rand_idx].data_type){
+        switch (sc.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
             // Pick between hex or decimal
             result_bool = rnd->gen_bool();
@@ -98,30 +98,30 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
         }
 
         // Update the expected argument table
-        scenario.exp_argtab[rand_idx].initialized = true; 
-        scenario.exp_argtab[rand_idx].value = value;
+        sc.exp_argtab[rand_idx].initialized = true; 
+        sc.exp_argtab[rand_idx].value = value;
 
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
-        if(scenario.exp_argtab[rand_idx].data_type != APDataType::FLAG){
+        if(sc.exp_argtab[rand_idx].data_type != APDataType::FLAG){
             argv.push_back(value);
         }
-        else if(scenario.exp_argtab[rand_idx].data_type == APDataType::FLAG && use_flag_value){
+        else if(sc.exp_argtab[rand_idx].data_type == APDataType::FLAG && use_flag_value){
             argv.push_back(flag_value);
         }
 
         // Update argc appropiately
-        switch (scenario.exp_argtab[rand_idx].data_type){
+        switch (sc.exp_argtab[rand_idx].data_type){
         case APDataType::NUMBER:
         case APDataType::TEXT:
-            scenario.argc += 2;
+            sc.argc += 2;
             break;
         case APDataType::FLAG:
             if(use_flag_value){
-                scenario.argc += 2;
+                sc.argc += 2;
             }
             else{
-                scenario.argc++;
+                sc.argc++;
             }
             break;
         default:
@@ -132,7 +132,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& scenario){
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, scenario.argv);
+    vector_to_char_array(argv, sc.argv);
 }
 
 void validate_MISSING_FIRST_DASH_scenario(ErrorReporter* er, ScenarioData& sc){
