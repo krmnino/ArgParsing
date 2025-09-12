@@ -25,33 +25,36 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 
 ### `ArgParsing* ArgParsing_get_instance()`
 
-- Input arguments:
-- Output:
+- **Input arguments**: none.
+- **Output**: a pointer to the allocated singleton ArgParsing object.
+- This method will allocate a single instance of the `ArgParsing` class. Only one instance of the `ArgParsing` class is allowed to exist throughout the execution of the program.
 
 ### `void set_input_args(int input_argc, char** input_argv)`
 
-- Input arguments:
-- Output:
+- **Input arguments**:
+  - `input_argc`: the number of C strings in program's argv to be passed to the `ArgParsing` object.
+  - `input_argv`: an array of pointers to C strings to be passed to the `ArgParsing` object. 
+- **Output**: none.
 
 ### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
 
-- Input arguments:
-- Output:
+- **Input arguments**:
+- **Output**:
 
 ### `int set_arg_table(std::vector<APTableEntry>& arg_table)`
 
-- Input arguments:
-- Output:
+- **Input arguments**:
+- **Output**:
 
 ### `int parse()`
 
-- Input arguments:
-- Output:
+- **Input arguments**:
+- **Output**:
 
 ### `std::string get_arg_value(std::string arg_key, bool is_abbr_input)`
 
-- Input arguments:
-- Output:
+- **Input arguments**:
+- **Output**:
 
 ## Changelog
 
