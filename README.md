@@ -33,13 +33,16 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 
 - **Input arguments**:
   - `input_argc`: the number of C strings in program's argv to be passed to the `ArgParsing` object.
-  - `input_argv`: an array of pointers to C strings to be passed to the `ArgParsing` object. 
+  - `input_argv`: an array of pointers to C strings to be passed to the `ArgParsing` object.
 - **Output**: none.
+- This method will assign the pointer to the array of strings containing the program's argument list (argv) and how many of them are in the list (argc) to the `ArgParsing` instance.
 
 ### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
 
-- **Input arguments**:
-- **Output**:
+- **Input arguments**: Pointer to an array of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
+- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message.
+- This method will initialize an argument table in the `ArgParsing` object. This table of arguments will be used to validate the program's command line arguments and hold their values once parsed and validated.
+- This function performs validation to prevent duplicate argument identifiers, use of reserved keywords, etc.
 
 ### `int set_arg_table(std::vector<APTableEntry>& arg_table)`
 
