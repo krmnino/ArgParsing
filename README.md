@@ -21,7 +21,7 @@ A simple command-line argument parser library for C++ programs.
 
 ## Usage
 
-The file `testing/ArgParsingExample.cpp` is an integration example on how the `ArgParsing` library can be integrated and used within a C++ program.
+The file `testing/ArgParsingExample.cpp` is an integration example on how the `ArgParsing` library can be used within a C++ program.
 
 Below you will find the publicly exposed methods belonging to the `ArgParsing` class.
 
