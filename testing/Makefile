@@ -38,6 +38,8 @@ OBJ_FILES = ArgParsing.o						\
 			INVALID_FLAG_GROUP_Scenario.o		\
 			Main.o
 
+###################################################################################################
+
 all: compile link
 
 compile:
@@ -46,6 +48,9 @@ compile:
 link: 
 	g++ $(OBJ_FILES) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\
 					 -o $(BD)argparsing
+
+single:
+	g++ -g -c -Wall -std=c++17 $(FILE) -D DEBUG
 
 test:
 	g++ -g -std=c++17 ../src/ArgParsing.cpp Test.cpp -o $(BD)argtest
