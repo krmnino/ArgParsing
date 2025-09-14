@@ -21,6 +21,8 @@ A simple command-line argument parser library for C++ programs.
 
 ## Usage
 
+The file `testing/ArgParsingExample.cpp` is an integration example on how the `ArgParsing` library can be integrated and used within a C++ program.
+
 Below you will find the publicly exposed methods belonging to the `ArgParsing` class.
 
 ### `ArgParsing* ArgParsing_get_instance()`
@@ -40,24 +42,28 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 ### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
 
 - **Input arguments**: Pointer to an array of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
-- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message.
+- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message is reported.
 - This method will initialize an argument table in the `ArgParsing` object. This table of arguments will be used to validate the program's command line arguments and hold their values once parsed and validated.
-- This function performs validation to prevent duplicate argument identifiers, use of reserved keywords, etc.
+- This method performs validation to prevent duplicate argument identifiers, use of reserved keywords, etc.
 
 ### `int set_arg_table(std::vector<APTableEntry>& arg_table)`
 
-- **Input arguments**:
-- **Output**:
+- **Input arguments**: Reference to a vector of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
+- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message.
+- Method overloading, calls `set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`.
 
 ### `int parse()`
 
-- **Input arguments**:
-- **Output**:
+- **Input arguments**: none.
+- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message is reported.
+- This method will parse the program's command line arguments set by `set_input_args()` method and and validate them against the argument table established `set_arg_table()` method.
+- When an error is encontered, the `ArgParsing` object will switch to an error state and reason for error is set.
+- An informational message is reported describing the cause of the error.
 
 ### `std::string get_arg_value(std::string arg_key, bool is_abbr_input)`
 
-- **Input arguments**:
-- **Output**:
+- **Input arguments**: a string containing the argument identifier plus a flag indicating whether the argument identifier string is in abbreviated or full form.
+- **Output**: a string representing the argument value will be returned if `ArgParsing`'s argument table has an entry with an argument identifier that matches the input argument.
 
 ## Changelog
 
