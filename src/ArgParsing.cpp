@@ -245,7 +245,7 @@ void ArgParsing::arg_value(){
     std::string value;
     value = this->argv[this->argv_idx];
     switch(this->arg_table[this->eval_arg_idx].data_type){
-    case APDataType::NUMBER:
+    case APDataType::UNSIGNED_INT:
         // Check if it is a hexadecimal value.
         // If so, validate it. Otherwise validate it as decimal
         if(value.size() >= 2){
@@ -521,8 +521,8 @@ void ArgParsing::display_arg_table(){
         case APDataType::FLAG:
             data_type_str = "FLAG";
             break;        
-        case APDataType::NUMBER:
-            data_type_str = "NUMBER";
+        case APDataType::UNSIGNED_INT:
+            data_type_str = "UNSIGNED_INT";
             break;        
         case APDataType::TEXT:
             data_type_str = "TEXT";

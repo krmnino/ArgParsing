@@ -28,9 +28,10 @@ enum class APErrRsn {
 
 
 enum class APDataType {
-    TEXT   = 0x00000001,
-    NUMBER = 0x00000002,
-    FLAG   = 0x00000004,
+    TEXT         = 0x00000001,
+    UNSIGNED_INT = 0x00000002,
+    FLAG         = 0x00000004,
+    SIGNED_INT   = 0x00000008,
 };
 #ifdef DEBUG
 #define MAX_TYPES (uint32_t)3
@@ -42,7 +43,10 @@ struct APTableEntry {
     std::string value;
     union data{
         std::string* text;
-        uint64_t number;
+        union intdata{
+            uint64_t number_u64;
+            int64_t  number_i64;
+        };
         bool flag;
     };
     typedef union data data;
@@ -119,6 +123,32 @@ class ArgParsing{
     int set_arg_table(std::vector<APTableEntry>&);
     int parse();
     std::string get_arg_value(std::string, bool);
+    
+    template<typename T> T get_arg_value(std::string, bool){
+        APDataType ret_data_type;
+        T ret_value{};
+        if constexpr (std::is_integral<T>::value) {
+            //if constexpr (std::is_signed<T>::value) {
+            //    ret_data_type = DataType::SINT;
+            //}
+            //else{
+            //    input_data_type = DataType::UINT;
+            //}
+            ret_data_type = APDataType::UNSIGNED_INT;
+        }
+        else if constexpr (std::is_base_of<std::string, T>::value) {
+            ret_data_type = APDataType::TEXT;
+        }
+        else if constexpr (std::is_same<T, const char*>::value) {
+            ret_data_type = APDataType::TEXT;
+        }
+        else if constexpr (std::is_same<T, bool>::value) {
+            ret_data_type = APDataType::FLAG;
+        }
+        else {
+            return ret_value;
+        }
+    }
 };
 
 #endif
