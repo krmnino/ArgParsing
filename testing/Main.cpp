@@ -27,11 +27,11 @@ int main(int argc, char* argv[]){
 
     // Program argument table 
     APTableEntry arg_table[] = {
-        { "s", "seed"       , APDataType::NUMBER  , true  },
-        { "n", "n_tests"    , APDataType::NUMBER  , true  },
-        { "c", "n_scenarios", APDataType::NUMBER  , true  },
-        { "t", "types"      , APDataType::NUMBER  , true  },
-        { "r", "trace"      , APDataType::FLAG    , false },
+        { "s", "seed"       , APDataType::UNSIGNED_INT , true  },
+        { "n", "n_tests"    , APDataType::UNSIGNED_INT , true  },
+        { "c", "n_scenarios", APDataType::UNSIGNED_INT , true  },
+        { "t", "types"      , APDataType::UNSIGNED_INT , true  },
+        { "r", "trace"      , APDataType::FLAG         , false },
     };
     
     // Start the argument parser
