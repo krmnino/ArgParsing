@@ -37,28 +37,36 @@ enum class APDataType {
 #define MAX_TYPES (uint32_t)3
 #endif
 
+union data {
+    std::string* text;
+    union intdata{
+        uint64_t number_u64;
+        int64_t  number_i64;
+    } intdata;
+    bool flag;
+};
+
 struct APTableEntry {
     std::string abbr_form;
     std::string full_form;
-    std::string value;
-    union data{
-        std::string* text;
-        union intdata{
-            uint64_t number_u64;
-            int64_t  number_i64;
-        };
-        bool flag;
-    };
-    typedef union data data;
+    union data data;
     APDataType data_type;
     bool required;
     bool initialized;
+
     APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
+
     APTableEntry(std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(""), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
+
     APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::TEXT), required(false), initialized(false) {}
-    ~APTableEntry() {}
+    
+    ~APTableEntry() {
+        if(this->initialized && this->data_type == APDataType::TEXT){
+            delete this->data.text;
+        }
+    }
 };
 typedef struct APTableEntry APTableEntry;
 
