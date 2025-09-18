@@ -167,7 +167,7 @@ void ArgParsing::arg_abbr_form(){
         }
         // Set FLAG argument value to true
         if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
-            this->arg_table[this->eval_arg_idx].value = "1";
+            this->arg_table[this->eval_arg_idx].data.flag = true;
         }
         // Set to initialized and update state
         this->arg_table[this->eval_arg_idx].initialized = true;
@@ -201,7 +201,7 @@ void ArgParsing::arg_abbr_form(){
                 this->err_msg_data.push_back("-" + abbr_arg);
                 return;    
             }
-            this->arg_table[this->eval_arg_idx].value = "1";
+            this->arg_table[this->eval_arg_idx].data.flag = true;
             this->arg_table[this->eval_arg_idx].initialized = true;
         }
         this->state = APState::ARGV_BEGIN;
@@ -231,7 +231,7 @@ void ArgParsing::arg_full_form(){
     }    
     // Set FLAG argument value to true
     if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
-        this->arg_table[this->eval_arg_idx].value = "1";
+        this->arg_table[this->eval_arg_idx].data.flag = true;
     }
 
     // Set to initialized and update state
@@ -250,10 +250,11 @@ void ArgParsing::arg_value(){
         // If so, validate it. Otherwise validate it as decimal
         if(value.size() >= 2){
             if(this->is_valid_hex(value)){
-                this->arg_table[this->eval_arg_idx].value = value;
+                value = value.substr(2);
+                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value, nullptr, 16);
             }
             else if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].value = value;
+                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -265,7 +266,7 @@ void ArgParsing::arg_value(){
         }
         else{
             if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].value = value;
+                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -277,7 +278,7 @@ void ArgParsing::arg_value(){
         }
         break;
     case APDataType::TEXT:
-        this->arg_table[this->eval_arg_idx].value = value;
+        this->arg_table[this->eval_arg_idx].data.text = new std::string(value);
         break;
     case APDataType::FLAG:
         if(this->validate_flag_value(value)){
@@ -389,18 +390,18 @@ bool ArgParsing::validate_flag_value(std::string& value){
         if(this->prev_argv_element[1] == '-'){
             prev_arg_id = this->prev_argv_element.substr(2);
             table_idx = get_index_in_arg_table(prev_arg_id, false);
-            this->arg_table[table_idx].value = "1";
+            this->arg_table[table_idx].data.flag = true;
         }
         else{
             prev_arg_id = this->prev_argv_element.substr(1);
             table_idx = get_index_in_arg_table(prev_arg_id, true);
-            this->arg_table[table_idx].value = "1";
+            this->arg_table[table_idx].data.flag = true;
         }
         if(value == "1" || value == "true" || value == "TRUE"){
-            this->arg_table[table_idx].value = "1";
+            this->arg_table[table_idx].data.flag = true;
         }
         else{
-            this->arg_table[table_idx].value = "0";
+            this->arg_table[table_idx].data.flag = false;
         }
     }
     // Check if it is a valid abbreviated/full form identifier that can be processed
@@ -485,21 +486,21 @@ int ArgParsing::parse(){
     return 0;
 }
 
-std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
-    for(size_t i = 0; i < this->arg_table.size(); i++){
-        if(is_abbr_input){
-            if(this->arg_table[i].abbr_form == arg_key){
-                return this->arg_table[i].value;
-            }
-        }
-        else{
-            if(this->arg_table[i].full_form == arg_key){
-                return this->arg_table[i].value;
-            }    
-        }
-    }
-    return "";
-}
+//std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
+//    for(size_t i = 0; i < this->arg_table.size(); i++){
+//        if(is_abbr_input){
+//            if(this->arg_table[i].abbr_form == arg_key){
+//                return this->arg_table[i].value;
+//            }
+//        }
+//        else{
+//            if(this->arg_table[i].full_form == arg_key){
+//                return this->arg_table[i].value;
+//            }    
+//        }
+//    }
+//    return "";
+//}
 
 #ifdef DEBUG
 void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
@@ -512,6 +513,7 @@ void ArgParsing::get_error_msg(std::string& target){
 
 void ArgParsing::display_arg_table(){
     std::string data_type_str;
+    std::string value_str;
     std::string required_str;
     std::string initialized_str;
     for(size_t i = 0; i < this->arg_table.size(); i++){
@@ -524,6 +526,9 @@ void ArgParsing::display_arg_table(){
         case APDataType::UNSIGNED_INT:
             data_type_str = "UNSIGNED_INT";
             break;        
+        case APDataType::SIGNED_INT:
+            data_type_str = "SIGNED_INT";
+            break;        
         case APDataType::TEXT:
             data_type_str = "TEXT";
             break;        
@@ -532,7 +537,34 @@ void ArgParsing::display_arg_table(){
             break;
         }
         std::cout << "Data Type:        " << data_type_str << std::endl;
-        std::cout << "Value:            " << this->arg_table[i].value << std::endl;
+        if(this->arg_table[i].initialized){
+            switch (this->arg_table[i].data_type){
+            case APDataType::FLAG:
+                if(this->arg_table[i].data.flag){
+                    value_str = "true";
+                }
+                else{
+                    value_str = "false";
+                }
+                break;        
+            case APDataType::UNSIGNED_INT:
+                value_str = std::to_string(this->arg_table[i].data.intdata.number_u64);
+                break;        
+            case APDataType::SIGNED_INT:
+                value_str = std::to_string(this->arg_table[i].data.intdata.number_i64);
+                break;        
+            case APDataType::TEXT:
+                value_str = *this->arg_table[i].data.text;
+                break;        
+            default:
+                value_str = "";
+                break;
+            }
+        }
+        else{
+            value_str = "";
+        }
+        std::cout << "Value:            " << value_str << std::endl;
         if(this->arg_table[i].required){
             required_str = "TRUE";
         }
