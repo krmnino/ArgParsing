@@ -6,8 +6,9 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     std::vector<std::string> argv;
     std::string arg_id;
     std::string no_dashes_arg_id;
-    std::string value;
+    std::string value_for_argv;
     std::string flag_value;
+    union data value{};
     size_t rand_idx;
     size_t n_initialized;
     size_t error_arg_n;
@@ -95,19 +96,21 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
         // Generate data for arguments that need it
         use_flag_value = false;
         switch (sc.exp_argtab[arg_table_idx].data_type){
-        case APDataType::NUMBER:
+        case APDataType::UNSIGNED_INT:
+            value.intdata.number_u64 = rnd->gen_integral<uint64_t>();
             // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
-                value = integer_to_hex_string(rnd->gen_integral<int64_t>());
+                value_for_argv = integer_to_hex_string(value.intdata.number_u64);
             }
             else{
-                value = std::to_string(rnd->gen_integral<int64_t>());
+                value_for_argv = std::to_string(value.intdata.number_u64);
             }
-            break;    
+            break;  
         case APDataType::TEXT:
             result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
-            value = rnd->gen_string(result_u32, nullptr);
+            value.text = new std::string(rnd->gen_string(result_u32, nullptr));
+            value_for_argv = *value.text;
             break;    
         case APDataType::FLAG:
             use_flag_value = rnd->gen_bool();
@@ -115,11 +118,9 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             if(use_flag_value){
                 result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
                 flag_value = valid_flag_values[result_u32];
-                value = valid_flag_values_dict.at(flag_value);
+                value_for_argv = valid_flag_values_dict.at(flag_value);
             }
-            else{
-                value = "1";
-            }
+            value.flag = true;
             break;   
         default:
             break;
@@ -127,13 +128,28 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
 
         // Set argument value (only for the non-repeated ones)
         if(!sc.exp_argtab[arg_table_idx].initialized){
-            sc.exp_argtab[arg_table_idx].value = value;
+            switch(sc.exp_argtab[arg_table_idx].data_type){
+            case APDataType::UNSIGNED_INT:
+                sc.exp_argtab[arg_table_idx].data.intdata.number_u64 = value.intdata.number_u64;
+                break;
+            case APDataType::SIGNED_INT:
+                sc.exp_argtab[arg_table_idx].data.intdata.number_i64 = value.intdata.number_i64;
+                break;
+            case APDataType::TEXT:
+                sc.exp_argtab[arg_table_idx].data.text = new std::string(*value.text);
+                break;
+            case APDataType::FLAG:
+                sc.exp_argtab[arg_table_idx].data.flag = value.flag;
+                break;
+            default:
+                break;
+            }
         }
 
         // Update the argv vector with argument we just created
         argv.push_back(arg_id);
         if(sc.exp_argtab[arg_table_idx].data_type != APDataType::FLAG){
-            argv.push_back(value);
+            argv.push_back(value_for_argv);
         }
         else if(sc.exp_argtab[arg_table_idx].data_type == APDataType::FLAG && use_flag_value){
             argv.push_back(flag_value);
@@ -141,7 +157,7 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
 
         // Update argc appropiately
         switch (sc.exp_argtab[arg_table_idx].data_type){
-        case APDataType::NUMBER:
+        case APDataType::UNSIGNED_INT:
         case APDataType::TEXT:
             sc.argc += 2;
             break;
@@ -155,6 +171,11 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             break;
         default:
             break;
+        }
+
+        // Deallocate text value if used
+        if(sc.exp_argtab[arg_table_idx].data_type == APDataType::TEXT){
+            delete value.text;
         }
     }
 
