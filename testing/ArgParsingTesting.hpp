@@ -22,7 +22,7 @@
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
 #define PRT_FULL_FORM_STR_WIDTH 10
-#define PRT_DATA_TYPE_STR_WIDTH 9
+#define PRT_DATA_TYPE_STR_WIDTH 24
 #define PRT_REQUIRED_STR_WIDTH 8
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
@@ -95,6 +95,7 @@ std::string describe_argv(int, char**);
 std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
+std::string union_data_to_string(union data*, APDataType);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
 std::string APErrRsn_to_string(APErrRsn);
 void vector_to_char_array(std::vector<std::string>&, char**&);

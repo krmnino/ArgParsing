@@ -77,9 +77,12 @@ std::string APDataType_to_string(APDataType apdt){
     case APDataType::TEXT:
         ret += "TEXT";
         break;
-    case APDataType::NUMBER:
-        ret += "NUMBER";
-        break;
+    case APDataType::UNSIGNED_INT:
+        ret += "UNSIGNED_INT";
+        break;        
+    case APDataType::SIGNED_INT:
+        ret += "SIGNED_INT";
+        break;  
     case APDataType::FLAG:
         ret += "FLAG";
         break;
@@ -94,6 +97,31 @@ std::string bool_to_string(bool data){
     return (data) ? "true" : "false";
 }
 
+std::string union_data_to_string(union data* data, APDataType data_type){
+    std::string ret;
+    switch (data_type){
+    case APDataType::UNSIGNED_INT:
+        ret = std::to_string(data->intdata.number_u64);
+        break;
+    case APDataType::SIGNED_INT:
+        ret = std::to_string(data->intdata.number_i64);
+        break;
+    case APDataType::TEXT:
+        if(data->text == nullptr){
+            ret = "";
+        }
+        else{
+            ret = *data->text;
+        }
+    case APDataType::FLAG:
+        ret = bool_to_string(data->flag);
+        break;
+    default:
+        ret = "";
+        break;
+    }
+    return ret;
+}
 
 std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     std::stringstream buffer;
@@ -124,33 +152,15 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         idx_str = std::to_string(i);
         abbr_form_str = arg_table[i].abbr_form;
         full_form_str = arg_table[i].full_form;
-        value_str = arg_table[i].value;
-        switch (arg_table[i].data_type){
-            case APDataType::FLAG:
-            data_type_str = "FLAG";
-            break;        
-            case APDataType::NUMBER:
-            data_type_str = "NUMBER";
-            break;        
-            case APDataType::TEXT:
-            data_type_str = "TEXT";
-            break;        
-            default:
-            data_type_str = "NONE";
-            break;
-        }
-        if(arg_table[i].required){
-            required_str = "TRUE";
-        }
-        else{
-            required_str = "FALSE";
-        }
         if(arg_table[i].initialized){
-            initialized_str = "TRUE";
+            value_str = union_data_to_string(&arg_table[i].data, arg_table[i].data_type);
         }
         else{
-            initialized_str = "FALSE";
+            value_str = "";
         }
+        data_type_str = APDataType_to_string(arg_table[i].data_type);
+        required_str = bool_to_string(arg_table[i].required);
+        initialized_str = bool_to_string(arg_table[i].initialized);
         buffer << " ";
         buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
         buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
