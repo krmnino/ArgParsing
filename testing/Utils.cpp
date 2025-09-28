@@ -113,6 +113,7 @@ std::string union_data_to_string(union data* data, APDataType data_type){
         else{
             ret = *data->text;
         }
+        break;
     case APDataType::FLAG:
         ret = bool_to_string(data->flag);
         break;
