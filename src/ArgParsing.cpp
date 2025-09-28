@@ -14,8 +14,8 @@ ArgParsing::ArgParsing() {
 
 ArgParsing::~ArgParsing() {}
 
-int ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
-    for(size_t i = 0; i < this->arg_table.size(); i++){
+int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
+    for(int32_t i = 0; i < (int32_t)this->arg_table.size(); i++){
         if(is_abbr_input){
             if(this->arg_table[i].abbr_form == arg_key){
                 return i;
@@ -251,10 +251,10 @@ void ArgParsing::arg_value(){
         if(value.size() >= 2){
             if(this->is_valid_hex(value)){
                 value = value.substr(2);
-                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value, nullptr, 16);
+                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoul(value, nullptr, 16);
             }
             else if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value);
+                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoul(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -486,25 +486,14 @@ int ArgParsing::parse(){
     return 0;
 }
 
-//std::string ArgParsing::get_arg_value(std::string arg_key, bool is_abbr_input){
-//    for(size_t i = 0; i < this->arg_table.size(); i++){
-//        if(is_abbr_input){
-//            if(this->arg_table[i].abbr_form == arg_key){
-//                return this->arg_table[i].value;
-//            }
-//        }
-//        else{
-//            if(this->arg_table[i].full_form == arg_key){
-//                return this->arg_table[i].value;
-//            }    
-//        }
-//    }
-//    return "";
-//}
-
 #ifdef DEBUG
 void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     target = this->arg_table;
+    for(size_t i = 0; i < this->arg_table.size(); i++){
+        if(target[i].initialized && target[i].data_type == APDataType::TEXT){
+            target[i].data.text = new std::string(*this->arg_table[i].data.text);
+        }
+    }
 }
 
 void ArgParsing::get_error_msg(std::string& target){
