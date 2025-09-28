@@ -42,13 +42,13 @@ enum class ScenarioType {
 };
 
 
-static std::unordered_map<std::string, std::string> valid_flag_values_dict = {
-    {"0"     , "0" },
-    {"false" , "0" },
-    {"FALSE" , "0" },
-    {"1"     , "1" },
-    {"true"  , "1" },
-    {"TRUE"  , "1" },
+static std::unordered_map<std::string, bool> valid_flag_values_dict = {
+    {"0"     , false },
+    {"false" , false },
+    {"FALSE" , false },
+    {"1"     , true  },
+    {"true"  , true  },
+    {"TRUE"  , true  },
 };
 
 
