@@ -47,12 +47,12 @@ union data {
 };
 
 struct APTableEntry {
-    std::string abbr_form;
-    std::string full_form;
-    union data data;
-    APDataType data_type;
-    bool required;
-    bool initialized;
+    std::string abbr_form{};
+    std::string full_form{};
+    union data data{};
+    APDataType data_type{};
+    bool required{};
+    bool initialized{};
 
     APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
@@ -94,7 +94,7 @@ class ArgParsing{
     #endif
     ArgParsing(const ArgParsing&) = delete;
     ArgParsing& operator=(const ArgParsing&) = delete;
-    int get_index_in_arg_table(std::string&, bool);
+    int32_t get_index_in_arg_table(std::string&, bool);
     bool is_valid_hex(std::string&);
     bool is_valid_dec(std::string&);
     void arg_begin();
@@ -130,32 +130,42 @@ class ArgParsing{
     int set_arg_table(APTableEntry*, size_t);
     int set_arg_table(std::vector<APTableEntry>&);
     int parse();
-    std::string get_arg_value(std::string, bool);
     
-    template<typename T> T get_arg_value(std::string, bool){
-        APDataType ret_data_type;
+    template<typename T> T get_arg_value(std::string arg_id, bool is_abbr_input){
+        int32_t arg_table_idx;
         T ret_value{};
-        if constexpr (std::is_integral<T>::value) {
-            //if constexpr (std::is_signed<T>::value) {
-            //    ret_data_type = DataType::SINT;
-            //}
-            //else{
-            //    input_data_type = DataType::UINT;
-            //}
-            ret_data_type = APDataType::UNSIGNED_INT;
-        }
-        else if constexpr (std::is_base_of<std::string, T>::value) {
-            ret_data_type = APDataType::TEXT;
-        }
-        else if constexpr (std::is_same<T, const char*>::value) {
-            ret_data_type = APDataType::TEXT;
-        }
-        else if constexpr (std::is_same<T, bool>::value) {
-            ret_data_type = APDataType::FLAG;
-        }
-        else {
+
+        // Check if argument identifier exists
+        arg_table_idx = this->get_index_in_arg_table(arg_id, is_abbr_input);
+        if(arg_table_idx == -1){
             return ret_value;
         }
+
+        // Return the appropiate argument value
+        if constexpr (std::is_integral<T>::value) {
+            if constexpr (std::is_signed<T>::value) {
+                if(this->arg_table[arg_table_idx].data_type == APDataType::SIGNED_INT){
+                    ret_value = this->arg_table[arg_table_idx].data.intdata.number_i64;
+                }
+            }
+            else if constexpr (std::is_same<T, bool>::value) {
+                if(this->arg_table[arg_table_idx].data_type == APDataType::FLAG){
+                    ret_value = this->arg_table[arg_table_idx].data.flag;
+                }
+            }
+            else{
+                if(this->arg_table[arg_table_idx].data_type == APDataType::UNSIGNED_INT){
+                    ret_value = this->arg_table[arg_table_idx].data.intdata.number_u64;
+                }
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::string>) {
+            if(this->arg_table[arg_table_idx].data.text != nullptr && 
+               this->arg_table[arg_table_idx].data_type == APDataType::TEXT){
+                ret_value = this->arg_table[arg_table_idx].data.text;
+            }
+        }
+        return ret_value;
     }
 };
 
