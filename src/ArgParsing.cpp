@@ -488,7 +488,9 @@ int ArgParsing::parse(){
 
 #ifdef DEBUG
 void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
+    // Copy the vector first
     target = this->arg_table;
+    // For any initialized TEXT type arugments, copy their values
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(target[i].initialized && target[i].data_type == APDataType::TEXT){
             target[i].data.text = new std::string(*this->arg_table[i].data.text);
