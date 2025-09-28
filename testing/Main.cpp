@@ -45,14 +45,7 @@ int main(int argc, char* argv[]){
     }
 
     // Read and validate seed argument
-    seed_argval = pgm_ap->get_arg_value("seed", false);
-    if(seed_argval.size() > 2 && seed_argval[0] == '0' && seed_argval[1] == 'x'){
-        seed_argval = seed_argval.substr(2);
-        init_seed = std::stoi(pgm_ap->get_arg_value("seed", false), nullptr, 16);
-    }
-    else{
-        init_seed = std::stoi(pgm_ap->get_arg_value("seed", false));
-    }
+    init_seed = pgm_ap->get_arg_value<uint32_t>("seed", false);
     if(init_seed == 0){
         std::cerr << "ERROR: seed value cannot be zero." << std::endl;
         return -1;
@@ -79,7 +72,7 @@ int main(int argc, char* argv[]){
     sigaction(SIGINT, &sa_struct, NULL);
     
     // Read n_tests argument
-    n_tests = std::stoi(pgm_ap->get_arg_value("n_tests", false));
+    n_tests = pgm_ap->get_arg_value<uint32_t>("n_tests", false);
     // Ignore pass counter if n_tests is 0
     if(n_tests == 0){
         infinite_loop = true;
@@ -89,17 +82,10 @@ int main(int argc, char* argv[]){
     }
     
     // Read n_scenarios argument
-    n_scenarios = std::stoi(pgm_ap->get_arg_value("n_scenarios", false));
+    n_scenarios = pgm_ap->get_arg_value<uint32_t>("n_scenarios", false);
     
     // Read and validate types argument
-    types_argval = pgm_ap->get_arg_value("types", false);
-    if(types_argval.size() > 2 && types_argval[0] == '0' && types_argval[1] == 'x'){
-        types_argval = types_argval.substr(2);
-        user_allowed_scenario_types = std::stoi(types_argval, nullptr, 16);
-    }
-    else{
-        user_allowed_scenario_types = std::stoi(types_argval);
-    }
+    user_allowed_scenario_types = pgm_ap->get_arg_value<uint32_t>("types", false);
     if(user_allowed_scenario_types == 0){
         std::cerr << "ERROR: --types argument cannot be zero." << std::endl;
         return -1;
@@ -109,7 +95,7 @@ int main(int argc, char* argv[]){
     testcase_counter = 0;
 
     // Allow tracing?
-    if(pgm_ap->get_arg_value("trace", false) == "1"){
+    if(pgm_ap->get_arg_value<bool>("trace", false)){
         er->log_everything(true);
     }
     else{
