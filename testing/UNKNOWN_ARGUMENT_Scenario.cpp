@@ -153,10 +153,12 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             if(use_flag_value){
                 result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
                 flag_value = valid_flag_values[result_u32];
-                value_for_argv = valid_flag_values_dict.at(flag_value);
+                value.flag = valid_flag_values_dict.at(flag_value);
             }
-            value.flag = true;
-            break;    
+            else{
+                value.flag = true;
+            }
+            break;  
         default:
             break;
         }
@@ -187,7 +189,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             argv.push_back(value_for_argv);
         }
         else if(arg_data_type == APDataType::FLAG && use_flag_value){
-            argv.push_back(value_for_argv);
+            argv.push_back(flag_value);
         }
 
         // Update argc appropiately
