@@ -243,7 +243,7 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         }
 
         // Deallocate text value if used
-        if(sc.exp_argtab[arg_table_idx].data_type == APDataType::TEXT){
+        if(arg_data_type == APDataType::TEXT){
             delete value.text;
         }
     }
