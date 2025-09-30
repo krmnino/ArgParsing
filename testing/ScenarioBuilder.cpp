@@ -101,7 +101,8 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
     }
     
     // Check if Scenarios::BAD_NUMERIC_VALUE scenario can be tested
-    if(arg_table_count_data_type(arg_table, APDataType::NUMBER) == 0){
+    if(arg_table_count_data_type(arg_table, APDataType::UNSIGNED_INT) == 0 && 
+       arg_table_count_data_type(arg_table, APDataType::SIGNED_INT) == 0){
         mask = ~(uint32_t)ScenarioType::BAD_NUMERIC_VALUE;
         allowed_scenarios = allowed_scenarios & mask;
     }
