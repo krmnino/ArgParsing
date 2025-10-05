@@ -101,12 +101,23 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             // Pick between hex or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
-                value_for_argv = integer_to_hex_string(value.intdata.number_u64);
+                value_for_argv = integer_to_hex_string<uint64_t>(value.intdata.number_u64);
             }
             else{
                 value_for_argv = std::to_string(value.intdata.number_u64);
             }
             break;  
+        case APDataType::SIGNED_INT:
+            value.intdata.number_i64 = rnd->gen_integral<int64_t>();
+            // Pick between hex or decimal
+            result_bool = rnd->gen_bool();
+            if(result_bool){
+                value_for_argv = integer_to_hex_string<int64_t>(value.intdata.number_i64);
+            }
+            else{
+                value_for_argv = std::to_string(value.intdata.number_i64);
+            }
+            break;    
         case APDataType::TEXT:
             result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
             value.text = new std::string(rnd->gen_string(result_u32, nullptr));
@@ -160,6 +171,7 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
         // Update argc appropiately
         switch (sc.exp_argtab[arg_table_idx].data_type){
         case APDataType::UNSIGNED_INT:
+        case APDataType::SIGNED_INT:
         case APDataType::TEXT:
             sc.argc += 2;
             break;
