@@ -29,12 +29,12 @@ enum class APErrRsn {
 
 enum class APDataType {
     TEXT         = 0x00000001,
-    UNSIGNED_INT = 0x00000002,
-    FLAG         = 0x00000004,
+    FLAG         = 0x00000002,
+    UNSIGNED_INT = 0x00000004,
     SIGNED_INT   = 0x00000008,
 };
 #ifdef DEBUG
-#define MAX_TYPES (uint32_t)3
+#define MAX_TYPES (uint32_t)4
 #endif
 
 union data {

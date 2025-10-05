@@ -246,6 +246,7 @@ void ArgParsing::arg_value(){
     value = this->argv[this->argv_idx];
     switch(this->arg_table[this->eval_arg_idx].data_type){
     case APDataType::UNSIGNED_INT:
+    case APDataType::SIGNED_INT:
         // Check if it is a hexadecimal value.
         // If so, validate it. Otherwise validate it as decimal
         if(value.size() >= 2){
