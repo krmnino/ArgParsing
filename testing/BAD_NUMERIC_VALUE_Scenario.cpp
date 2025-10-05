@@ -2,6 +2,7 @@
 
 static const char* non_num_dict = "GHIJKLMNOPQRSTUVWXYZghijklmnopqrstuvwxyz!@#$%^&*()";
 
+template <typename T>
 std::string generate_bad_number(Randomizer* rnd){
     std::string ret_value;
     size_t non_num_dict_idx;
@@ -52,7 +53,8 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
     while(true){
         // Pick a random argument
         rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1);
-        if(sc.exp_argtab[rand_idx].data_type == APDataType::UNSIGNED_INT){
+        if(sc.exp_argtab[rand_idx].data_type == APDataType::UNSIGNED_INT || 
+           sc.exp_argtab[rand_idx].data_type == APDataType::SIGNED_INT){
             error_table_idx = rand_idx;
             break;
         }
@@ -148,20 +150,37 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
         case APDataType::UNSIGNED_INT:
             // It is time to inject the error
             if(error_table_idx == arg_table_idx){
-                value_for_argv = generate_bad_number(rnd);
+                value_for_argv = generate_bad_number<uint64_t>(rnd);
             }
             else{
                 value.intdata.number_u64 = rnd->gen_integral<uint64_t>();
                 // Pick between hex or decimal
                 result_bool = rnd->gen_bool();
                 if(result_bool){
-                    value_for_argv = integer_to_hex_string(value.intdata.number_u64);
+                    value_for_argv = integer_to_hex_string<uint64_t>(value.intdata.number_u64);
                 }
                 else{
                     value_for_argv = std::to_string(value.intdata.number_u64);
                 }
             }
             break;    
+        case APDataType::SIGNED_INT:
+            // It is time to inject the error
+            if(error_table_idx == arg_table_idx){
+                value_for_argv = generate_bad_number<int64_t>(rnd);
+            }
+            else{
+                value.intdata.number_i64 = rnd->gen_integral<int64_t>();
+                // Pick between hex or decimal
+                result_bool = rnd->gen_bool();
+                if(result_bool){
+                    value_for_argv = integer_to_hex_string<int64_t>(value.intdata.number_i64);
+                }
+                else{
+                    value_for_argv = std::to_string(value.intdata.number_i64);
+                }
+            }
+            break; 
         case APDataType::TEXT:
             result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
             value.text = new std::string(rnd->gen_string(result_u32, nullptr));
@@ -213,6 +232,7 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
         // Update argc appropiately
         switch (sc.exp_argtab[arg_table_idx].data_type){
         case APDataType::UNSIGNED_INT:
+        case APDataType::SIGNED_INT:
         case APDataType::TEXT:
             sc.argc += 2;
             break;
