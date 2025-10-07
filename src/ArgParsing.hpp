@@ -162,7 +162,7 @@ class ArgParsing{
         else if constexpr (std::is_same_v<T, std::string>) {
             if(this->arg_table[arg_table_idx].data.text != nullptr && 
                this->arg_table[arg_table_idx].data_type == APDataType::TEXT){
-                ret_value = this->arg_table[arg_table_idx].data.text;
+                ret_value = *this->arg_table[arg_table_idx].data.text;
             }
         }
         return ret_value;
