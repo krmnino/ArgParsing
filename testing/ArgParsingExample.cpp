@@ -6,11 +6,11 @@ int main(int argc, char* argv[]){
     ArgParsing* ap = ArgParsing::ArgParsing_get_instance();
 
     APTableEntry arg_table[] = {
-        { "a", "arg1", APDataType::FLAG  , true  },
-        { "x", "arg2", APDataType::TEXT  , false },
-        {      "arg3", APDataType::NUMBER, false },
-        { "2", "arg4", APDataType::FLAG  , false },
-        { "z", "arg5", APDataType::TEXT  , true },
+        { "a", "arg1", APDataType::FLAG        , true  },
+        { "x", "arg2", APDataType::TEXT        , false },
+        {      "arg3", APDataType::UNSIGNED_INT, false },
+        { "9", "arg4", APDataType::FLAG        , false },
+        { "z", "arg5", APDataType::TEXT        , true  },
     };
 
     int ret;
@@ -27,11 +27,11 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    std::cout << "a/arg1: " << ap->get_arg_value("arg1", false) << std::endl;
-    std::cout << "b/arg2: " << ap->get_arg_value("x"   , true) << std::endl;
-    std::cout << "  arg3: " << ap->get_arg_value("arg3", false) << std::endl;
-    std::cout << "0/arg4: " << ap->get_arg_value("0"   , true) << std::endl;
-    std::cout << "z/arg4: " << ap->get_arg_value("z"   , true) << std::endl;
+    std::cout << "a/arg1: " << ap->get_arg_value<bool>("arg1", false) << std::endl;
+    std::cout << "b/arg2: " << ap->get_arg_value<std::string>("x", true) << std::endl;
+    std::cout << "  arg3: " << ap->get_arg_value<uint64_t>("arg3", false) << std::endl;
+    std::cout << "9/arg4: " << ap->get_arg_value<bool>("9", true) << std::endl;
+    std::cout << "z/arg5: " << ap->get_arg_value<std::string>("z", true) << std::endl;
     
     ap->ArgParsing_end_instance();
     return 0;
