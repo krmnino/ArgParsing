@@ -53,7 +53,6 @@ single:
 	g++ -g -c -Wall -std=c++17 $(FILE) -D DEBUG
 
 test:
-#	g++ -g -std=c++17 ../src/ArgParsing.cpp Test.cpp -o $(BD)argtest
 	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp
 	g++ ArgParsingExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
 							-o $(BD)aptest
