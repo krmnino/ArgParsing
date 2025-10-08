@@ -60,12 +60,26 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - When an error is encontered, the `ArgParsing` object will switch to an error state and reason for error is set.
 - An informational message is reported describing the cause of the error.
 
-### `std::string get_arg_value(std::string arg_key, bool is_abbr_input)`
+### `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)`
 
 - **Input arguments**: a string containing the argument identifier plus a flag indicating whether the argument identifier string is in abbreviated or full form.
-- **Output**: a string representing the argument value will be returned if `ArgParsing`'s argument table has an entry with an argument identifier that matches the input argument.
+- **Output**: the argument value on its corresponding data type that `APDataType` maps will be returned if `ArgParsing`'s argument table has an entry with an argument identifier that matches the input argument.
+- `APDataType` mappings described below:
+
+|`APDataType`   |C/C++ data type  |
+|---------------|-----------------|
+|`TEXT`         |`std::string`    |
+|`FLAG`         |`bool`           |
+|`UNSIGNED_INT` |`uint64_t`       |
+|`SIGNED_INT`   |`int64_t`        |
 
 ## Changelog
+
+### v1.1
+
+- Definiton of data types for argument values: `APDataType::TEXT`, `APDataType::FLAG`, `APDataType::UNSIGNED_INT`, and `APDataType::SIGNED_INT`.
+- Store argument values in their equivalent C++ data type rather than just `std::string`.
+- Refactored getter method using templates: `T get_arg_value(std::string, bool)`.
 
 ### v1.0
 
