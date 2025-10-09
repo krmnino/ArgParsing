@@ -169,4 +169,7 @@ class ArgParsing{
     }
 };
 
+extern "C" void* ArgParsing_get_instance();
+extern "C" void ArgParsing_end_instance();
+
 #endif
