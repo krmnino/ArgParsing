@@ -72,7 +72,7 @@ typedef struct APTableEntry APTableEntry;
 
 
 class ArgParsing{
-    private:
+private:
     std::vector<APTableEntry> arg_table;
     std::vector<std::string> err_msg_data;
     std::string error_msg;
@@ -105,19 +105,11 @@ class ArgParsing{
     void display_error_msg();
     bool validate_flag_value(std::string&);
     
-    public:
+public:
     #ifndef DEBUG
-    static ArgParsing* ArgParsing_get_instance(){
-        if(ap_ptr == nullptr){
-            ap_ptr = new ArgParsing();
-        }
-        return ap_ptr;
-    }
-    
-    static void ArgParsing_end_instance(){
-        if(ap_ptr){
-            delete ap_ptr;
-        }
+    static ArgParsing& get_instance(){
+        static ArgParsing ap;
+        return ap;
     }
     #else
     ArgParsing();
