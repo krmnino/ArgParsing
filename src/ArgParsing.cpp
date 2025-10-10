@@ -575,3 +575,7 @@ void ArgParsing::display_arg_table(){
     }
 }
 #endif
+
+//extern "C" void* ArgParsing_get_instance(){
+//    ArgParsing::ArgParsing_get_instance()
+//}
