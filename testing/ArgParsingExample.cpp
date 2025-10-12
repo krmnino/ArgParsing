@@ -1,7 +1,5 @@
 #include "../src/ArgParsing.hpp"
 
-ArgParsing* ArgParsing::ap_ptr = nullptr;
-
 int main(int argc, char* argv[]){
     ArgParsing& ap = ArgParsing::get_instance();
 
