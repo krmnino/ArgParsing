@@ -578,6 +578,14 @@ void ArgParsing::display_arg_table(){
 
 #endif
 
-ArgParsing_C* get_instance_C(){
+///////////////////////////////////////////////////////////////
+// C INTERFACE DEFINITION 
+///////////////////////////////////////////////////////////////
+
+ArgParsing_C* ArgParsing_C_get_instance(){
     return (ArgParsing_C*)&ArgParsing::get_instance();
+}
+
+void ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv){
+    reinterpret_cast<ArgParsing*>(apc)->set_input_args(input_argc, input_argv);
 }
