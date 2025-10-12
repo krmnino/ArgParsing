@@ -1,4 +1,5 @@
 #include "ArgParsing.hpp"
+#include "ArgParsing_C.h"
 
 ArgParsing::ArgParsing() {
     this->state = APState::ARGV_BEGIN;
@@ -574,8 +575,9 @@ void ArgParsing::display_arg_table(){
         std::cout << "--------------------------------" << std::endl;
     }
 }
+
 #endif
 
-//extern "C" void* ArgParsing_get_instance(){
-//    ArgParsing::ArgParsing_get_instance()
-//}
+ArgParsing_C* get_instance_C(){
+    return (ArgParsing_C*)&ArgParsing::get_instance();
+}
