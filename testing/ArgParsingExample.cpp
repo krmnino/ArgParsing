@@ -1,6 +1,8 @@
 #include "../src/ArgParsing.hpp"
 
 int main(int argc, char* argv[]){
+    int ret;
+
     ArgParsing& ap = ArgParsing::get_instance();
 
     APTableEntry arg_table[] = {
@@ -10,11 +12,10 @@ int main(int argc, char* argv[]){
         { "9", "arg4", APDataType::FLAG        , false },
         { "z", "arg5", APDataType::TEXT        , true  },
     };
-
-    int ret;
     
     ret = ap.set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
     if(ret != 0){
+        std::cerr << "ERROR: ArgParsing::set_arg_table() return code -> " << ret << std::endl;
         return -1;
     }
 
@@ -22,6 +23,7 @@ int main(int argc, char* argv[]){
     
     ret = ap.parse();
     if(ret != 0){
+        std::cerr << "ERROR: ArgParsing::set_input_args() return code -> " << ret << std::endl;
         return -1;
     }
 
