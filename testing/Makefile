@@ -52,10 +52,13 @@ link:
 single:
 	g++ -g -c -Wall -std=c++17 $(FILE) -D DEBUG
 
-test:
+example:
 	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp
+	gcc -g -c -Wall -std=c17 ArgParsingCExample.c
 	g++ ArgParsingExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
 							-o $(BD)aptest
+	gcc ArgParsingCExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
+							-o $(BD)aptest_c
 
 clean:
 	rm $(BD)argparsing $(BD)argtest *.o ../src/*.gch
