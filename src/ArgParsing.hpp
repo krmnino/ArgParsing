@@ -60,7 +60,7 @@ struct APTableEntry {
     APTableEntry(std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(""), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
 
-    APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::TEXT), required(false), initialized(false) {}
+    APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
     
     ~APTableEntry() {
         if(this->initialized && this->data_type == APDataType::TEXT){

@@ -362,9 +362,6 @@ void ArgParsing::display_error_msg(){
     default:
         break;
     }
-    #ifndef DEBUG
-    std::cerr << this->error_msg << std::endl;
-    #endif
 }
 
 bool ArgParsing::validate_flag_value(std::string& value){
@@ -575,17 +572,68 @@ void ArgParsing::display_arg_table(){
         std::cout << "--------------------------------" << std::endl;
     }
 }
-
 #endif
 
 ///////////////////////////////////////////////////////////////
 // C INTERFACE DEFINITION 
 ///////////////////////////////////////////////////////////////
 
+#ifndef DEBUG
 ArgParsing_C* ArgParsing_C_get_instance(){
-    return (ArgParsing_C*)&ArgParsing::get_instance();
+    return reinterpret_cast<ArgParsing_C*>(&ArgParsing::get_instance());
 }
+#endif
 
 void ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv){
     reinterpret_cast<ArgParsing*>(apc)->set_input_args(input_argc, input_argv);
+}
+
+int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries){
+    // If no entries passed, can't process them
+    if(n_entries == 0){
+        return -1;
+    }
+    
+    // Set pointer to the first element in the input array
+    APTableEntry_C* input_entry_curr = input_arg_table;
+    APTableEntry new_entry;
+    std::vector<APTableEntry> new_arg_table;
+    new_arg_table.reserve(n_entries);
+
+    // Loop though each entry in the array and copy the data to the vector
+    for(size_t i = 0; i < n_entries; i++){
+        if(strlen(input_entry_curr->abbr_form) != 0){
+            new_entry.abbr_form = input_entry_curr->abbr_form;
+        }
+        if(strlen(input_entry_curr->full_form) == 0){
+            return -1;
+        }
+        new_entry.full_form = input_entry_curr->full_form;
+        new_entry.required = input_entry_curr->required;
+        switch (input_entry_curr->data_type){
+        case TEXT:
+            new_entry.data_type = APDataType::TEXT;
+            break;        
+        case FLAG:
+            new_entry.data_type = APDataType::FLAG;
+            break;        
+        case UNSIGNED_INT:
+            new_entry.data_type = APDataType::UNSIGNED_INT;
+            break;        
+        case SIGNED_INT:
+            new_entry.data_type = APDataType::SIGNED_INT;
+            break;        
+        default:
+            return -1;
+            break;
+        }
+        new_arg_table.push_back(new_entry);
+        new_entry = {};
+        input_entry_curr++;
+    }
+    return reinterpret_cast<ArgParsing*>(apc)->set_arg_table(new_arg_table);
+}
+
+int ArgParsing_C_parse(ArgParsing_C* apc){
+    return reinterpret_cast<ArgParsing*>(apc)->parse();
 }

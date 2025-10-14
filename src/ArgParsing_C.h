@@ -39,10 +39,10 @@ struct APTableEntry_C {
 };
 typedef struct APTableEntry_C APTableEntry_C;
 
-
 ArgParsing_C* ArgParsing_C_get_instance();
 void ArgParsing_C_set_input_args(ArgParsing_C*, int, char**);
 int ArgParsing_C_set_arg_table(ArgParsing_C*, APTableEntry_C*, size_t);
+int ArgParsing_C_parse(ArgParsing_C*);
 
 #ifdef __cplusplus
 }
