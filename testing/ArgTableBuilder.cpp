@@ -114,6 +114,6 @@ int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
         new_entry.required = true;
     }
     arg_table.push_back(new_entry);
-
+    new_entry = {};
     return 0;
 }
