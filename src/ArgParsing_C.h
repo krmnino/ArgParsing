@@ -48,4 +48,4 @@ int ArgParsing_C_parse(ArgParsing_C*);
 }
 #endif
 
-#endif
+#endif // #ifndef ARGPARSING_C
