@@ -28,7 +28,7 @@ int main(int argc, char* argv[]){
     }
 
     std::cout << "a/arg1: " << ap.get_arg_value<bool>("arg1", false) << std::endl;
-    std::cout << "b/arg2: " << ap.get_arg_value<std::string>("x", true) << std::endl;
+    std::cout << "x/arg2: " << ap.get_arg_value<std::string>("x", true) << std::endl;
     std::cout << "  arg3: " << ap.get_arg_value<uint64_t>("arg3", false) << std::endl;
     std::cout << "9/arg4: " << ap.get_arg_value<bool>("9", true) << std::endl;
     std::cout << "z/arg5: " << ap.get_arg_value<std::string>("z", true) << std::endl;
