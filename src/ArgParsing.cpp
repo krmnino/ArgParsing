@@ -638,18 +638,18 @@ int ArgParsing_C_parse(ArgParsing_C* apc){
     return reinterpret_cast<ArgParsing*>(apc)->parse();
 }
 
-const char* ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_id, bool is_abbr_input){
-    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<std::string>((std::string)arg_id, is_abbr_input).c_str();
+const char* ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<std::string>((std::string)arg_key, is_abbr_input).c_str();
 }
 
-bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_id, bool is_abbr_input){
-    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<bool>((std::string)arg_id, is_abbr_input);
+bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<bool>((std::string)arg_key, is_abbr_input);
 }
 
-uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_id, bool is_abbr_input){
-    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<uint64_t>((std::string)arg_id, is_abbr_input);
+uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<uint64_t>((std::string)arg_key, is_abbr_input);
 }
 
-int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_id, bool is_abbr_input){
-    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<int64_t>((std::string)arg_id, is_abbr_input);
+int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<int64_t>((std::string)arg_key, is_abbr_input);
 }
