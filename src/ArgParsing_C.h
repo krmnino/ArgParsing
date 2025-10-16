@@ -10,7 +10,6 @@ extern "C"{
 #endif
 
 typedef struct ArgParsing_C ArgParsing_C;
-typedef struct APTableEntry_C APTableEntry_C;
 
 union data_C {
     char* text;
