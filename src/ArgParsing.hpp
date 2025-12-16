@@ -60,6 +60,7 @@ enum class APDataType {
 #define MAX_TYPES (uint32_t)4
 #endif
 
+
 union data {
     std::string* text;
     union intdata{
@@ -68,6 +69,7 @@ union data {
     } intdata;
     bool flag;
 };
+
 
 struct APTableEntry {
     std::string abbr_form{};
