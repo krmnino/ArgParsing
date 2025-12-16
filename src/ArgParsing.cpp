@@ -35,7 +35,9 @@ ArgParsing::ArgParsing() {
     #endif
 }
 
+
 ArgParsing::~ArgParsing() {}
+
 
 int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_input){
     for(int32_t i = 0; i < (int32_t)this->arg_table.size(); i++){
@@ -53,10 +55,12 @@ int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_in
     return -1;
 }
 
+
 void ArgParsing::set_input_args(int input_argc, char** input_argv){
     this->argc = input_argc;
     this->argv = input_argv;
 }
+
 
 int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
@@ -106,11 +110,13 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     return 0;
 }
 
+
 int ArgParsing::set_arg_table(std::vector<APTableEntry>& arg_table){
     size_t n_entries = arg_table.size();
     APTableEntry* arg_table_ptr = arg_table.data();
     return set_arg_table(arg_table_ptr, n_entries);
 }
+
 
 size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input){
     int32_t arg_table_idx{};
@@ -164,6 +170,7 @@ bool ArgParsing::is_valid_hex(std::string& input){
     return valid;
 }
 
+
 bool ArgParsing::is_valid_dec(std::string& input){
     std::string input_copy = input;
     bool valid = true;
@@ -179,6 +186,7 @@ bool ArgParsing::is_valid_dec(std::string& input){
     }
     return valid;
 }
+
 
 void ArgParsing::arg_begin(){
     // We guarantee that curr is not an empty string
@@ -199,6 +207,7 @@ void ArgParsing::arg_begin(){
         this->arg_abbr_form();
     }
 }
+
 
 void ArgParsing::arg_abbr_form(){
     std::string abbr_arg;
@@ -266,6 +275,7 @@ void ArgParsing::arg_abbr_form(){
     this->argv_idx++;
 }
 
+
 void ArgParsing::arg_full_form(){
     std::string full_arg = this->argv[this->argv_idx];
     full_arg = full_arg.substr(2);
@@ -296,6 +306,7 @@ void ArgParsing::arg_full_form(){
     this->prev_argv_element = this->argv[this->argv_idx];
     this->argv_idx++;
 }
+
 
 void ArgParsing::arg_value(){
     std::string value;
@@ -349,6 +360,7 @@ void ArgParsing::arg_value(){
     this->argv_idx++;
 }
 
+
 std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
     switch (rsn){
     case APErrRsn::MISSING_FIRST_DASH:
@@ -368,6 +380,7 @@ std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
     }
     return "APErrRsn::UNDEFINED";
 }
+
 
 void ArgParsing::display_error_msg(){
     std::string rsn_str = APErrRsn_to_string(this->reason);
@@ -418,6 +431,7 @@ void ArgParsing::display_error_msg(){
         break;
     }
 }
+
 
 bool ArgParsing::validate_flag_value(std::string& value){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
@@ -509,6 +523,7 @@ bool ArgParsing::validate_flag_value(std::string& value){
     return arg_value_fn_quick_exit;
 }
 
+
 int ArgParsing::parse(){
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
@@ -552,9 +567,11 @@ void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     }
 }
 
+
 void ArgParsing::get_error_msg(std::string& target){
     target = this->error_msg;
 }
+
 
 void ArgParsing::display_arg_table(){
     std::string data_type_str;
@@ -639,9 +656,11 @@ ArgParsing_C* ArgParsing_C_get_instance(){
 }
 #endif
 
+
 void ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv){
     reinterpret_cast<ArgParsing*>(apc)->set_input_args(input_argc, input_argv);
 }
+
 
 int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries){
     // If no entries passed, can't process them
@@ -689,14 +708,17 @@ int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_tabl
     return reinterpret_cast<ArgParsing*>(apc)->set_arg_table(new_arg_table);
 }
 
+
 int ArgParsing_C_parse(ArgParsing_C* apc){
     return reinterpret_cast<ArgParsing*>(apc)->parse();
 }
+
 
 size_t ArgParsing_C_get_arg_value_bytesize(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
     return 0;
 }
+
 
 int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input, char* output_buffer, size_t len_output_buffer){
     std::string val;
@@ -715,13 +737,16 @@ int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_
     return 0;
 }
 
+
 bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<bool>((std::string)arg_key, is_abbr_input);
 }
 
+
 uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<uint64_t>((std::string)arg_key, is_abbr_input);
 }
+
 
 int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<int64_t>((std::string)arg_key, is_abbr_input);
