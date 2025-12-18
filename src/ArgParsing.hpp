@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
+#include <stdint.h>
 
 #define VALID_FLAG_VALUES {"0", "1", "true", "false", "TRUE", "FALSE"}
 
