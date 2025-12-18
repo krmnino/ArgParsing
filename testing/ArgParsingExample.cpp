@@ -28,10 +28,15 @@ int main(int argc, char* argv[]){
     }
 
     std::cout << "a/arg1: " << ap.get_arg_value<bool>("arg1", false) << std::endl;
+    std::cout << "a/arg1 byte_size: " << ap.get_arg_value_bytesize("arg1", false) << std::endl;
     std::cout << "x/arg2: " << ap.get_arg_value<std::string>("x", true) << std::endl;
+    std::cout << "x/arg2 byte_size: " << ap.get_arg_value_bytesize("x", true) << std::endl;
     std::cout << "  arg3: " << ap.get_arg_value<uint64_t>("arg3", false) << std::endl;
+    std::cout << "  arg3 byte_size: " << ap.get_arg_value_bytesize("arg3", false) << std::endl;
     std::cout << "9/arg4: " << ap.get_arg_value<bool>("9", true) << std::endl;
+    std::cout << "9/arg4 byte_size: " << ap.get_arg_value_bytesize("9", true) << std::endl;
     std::cout << "z/arg5: " << ap.get_arg_value<std::string>("z", true) << std::endl;
+    std::cout << "z/arg5 byte_size: " << ap.get_arg_value_bytesize("z", true) << std::endl;
     
     return 0;
 }
