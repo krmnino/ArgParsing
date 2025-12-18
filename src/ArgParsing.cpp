@@ -90,6 +90,39 @@ int ArgParsing::set_arg_table(std::vector<APTableEntry>& arg_table){
     return set_arg_table(arg_table_ptr, n_entries);
 }
 
+size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input){
+    int32_t arg_table_idx{};
+    size_t ret_size{};
+
+    // Check if argument identifier exists
+    arg_table_idx = this->get_index_in_arg_table(arg_id, is_abbr_input);
+    if(arg_table_idx == -1){
+        return 0;
+    }
+    
+    // Set the size value to return
+    switch (this->arg_table[arg_table_idx].data_type){
+    case APDataType::TEXT:
+        if(this->arg_table[arg_table_idx].data.text != nullptr){
+            ret_size = (*this->arg_table[arg_table_idx].data.text).size();
+        }
+        break;
+    case APDataType::FLAG:
+        ret_size = sizeof(bool);
+        break;
+    case APDataType::UNSIGNED_INT:
+        ret_size = sizeof(uint64_t);    
+        break;
+    case APDataType::SIGNED_INT:
+        ret_size = sizeof(int64_t);    
+        break;
+    default:
+        break;
+    }
+    return ret_size;
+}
+
+
 bool ArgParsing::is_valid_hex(std::string& input){
     std::string input_copy = input;
     bool valid = true;
@@ -638,8 +671,26 @@ int ArgParsing_C_parse(ArgParsing_C* apc){
     return reinterpret_cast<ArgParsing*>(apc)->parse();
 }
 
-const char* ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
-    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<std::string>((std::string)arg_key, is_abbr_input).c_str();
+size_t ArgParsing_C_get_arg_value_bytesize(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
+    return 0;
+}
+
+int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input, char* output_buffer, size_t len_output_buffer){
+    std::string val;
+    size_t arg_value_len;
+    
+    arg_value_len = reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
+    // If argument value length is 0 or if output buffer is smaller than argument length, then stop it
+    if(arg_value_len == 0 || 
+       arg_value_len > len_output_buffer + 1){
+        return -1;
+    }
+    
+    // Copy string value to output buffer
+    val = (reinterpret_cast<ArgParsing*>(apc)->get_arg_value<std::string>((std::string)arg_key, is_abbr_input));
+    memcpy(output_buffer, val.c_str(), arg_value_len);
+    return 0;
 }
 
 bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
