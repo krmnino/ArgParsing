@@ -1,9 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../src/ArgParsing_C.h"
 
+#define MAX_BUFF_LEN 512
+
 int main(int argc, char* argv[]){
     int ret;
+    char str_buff1[MAX_BUFF_LEN];
+    char* str_buff2;
+    size_t arg_txt_len;
 
     ArgParsing_C* ap = ArgParsing_C_get_instance();
 
@@ -29,11 +35,30 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    printf("a/arg1: %d\n" , ArgParsing_C_get_value_FLAG(ap, "arg1", false));
-    printf("x/arg2: %s\n" , ArgParsing_C_get_value_TEXT(ap, "x", true));
+    printf("a/arg1: %d\n", ArgParsing_C_get_value_FLAG(ap, "arg1", false));
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "arg1", false);
+    printf("a/arg1 byte_size: %ld\n", arg_txt_len);
+    
+    memset((void*)&str_buff1, 0, MAX_BUFF_LEN);
+    ArgParsing_C_get_value_TEXT(ap, "x", true, (char*)&str_buff1, MAX_BUFF_LEN);
+    printf("x/arg2: %s\n", str_buff1);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "x", true);
+    printf("x/arg2 byte_size: %ld\n", arg_txt_len);
+
     printf("  arg3: %ld\n", ArgParsing_C_get_value_UNSIGNED_INT(ap, "arg3", false));
-    printf("9/arg4: %d\n" , ArgParsing_C_get_value_FLAG(ap, "9", true));
-    printf("z/arg5: %s\n" , ArgParsing_C_get_value_TEXT(ap, "z", true));
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "arg3", false);
+    printf("  arg3 byte_size: %ld\n", arg_txt_len);
+
+    printf("9/arg4: %d\n", ArgParsing_C_get_value_FLAG(ap, "9", true));
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "9", true);
+    printf("9/arg4 byte_size: %ld\n", arg_txt_len);
+
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "z", true);
+    str_buff2 = (char*)calloc(arg_txt_len + 1, sizeof(char));
+    ArgParsing_C_get_value_TEXT(ap, "z", true, str_buff2, MAX_BUFF_LEN);
+    printf("z/arg5: %s\n", str_buff2);
+    printf("z/arg5 byte_size: %ld\n", arg_txt_len);
+    free(str_buff2);
 
     return 0;
 }
