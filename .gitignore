@@ -1,5 +1,6 @@
 bin
 res
+src/.vscode
 testing/Test.cpp
 testing/argtest
 testing/*.o
