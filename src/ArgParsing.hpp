@@ -122,10 +122,11 @@ public:
     void set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
     int set_arg_table(std::vector<APTableEntry>&);
+    size_t get_arg_value_bytesize(std::string, bool);
     int parse();
     
     template<typename T> T get_arg_value(std::string arg_id, bool is_abbr_input){
-        int32_t arg_table_idx;
+        int32_t arg_table_idx{};
         T ret_value{};
 
         // Check if argument identifier exists
