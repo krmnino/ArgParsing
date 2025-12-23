@@ -25,13 +25,15 @@ SOFTWARE.
 
 #include "../src/ArgParsing_C.h"
 
+
 #define MAX_BUFF_LEN 512
 
+
 int main(int argc, char* argv[]){
-    int ret;
+    int ret = 0;
     char str_buff1[MAX_BUFF_LEN];
-    char* str_buff2;
-    size_t arg_txt_len;
+    char* str_buff2 = {0};
+    size_t arg_txt_len = 0;
 
     ArgParsing_C* ap = ArgParsing_C_get_instance();
 

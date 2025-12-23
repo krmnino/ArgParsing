@@ -26,6 +26,7 @@ SOFTWARE.
 #include <iostream>
 #include <vector>
 
+
 enum class ERExceptionCode {
 	OK,
 	TEST_ALREADY_STARTED,
@@ -37,10 +38,12 @@ class ERException : public std::exception {
 protected:
 	ERExceptionCode err_code;
 	std::string message;
+
 public:
 	explicit ERException(){
         this->err_code = ERExceptionCode::OK;
     }
+
 
 	explicit ERException(ERExceptionCode error_code){
         switch (this->err_code) {
@@ -58,11 +61,14 @@ public:
 	    }
     }
 
+
 	virtual ~ERException() noexcept {}
+
 
 	virtual const char* what() const noexcept{
         return this->message.c_str();
     }
+
 
 	ERExceptionCode get_error_code(){
         return this->err_code;
@@ -78,7 +84,7 @@ struct Log{
 
 
 class ErrorReporter{
-    private:
+private:
     std::vector<Log> logs;
     static ErrorReporter* er_ptr;
     size_t logs_size;
@@ -105,7 +111,7 @@ class ErrorReporter{
         return (data) ? "FAIL" : "PASS";
     }    
 
-    public:
+public:
     static ErrorReporter* get_instance(){
         if(er_ptr == nullptr){
             er_ptr = new ErrorReporter();
@@ -113,15 +119,19 @@ class ErrorReporter{
         return er_ptr;
     }
 
+
     static void end_instance(){
         delete er_ptr;
     }
 
+
     void log_everything(bool flag){
         this->log_everything_flag = flag;
     }
+   
     
     ~ErrorReporter() {}
+
 
     void log_it(std::string input_text){
         if(test_text_buffer.length() != 0){
@@ -129,7 +139,8 @@ class ErrorReporter{
         }
         test_text_buffer += input_text;
     }
-   
+
+
     void begin_test(const char* input_id){
         if(this->started_test){
             throw ERException(ERExceptionCode::TEST_ALREADY_STARTED);
@@ -140,6 +151,7 @@ class ErrorReporter{
         this->started_test = true;
     }
 
+
     void begin_test(std::string& input_id){
         if(this->started_test){
             throw ERException(ERExceptionCode::TEST_ALREADY_STARTED);
@@ -149,6 +161,7 @@ class ErrorReporter{
         this->marked_error = false;
         this->started_test = true;
     }
+    
     
     void end_test(){
         if(!this->started_test){
@@ -171,12 +184,14 @@ class ErrorReporter{
         this->started_test = false;
     }
 
+
     void mark_error(){
         if(!this->started_test){
             throw ERException(ERExceptionCode::TEST_NOT_STARTED);
         }
         this->marked_error = true;
     }
+
 
     void print_report(){
         std::cout << "================ (START OF REPORT) ================" << std::endl;

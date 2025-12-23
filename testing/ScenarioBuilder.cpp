@@ -20,8 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 #include <algorithm>
+
 
 void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
@@ -73,10 +75,11 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
     }
 }
 
+
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t input_allowed_scenarios){
-    uint32_t mask;
-    uint32_t allowed_scenarios;
-    size_t valid_args_for_group;
+    uint32_t mask{};
+    uint32_t allowed_scenarios{};
+    size_t valid_args_for_group{};
     
     // Allow everything first
     allowed_scenarios = (uint32_t)ScenarioType::OK                     |

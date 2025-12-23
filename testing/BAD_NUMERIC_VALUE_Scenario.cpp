@@ -20,16 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 static const char* non_num_dict = "GHIJKLMNOPQRSTUVWXYZghijklmnopqrstuvwxyz!@#$%^&*()";
 
+
 template <typename T>
 std::string generate_bad_number(Randomizer* rnd){
-    std::string ret_value;
-    size_t non_num_dict_idx;
-    size_t value_idx;
-    bool result_bool;
+    std::string ret_value{};
+    size_t non_num_dict_idx{};
+    size_t value_idx{};
+    bool result_bool{};
 
     // 50% chances of hex or decimal
     result_bool = rnd->gen_bool();
@@ -50,22 +53,23 @@ std::string generate_bad_number(Randomizer* rnd){
     return ret_value;
 }
 
+
 void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     union data value{};
-    size_t rand_idx;
-    size_t n_initialized;
-    uint32_t result_u32;
-    int32_t error_table_idx;
-    int32_t arg_table_idx;
-    bool result_bool;
-    bool use_flag_value;
+    size_t rand_idx{};
+    size_t n_initialized{};
+    uint32_t result_u32{};
+    int32_t error_table_idx{};
+    int32_t arg_table_idx{};
+    bool result_bool{};
+    bool use_flag_value{};
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -287,8 +291,10 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
     vector_to_char_array(argv, sc.argv);
 }
 
+
 void validate_BAD_NUMERIC_VALUE_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

@@ -20,26 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<APTableEntry> non_empty_table;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<APTableEntry> non_empty_table{};
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     union data value{};
-    size_t n_initialized;
-    uint32_t attempt_counter;
-    uint32_t result_u32;
-    int32_t arg_table_idx;
-    int32_t ret;
-    bool result_bool;
-    bool invalid;
-    bool use_flag_value;
+    size_t n_initialized{};
+    uint32_t attempt_counter{};
+    uint32_t result_u32{};
+    int32_t arg_table_idx{};
+    int32_t ret{};
+    bool result_bool{};
+    bool invalid{};
+    bool use_flag_value{};
     
     // Generate non-empty argument table 
     attempt_counter = 0;
@@ -184,8 +186,10 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
     vector_to_char_array(argv, sc.argv);
 }
 
+
 void validate_EMPTY_ARG_LIST_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

@@ -20,24 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     union data value{};
-    size_t rand_idx;
-    size_t n_initialized;
-    size_t error_arg_n;
-    uint32_t result_u32;
-    int32_t arg_table_idx;
-    bool result_bool;
-    bool use_flag_value;
+    size_t rand_idx{};
+    size_t n_initialized{};
+    size_t error_arg_n{};
+    uint32_t result_u32{};
+    int32_t arg_table_idx{};
+    bool result_bool{};
+    bool use_flag_value{};
    
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -101,7 +103,6 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     sc.argc = 0;
     argv.push_back("PGM_PLACEHOLDER");
     sc.argc++;
-
 
     // Loop through the arguments and set random values (for non-FLAG types only)
     for(size_t i = 0; i < arg_id_accumulator.size(); i++){
@@ -219,8 +220,10 @@ void build_REPEATED_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     vector_to_char_array(argv, sc.argv);
 }
 
+
 void validate_REPEATED_ARGUMENT_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

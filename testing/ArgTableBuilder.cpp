@@ -20,10 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 
+
 int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
-    uint32_t attempt_counter;
+    uint32_t attempt_counter{};
                                   
     // Empty the vector and reserve space
     table.clear();
@@ -31,7 +33,6 @@ int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint
 
     // Attempt uilding entries one by one
     for(size_t i = 0; i < n_args; i++){
-        attempt_counter = 0;
         while(true){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
                 return -1;
@@ -46,16 +47,17 @@ int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint
     return 0;
 }
 
+
 int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    APTableEntry new_entry;
-    std::string result_str;
-    uint32_t result_u32;
-    uint32_t attempt_counter;
-    uint32_t shifter;
-    bool result_bool;
-    bool invalid;
+    APTableEntry new_entry{};
+    std::string result_str{};
+    uint32_t result_u32{};
+    uint32_t attempt_counter{};
+    uint32_t shifter{};
+    bool result_bool{};
+    bool invalid{};
 
     // APTableEntry.abbr_form -> Make it 50% of the time
     result_bool = rnd->gen_bool();

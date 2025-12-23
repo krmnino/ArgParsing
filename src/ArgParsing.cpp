@@ -20,8 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsing.hpp"
 #include "ArgParsing_C.h"
+
 
 ArgParsing::ArgParsing() {
     this->state = APState::ARGV_BEGIN;
@@ -554,6 +556,7 @@ int ArgParsing::parse(){
     }
     return 0;
 }
+
 
 #ifdef DEBUG
 void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){

@@ -20,30 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 
 
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
-    std::string error_arg;
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
+    std::string error_arg{};
     union data value{};
-    size_t rand_idx;
-    size_t n_initialized;
-    uint32_t result_u32;
-    uint32_t shifter;
-    int32_t arg_table_idx;
-    int32_t error_arg_idx;
-    APDataType error_arg_data_type;
-    APDataType arg_data_type;
-    bool result_bool;
-    bool use_flag_value;
+    size_t rand_idx{};
+    size_t n_initialized{};
+    uint32_t result_u32{};
+    uint32_t shifter{};
+    int32_t arg_table_idx{};
+    int32_t error_arg_idx{};
+    APDataType error_arg_data_type{};
+    APDataType arg_data_type{};
+    bool result_bool{};
+    bool use_flag_value{};
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -255,8 +256,10 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
 
 }
 
+
 void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

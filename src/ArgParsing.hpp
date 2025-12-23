@@ -20,15 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #ifndef ARGPARSING
 #define ARGPARSING
 
+
 #include <iostream>
-#include <vector>
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
+#include <vector>
+
 
 #define VALID_FLAG_VALUES {"0", "1", "true", "false", "TRUE", "FALSE"}
+
 
 enum class APState {
     DONE,
@@ -71,6 +75,7 @@ union data {
 };
 
 
+typedef struct APTableEntry APTableEntry;
 struct APTableEntry {
     std::string abbr_form{};
     std::string full_form{};
@@ -79,13 +84,17 @@ struct APTableEntry {
     bool required{};
     bool initialized{};
 
+
     APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(in_abbr_form), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
+
 
     APTableEntry(std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(""), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
 
+
     APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
+    
     
     ~APTableEntry() {
         if(this->initialized && this->data_type == APDataType::TEXT){
@@ -93,7 +102,6 @@ struct APTableEntry {
         }
     }
 };
-typedef struct APTableEntry APTableEntry;
 
 
 class ArgParsing{

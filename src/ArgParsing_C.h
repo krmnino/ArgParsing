@@ -23,15 +23,19 @@ SOFTWARE.
 #ifndef ARGPARSING_C
 #define ARGPARSING_C
 
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
+
 typedef struct ArgParsing_C ArgParsing_C;
+
 
 union data_C {
     char* text;
@@ -52,6 +56,7 @@ enum APDataType_C {
 typedef enum APDataType_C APDataType_C;
 
 
+typedef struct APTableEntry_C APTableEntry_C;
 struct APTableEntry_C {
     char* abbr_form;
     char* full_form;
@@ -60,7 +65,6 @@ struct APTableEntry_C {
     bool required;
     bool initialized;
 };
-typedef struct APTableEntry_C APTableEntry_C;
 
 
 ArgParsing_C* ArgParsing_C_get_instance();
