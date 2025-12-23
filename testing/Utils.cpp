@@ -20,10 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 
+
 std::string space_padding(std::string input_str, size_t width, std::string pad){
-    std::string ret = input_str;
+    std::string ret{};
+    
+    ret = input_str;
     if(input_str.size() >= width){
         return ret;
     }
@@ -33,6 +37,7 @@ std::string space_padding(std::string input_str, size_t width, std::string pad){
     }
     return ret;
 }
+
 
 std::string describe_argv(int input_argc, char** input_argv){
     if(input_argv == nullptr){
@@ -53,8 +58,11 @@ std::string describe_argv(int input_argc, char** input_argv){
     return buffer;
 }
 
+
 std::string ScenarioType_to_string(ScenarioType st){
-    std::string ret = "ScenarioType::";
+    std::string ret{};
+
+    ret = "ScenarioType::";
     switch (st){
     case ScenarioType::OK:
         ret += "OK";
@@ -93,8 +101,11 @@ std::string ScenarioType_to_string(ScenarioType st){
     return ret;
 }
 
+
 std::string APDataType_to_string(APDataType apdt){
-    std::string ret = "APDataType::";
+    std::string ret{};
+    
+    ret = "APDataType::";
     switch (apdt){
     case APDataType::TEXT:
         ret += "TEXT";
@@ -115,12 +126,15 @@ std::string APDataType_to_string(APDataType apdt){
     return ret;
 }
 
+
 std::string bool_to_string(bool data){
     return (data) ? "true" : "false";
 }
 
+
 std::string union_data_to_string(union data* data, APDataType data_type){
-    std::string ret;
+    std::string ret{};
+
     switch (data_type){
     case APDataType::UNSIGNED_INT:
         ret = std::to_string(data->intdata.number_u64);
@@ -146,15 +160,17 @@ std::string union_data_to_string(union data* data, APDataType data_type){
     return ret;
 }
 
+
 std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
-    std::stringstream buffer;
-    std::string idx_str;
-    std::string abbr_form_str;
-    std::string full_form_str;
-    std::string data_type_str;
-    std::string required_str;
-    std::string initialized_str;
-    std::string value_str;
+    std::stringstream buffer{};
+    std::string idx_str{};
+    std::string abbr_form_str{};
+    std::string full_form_str{};
+    std::string data_type_str{};
+    std::string required_str{};
+    std::string initialized_str{};
+    std::string value_str{};
+
     buffer << " ";
     buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
     buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
@@ -196,6 +212,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     return buffer.str();
 }
 
+
 std::string APErrRsn_to_string(APErrRsn rsn){
     switch (rsn){
     case APErrRsn::MISSING_FIRST_DASH:
@@ -216,6 +233,7 @@ std::string APErrRsn_to_string(APErrRsn rsn){
     return "APErrRsn::UNDEFINED";
 }
 
+
 void vector_to_char_array(std::vector<std::string>& input_vect, char**& output_char_arr){
     // Allocate the array of char pointers + 1 for the null terminator
     output_char_arr = new char*[input_vect.size() + 1];
@@ -230,7 +248,9 @@ void vector_to_char_array(std::vector<std::string>& input_vect, char**& output_c
 
 
 size_t arg_table_count_data_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
-    size_t accumulator = 0;
+    size_t accumulator{};
+
+    accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
         if(arg_table[i].data_type == input_data_type){
             accumulator++;
@@ -244,7 +264,9 @@ bool arg_table_is_required_arg(std::vector<APTableEntry>& arg_table, size_t idx)
 }
 
 size_t arg_table_count_required(std::vector<APTableEntry>& arg_table){
-    size_t accumulator = 0;
+    size_t accumulator{};
+    
+    accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
         if(arg_table_is_required_arg(arg_table, i)){
             accumulator++;
@@ -254,7 +276,9 @@ size_t arg_table_count_required(std::vector<APTableEntry>& arg_table){
 }
 
 size_t arg_table_count_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
-    size_t accumulator = 0;
+    size_t accumulator{};
+    
+    accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
         if(arg_table[i].data_type == input_data_type){
             accumulator++;
@@ -268,7 +292,9 @@ bool arg_table_is_abbr_form_available(std::vector<APTableEntry>& arg_table, size
 }
 
 size_t arg_table_count_abbr_form(std::vector<APTableEntry>& arg_table){
-    size_t accumulator = 0;
+    size_t accumulator{};
+    
+    accumulator = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
         if(arg_table_is_abbr_form_available(arg_table, i)){
             accumulator++;

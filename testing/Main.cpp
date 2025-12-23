@@ -20,32 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 Randomizer* Randomizer::rnd_ptr = nullptr;
 ErrorReporter* ErrorReporter::er_ptr = nullptr;
 volatile sig_atomic_t running = true;
 
+
 void terminating_handler(int s){
     running = false;
 }
 
+
 int main(int argc, char* argv[]){
-    struct sigaction sa_struct;
-    std::string pgm_err_msg;
-    std::string seed_argval;
-    std::string types_argval;
-    ArgParsing* pgm_ap;
-    ArgParsing* ap_test;
-    Randomizer* rnd;
-    ErrorReporter* er;
-    TestcaseData* testcase;
-    uint64_t testcase_counter;
-    uint32_t n_tests;
-    uint32_t n_scenarios;
-    uint32_t init_seed;
-    uint32_t user_allowed_scenario_types;
-    bool infinite_loop;
+    struct sigaction sa_struct{};
+    std::string pgm_err_msg{};
+    std::string seed_argval{};
+    std::string types_argval{};
+    ArgParsing* pgm_ap{};
+    ArgParsing* ap_test{};
+    Randomizer* rnd{};
+    ErrorReporter* er{};
+    TestcaseData* testcase{};
+    uint64_t testcase_counter{};
+    uint32_t n_tests{};
+    uint32_t n_scenarios{};
+    uint32_t init_seed{};
+    uint32_t user_allowed_scenario_types{};
+    bool infinite_loop{};
 
     // Program argument table 
     APTableEntry arg_table[] = {
@@ -147,7 +151,9 @@ int main(int argc, char* argv[]){
         }
     }
 
-    std::cout << "\nTERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
+    
+    std::cout << std::endl;
+    std::cout << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
     er->print_report();
 
     delete pgm_ap;

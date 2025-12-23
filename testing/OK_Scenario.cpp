@@ -20,23 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 void build_OK_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     union data value{};
-    size_t rand_idx;
-    size_t n_initialized;
-    uint32_t result_u32;
-    int32_t arg_table_idx;
-    bool result_bool;
-    bool use_flag_value;
+    size_t rand_idx{};
+    size_t n_initialized{};
+    uint32_t result_u32{};
+    int32_t arg_table_idx{};
+    bool result_bool{};
+    bool use_flag_value{};
    
     // Set expected error message 
     sc.exp_error_message = "";
@@ -210,8 +212,10 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& sc){
     vector_to_char_array(argv, sc.argv);
 }
 
+
 void validate_OK_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

@@ -20,30 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> arg_id_accumulator;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string no_dashes_arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<std::string> arg_id_accumulator{};
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string no_dashes_arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     std::string group_buffer;
-    std::string error_abbr_arg_id;
-    std::string error_full_arg_id;
+    std::string error_abbr_arg_id{};
+    std::string error_full_arg_id{};
     union data value{};
-    size_t rand_idx;
-    size_t n_initialized;
-    size_t valid_args_for_group;
-    size_t args_in_group;
-    uint32_t result_u32;
-    int32_t arg_table_idx;
-    int32_t error_abbr_arg_idx;
-    bool result_bool;
-    bool use_flag_value;
+    size_t rand_idx{};
+    size_t n_initialized{};
+    size_t valid_args_for_group{};
+    size_t args_in_group{};
+    uint32_t result_u32{};
+    int32_t arg_table_idx{};
+    int32_t error_abbr_arg_idx{};
+    bool result_bool{};
+    bool use_flag_value{};
 
     // Make room in the accumulator argv
     arg_id_accumulator.reserve(sc.n_args);
@@ -278,8 +280,10 @@ void build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd, ScenarioData& sc){
     vector_to_char_array(argv, sc.argv);
 }
 
+
 void validate_INVALID_FLAG_GROUP_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

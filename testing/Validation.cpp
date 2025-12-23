@@ -20,10 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 
+
 void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& tc){
-    std::string buffer;
+    std::string buffer{};
+
     for(size_t i = 0; i < tc.n_scenarios; i++){
         buffer = "ArgParsingTesting - " + ScenarioType_to_string(tc.s_arr[i].type);
         er->begin_test(buffer);
@@ -72,6 +75,7 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         er->end_test();
     }
 }
+
 
 void collect_ap_data(ScenarioData& scenario, ArgParsing* ap){
     ap->get_arg_table(scenario.res_argtab);

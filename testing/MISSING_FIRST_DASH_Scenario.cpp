@@ -20,22 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
+
 
 void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::vector<std::string> argv;
-    std::string arg_id;
-    std::string value_for_argv;
-    std::string flag_value;
+    std::vector<std::string> argv{};
+    std::string arg_id{};
+    std::string value_for_argv{};
+    std::string flag_value{};
     union data value{};
-    size_t rand_idx;
-    size_t error_arg_idx;
-    size_t n_initialized;
-    size_t error_arg_n;
-    uint32_t result_u32;
-    bool result_bool;
-        bool use_flag_value;
+    size_t rand_idx{};
+    size_t error_arg_idx{};
+    size_t n_initialized{};
+    size_t error_arg_n{};
+    uint32_t result_u32{};
+    bool result_bool{};
+    bool use_flag_value{};
 
     // Add the placeholder program name for the first element of argv
     sc.argc = 0;
@@ -190,11 +192,12 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
     vector_to_char_array(argv, sc.argv);
-
 }
 
+
 void validate_MISSING_FIRST_DASH_scenario(ErrorReporter* er, ScenarioData& sc){
-    std::string buffer;
+    std::string buffer{};
+
     // Result vs. Expected error mesage
     er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
     er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");

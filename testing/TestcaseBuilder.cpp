@@ -20,17 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #include "ArgParsingTesting.hpp"
 
 
 int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
-    uint32_t scenario_type_pool;
-    uint32_t picked_scenario_type;
-    uint32_t attempt_counter;
-    uint32_t shifter;
-    uint32_t n_args;
-    int32_t ret;
-    bool invalid;
+    uint32_t scenario_type_pool{};
+    uint32_t picked_scenario_type{};
+    uint32_t attempt_counter{};
+    uint32_t shifter{};
+    uint32_t n_args{};
+    int32_t ret{};
+    bool invalid{};
     
     // Set the number of scenarios for this testcase
     tdata.n_scenarios = n_scenarios;
