@@ -40,10 +40,11 @@ std::string space_padding(std::string input_str, size_t width, std::string pad){
 
 
 std::string describe_argv(int input_argc, char** input_argv){
+    std::string buffer{};
+
     if(input_argv == nullptr){
-        return "";
+        return buffer;
     }
-    std::string buffer;
     buffer += " ";
     buffer += space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") + " | ";
     buffer += space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") + "\n";
