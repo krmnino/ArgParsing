@@ -30,10 +30,10 @@ SOFTWARE.
 
 
 int main(int argc, char* argv[]){
-    int ret = 0;
+    int ret;
     char str_buff1[MAX_BUFF_LEN];
-    char* str_buff2 = {0};
-    size_t arg_txt_len = 0;
+    char* str_buff2;
+    size_t arg_txt_len;
 
     ArgParsing_C* ap = ArgParsing_C_get_instance();
 
