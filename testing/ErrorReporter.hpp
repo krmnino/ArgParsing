@@ -134,7 +134,7 @@ public:
 
 
     void log_it(std::string input_text){
-        if(test_text_buffer.length() != 0){
+        if(test_text_buffer.size() != 0){
             test_text_buffer += "\n";
         }
         test_text_buffer += input_text;
