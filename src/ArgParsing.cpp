@@ -204,8 +204,16 @@ bool ArgParsing::is_valid_hex(std::string& input){
 
 
 bool ArgParsing::is_valid_dec(std::string& input){
-    std::string input_copy = input;
-    bool valid = true;
+    std::string input_copy{};
+    bool valid{};
+
+    // Validate input
+    if(input.size() == 0){
+        return false;
+    }
+
+    input_copy = input;
+    valid = true;
     // Might be a negative number. If so, skip the minus sign
     if(input_copy[0] == '-'){
         input_copy = input_copy.substr(1);
@@ -221,8 +229,10 @@ bool ArgParsing::is_valid_dec(std::string& input){
 
 
 void ArgParsing::arg_begin(){
+    std::string curr{};
+
     // We guarantee that curr is not an empty string
-    std::string curr = this->argv[argv_idx];
+    curr = this->argv[argv_idx];
     // If first char is not a dash, set error state
     if(curr[0] != '-'){
         this->state = APState::ERROR;
@@ -242,7 +252,8 @@ void ArgParsing::arg_begin(){
 
 
 void ArgParsing::arg_abbr_form(){
-    std::string abbr_arg;
+    std::string abbr_arg{};
+
     abbr_arg = this->argv[this->argv_idx];
     if(abbr_arg.size() == 2){
         abbr_arg = std::string(1, abbr_arg[1]);
@@ -309,7 +320,9 @@ void ArgParsing::arg_abbr_form(){
 
 
 void ArgParsing::arg_full_form(){
-    std::string full_arg = this->argv[this->argv_idx];
+    std::string full_arg{};
+    
+    full_arg = this->argv[this->argv_idx];
     full_arg = full_arg.substr(2);
     // Search for full identifier in argument table
     // If not found, returned index is -1 and set error state
@@ -341,7 +354,8 @@ void ArgParsing::arg_full_form(){
 
 
 void ArgParsing::arg_value(){
-    std::string value;
+    std::string value{};
+
     value = this->argv[this->argv_idx];
     switch(this->arg_table[this->eval_arg_idx].data_type){
     case APDataType::UNSIGNED_INT:
@@ -415,7 +429,9 @@ std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
 
 
 void ArgParsing::display_error_msg(){
-    std::string rsn_str = APErrRsn_to_string(this->reason);
+    std::string rsn_str{};
+    
+    rsn_str = APErrRsn_to_string(this->reason);
     switch (this->reason){
     case APErrRsn::MISSING_FIRST_DASH:
         this->error_msg = rsn_str + ": all argument identifiers must start with a dash (-).";
@@ -586,10 +602,11 @@ void ArgParsing::get_error_msg(std::string& target){
 
 
 void ArgParsing::display_arg_table(){
-    std::string data_type_str;
-    std::string value_str;
-    std::string required_str;
-    std::string initialized_str;
+    std::string data_type_str{};
+    std::string value_str{};
+    std::string required_str{};
+    std::string initialized_str{};
+
     for(size_t i = 0; i < this->arg_table.size(); i++){
         std::cout << "Abbreviated Form: " << this->arg_table[i].abbr_form << std::endl;
         std::cout << "Full Form:        " << this->arg_table[i].full_form << std::endl;
@@ -675,15 +692,17 @@ void ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input
 
 
 int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries){
+    APTableEntry_C* input_entry_curr{};
+    APTableEntry new_entry{};
+    std::vector<APTableEntry> new_arg_table{};
+
     // If no entries passed, can't process them
     if(n_entries == 0){
         return -1;
     }
     
     // Set pointer to the first element in the input array
-    APTableEntry_C* input_entry_curr = input_arg_table;
-    APTableEntry new_entry;
-    std::vector<APTableEntry> new_arg_table;
+    input_entry_curr = input_arg_table;
     new_arg_table.reserve(n_entries);
 
     // Loop though each entry in the array and copy the data to the vector
@@ -728,13 +747,12 @@ int ArgParsing_C_parse(ArgParsing_C* apc){
 
 size_t ArgParsing_C_get_arg_value_bytesize(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
-    return 0;
 }
 
 
 int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input, char* output_buffer, size_t len_output_buffer){
-    std::string val;
-    size_t arg_value_len;
+    std::string val{};
+    size_t arg_value_len{};
     
     arg_value_len = reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
     // If argument value length is 0 or if output buffer is smaller than argument length, then stop it
