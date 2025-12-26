@@ -35,12 +35,12 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - **Output**: a static reference to the singleton ArgParsing object.
 - Only one instance of the `ArgParsing` class is allowed to exist throughout the execution of the program.
 
-### `void set_input_args(int input_argc, char** input_argv)`
+### `int set_input_args(int input_argc, char** input_argv)`
 
 - **Input arguments**:
   - `input_argc`: the number of C strings in program's argv to be passed to the `ArgParsing` object.
   - `input_argv`: an array of pointers to C strings to be passed to the `ArgParsing` object.
-- **Output**: none.
+- **Output**: return 0 if no errors occurred. Return -1 if `input_argc` is less than 1 or `input_argv` is a `nullptr`.
 - This method will assign the pointer to the array of strings containing the program's argument list (argv) and how many of them are in the list (argc) to the `ArgParsing` instance.
 
 ### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
@@ -48,7 +48,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - **Input arguments**:
   - `arg_table_ptr`: a pointer to an array of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
   - `n_entries`: the number of elements in the array of `APTableEntry` objects.
-- **Output**: return 0 if no errors occurred. Return 1 if an error was encountred plus an informational message is reported.
+- **Output**: return 0 if no errors occurred. Return -1 if an error was encountred plus an informational message is reported.
 - This method will initialize an argument table in the `ArgParsing` object. This table of arguments will be used to validate the program's command line arguments and hold their values once parsed and validated.
 - This method performs validation to prevent duplicate argument identifiers, use of reserved keywords, etc.
 
@@ -103,14 +103,14 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - **Output**: a pointer to `ArgParsing_C` object.
 - The returned `ArgParsing_C` pointer points to a statically allocated `ArgParsing` object.
 
-### `void ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv)`
+### `int ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
   - `input_argc`: the number of C strings in program's argv to be passed to the `ArgParsing` object.
   - `input_argv`: an array of pointers to C strings to be passed to the `ArgParsing` object.
-- **Output**: none.
-- This function calls the `ArgParsing` method `void set_input_args(int input_argc, char** input_argv)`.
+- **Output**: return 0 if no errors occurred. Return -1 if `input_argc` is less than 1 or `input_argv` is a `nullptr`.
+- This function calls the `ArgParsing` method `int set_input_args(int input_argc, char** input_argv)`.
 
 ### `int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries)`
 
