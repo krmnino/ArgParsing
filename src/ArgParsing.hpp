@@ -151,7 +151,7 @@ public:
     void get_error_msg(std::string&);
     void display_arg_table();
     #endif
-    void set_input_args(int, char**);
+    int set_input_args(int, char**);
     int set_arg_table(APTableEntry*, size_t);
     int set_arg_table(std::vector<APTableEntry>&);
     size_t get_arg_value_bytesize(std::string, bool);
@@ -159,7 +159,15 @@ public:
     
     template<typename T> T get_arg_value(std::string arg_id, bool is_abbr_input){
         int32_t arg_table_idx{};
+        size_t arg_id_len;
         T ret_value{};
+
+        // Validate input
+        arg_id_len = arg_id.size();
+        if(arg_id_len == 0){
+            std::cerr << "ERROR: Argument identification string is empty." << std::endl;
+            return ret_value;
+        }
 
         // Check if argument identifier exists
         arg_table_idx = this->get_index_in_arg_table(arg_id, is_abbr_input);

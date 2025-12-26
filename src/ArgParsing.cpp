@@ -54,13 +54,32 @@ int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_in
             }    
         }
     }
+    #ifndef DEBUG
+    std::cerr << "ERROR: Argument with identification \"" << arg_key <<
+              "\" [is_abbr_input:" << is_abbr_input << "]" <<" does not exist within the argument table." << std::endl;
+    #endif
     return -1;
 }
 
 
-void ArgParsing::set_input_args(int input_argc, char** input_argv){
+int ArgParsing::set_input_args(int input_argc, char** input_argv){
+    // Validate input
+    if(input_argv == nullptr){
+        #ifndef DEBUG
+        std::cerr << "ERROR: input_argc cannot be less than 1." << std::endl;
+        #endif
+        return -1;
+    }
+    if(input_argv == nullptr){
+        #ifndef DEBUG
+        std::cerr << "ERROR: input_argv is a nullptr." << std::endl;
+        #endif
+        return -1;
+    }
+
     this->argc = input_argc;
     this->argv = input_argv;
+    return 0;
 }
 
 
@@ -114,8 +133,11 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
 
 
 int ArgParsing::set_arg_table(std::vector<APTableEntry>& arg_table){
-    size_t n_entries = arg_table.size();
-    APTableEntry* arg_table_ptr = arg_table.data();
+    size_t n_entries{};
+    APTableEntry* arg_table_ptr{};
+    
+    n_entries = arg_table.size();
+    arg_table_ptr = arg_table.data();
     return set_arg_table(arg_table_ptr, n_entries);
 }
 
@@ -154,8 +176,16 @@ size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input
 
 
 bool ArgParsing::is_valid_hex(std::string& input){
-    std::string input_copy = input;
-    bool valid = true;
+    std::string input_copy{};
+    bool valid{};
+    
+    // Validate input
+    if(input.size() == 0){
+        return false;
+    }
+       
+    input_copy = input;
+    valid = true;
     // A hex number must always start with '0x'
     if(input_copy[0] != '0' || input_copy[1] != 'x'){
         return false;
@@ -388,61 +418,40 @@ void ArgParsing::display_error_msg(){
     std::string rsn_str = APErrRsn_to_string(this->reason);
     switch (this->reason){
     case APErrRsn::MISSING_FIRST_DASH:
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": all argument identifiers must start with a dash (-)." << std::endl;
-        #else
         this->error_msg = rsn_str + ": all argument identifiers must start with a dash (-).";
-        #endif
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": the required argument " << err_msg_data[0] << " is missing." << std::endl;
-        #else
         this->error_msg = rsn_str + ": the required argument " + err_msg_data[0] + " is missing.";
-        #endif
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is an unknown." << std::endl;
-        #else
         this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is an unknown.";
-        #endif
         break;
     case APErrRsn::REPEATED_ARGUMENT:    
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is repeated." << std::endl;
-        #else
         this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is repeated.";
-        #endif
         break;
     case APErrRsn::MUST_BE_FLAG:    
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": the provided argument " << err_msg_data[0] << " is of type FLAG and does not need a value." << std::endl;
-        #else
         this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
-        #endif
         break;
     case APErrRsn::BAD_NUMERIC_VALUE:    
-        #ifndef DEBUG
-        std::cerr << rsn_str << ": \"" << err_msg_data[0] << "\" provided to the argument " << err_msg_data[1] << " is not a valid numeric value.";
-        #else
         this->error_msg = rsn_str + ": \"" + err_msg_data[0] + "\" provided to the argument " + err_msg_data[1] + " is not a valid numeric value.";
-        #endif
         break;
     default:
         break;
     }
+    #ifndef DEBUG
+    std::cout << this->error_msg << std::endl;
+    #endif
 }
 
 
 bool ArgParsing::validate_flag_value(std::string& value){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
-    std::string prev_arg_id;
-    std::string arg_id;
-    int table_idx;
-    bool found; 
-    bool group_id; 
-    bool arg_value_fn_quick_exit; 
+    std::string prev_arg_id{};
+    std::string arg_id{};
+    int table_idx{};
+    bool found{}; 
+    bool group_id{}; 
+    bool arg_value_fn_quick_exit{}; 
     
     arg_value_fn_quick_exit = false;
     found = false;
