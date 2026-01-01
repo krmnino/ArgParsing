@@ -29,7 +29,7 @@ ArgParsing::ArgParsing() {
     this->state = APState::ARGV_BEGIN;
     this->argc = 0;
     this->argv = nullptr;
-    this->argv_idx = 1;
+    this->argv_idx = 0;
     this->eval_arg_idx = 0;
     this->is_table_set = false;
     #ifdef DEBUG
