@@ -95,7 +95,23 @@ struct APTableEntry {
 
     APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
     
-    
+    template<typename T> APTableEntry(std::string in_full_form, APDataType in_data_type, T value){
+        // Return the appropiate argument value
+        if constexpr (std::is_integral<T>::value) {
+            if constexpr (std::is_signed<T>::value) {
+                this->data.intdata.number_i64 = value;
+            }
+            else if constexpr (std::is_unsigned<T>::value) {
+                this->data.intdata.number_u64 = value;
+            }
+            else if constexpr (std::is_same<T, bool>::value) {
+                this->data.flag= value;
+            }
+        }
+        // Args that receive a default value are not required, no need to specify in the program's argument list
+        this->required = false; 
+    }
+
     ~APTableEntry() {
         if(this->initialized && this->data_type == APDataType::TEXT){
             delete this->data.text;
