@@ -127,6 +127,9 @@ int main(int argc, char* argv[]){
     else{
         er->log_everything(false);
     }
+
+    std::cout << std::endl;
+    std::cout << "STARTING TEST MAIN LOOP... " << std::endl;    
     
     // Main driver
     while((testcase_counter < n_tests || infinite_loop) && running){
@@ -150,7 +153,6 @@ int main(int argc, char* argv[]){
             break;
         }
     }
-
     
     std::cout << std::endl;
     std::cout << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
