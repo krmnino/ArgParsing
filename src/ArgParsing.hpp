@@ -108,6 +108,9 @@ struct APTableEntry {
                 this->data.flag= value;
             }
         }
+        else if constexpr (std::is_same_v<T, std::string>) {
+            this->data.text = new std::string(value);
+        }
         // Args that receive a default value are not required, no need to specify in the program's argument list
         this->required = false; 
     }
