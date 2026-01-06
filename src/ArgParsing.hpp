@@ -83,6 +83,7 @@ struct APTableEntry {
     APDataType data_type{};
     bool required{};
     bool initialized{};
+    bool default_value{};
 
 
     APTableEntry(std::string in_abbr_form, std::string in_full_form, APDataType in_data_type, bool in_required) : 
@@ -95,22 +96,28 @@ struct APTableEntry {
 
     APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
     
-    template<typename T> APTableEntry(std::string in_full_form, APDataType in_data_type, T value){
+    template<typename T> APTableEntry(std::string in_full_form, T value){
         // Return the appropiate argument value
         if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
                 this->data.intdata.number_i64 = value;
+                this->data_type = APDataType::SIGNED_INT;
             }
             else if constexpr (std::is_unsigned<T>::value) {
                 this->data.intdata.number_u64 = value;
+                this->data_type = APDataType::UNSIGNED_INT;
             }
             else if constexpr (std::is_same<T, bool>::value) {
-                this->data.flag= value;
+                this->data.flag = value;
+                this->data_type = APDataType::FLAG;
             }
         }
         else if constexpr (std::is_same_v<T, std::string>) {
             this->data.text = new std::string(value);
+            this->data_type = APDataType::TEXT;
         }
+        this->initialized = false; 
+        this->default_value = true;
         // Args that receive a default value are not required, no need to specify in the program's argument list
         this->required = false; 
     }
