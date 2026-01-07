@@ -93,11 +93,11 @@ struct APTableEntry {
     APTableEntry(std::string in_full_form, APDataType in_data_type, bool in_required) : 
                  abbr_form(""), full_form(in_full_form), data_type(in_data_type), required(in_required), initialized(false) {}
 
-
-    APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
     
-    template<typename T> APTableEntry(std::string in_full_form, T value){
-        // Return the appropiate argument value
+    template<typename T> APTableEntry(std::string in_abbr_form, std::string in_full_form, T value){
+        this->abbr_form = in_abbr_form;
+        this->full_form = in_full_form;
+        // Set the default value appropiately
         if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
                 this->data.intdata.number_i64 = value;
@@ -121,6 +121,10 @@ struct APTableEntry {
         // Args that receive a default value are not required, no need to specify in the program's argument list
         this->required = false; 
     }
+
+
+    APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
+
 
     ~APTableEntry() {
         if(this->initialized && this->data_type == APDataType::TEXT){
