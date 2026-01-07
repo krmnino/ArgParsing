@@ -35,6 +35,7 @@ int main(int argc, char* argv[]){
         {      "arg3", APDataType::UNSIGNED_INT, false },
         { "9", "arg4", APDataType::FLAG        , false },
         { "z", "arg5", APDataType::TEXT        , true  },
+        { "m", "test", 123  },
     };
     
     ret = ap.set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
@@ -61,6 +62,8 @@ int main(int argc, char* argv[]){
     std::cout << "9/arg4 byte_size: " << ap.get_arg_value_bytesize("9", true) << std::endl;
     std::cout << "z/arg5: " << ap.get_arg_value<std::string>("z", true) << std::endl;
     std::cout << "z/arg5 byte_size: " << ap.get_arg_value_bytesize("z", true) << std::endl;
+    std::cout << "m/arg6: " << ap.get_arg_value<int64_t>("m", true) << std::endl;
+    std::cout << "m/arg6 byte_size: " << ap.get_arg_value_bytesize("m", true) << std::endl;
     
     return 0;
 }
