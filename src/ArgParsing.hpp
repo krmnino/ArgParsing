@@ -98,7 +98,11 @@ struct APTableEntry {
         this->abbr_form = in_abbr_form;
         this->full_form = in_full_form;
         // Set the default value appropiately
-        if constexpr (std::is_integral<T>::value) {
+        if constexpr (std::is_same<T, bool>::value) {
+            this->data.flag = value;
+            this->data_type = APDataType::FLAG;
+        }
+        else if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
                 this->data.intdata.number_i64 = value;
                 this->data_type = APDataType::SIGNED_INT;
@@ -107,10 +111,10 @@ struct APTableEntry {
                 this->data.intdata.number_u64 = value;
                 this->data_type = APDataType::UNSIGNED_INT;
             }
-            else if constexpr (std::is_same<T, bool>::value) {
-                this->data.flag = value;
-                this->data_type = APDataType::FLAG;
-            }
+        }
+        else if constexpr (std::is_same_v<T, const char*>) {
+            this->data.text = new std::string(value);
+            this->data_type = APDataType::TEXT;
         }
         else if constexpr (std::is_same_v<T, std::string>) {
             this->data.text = new std::string(value);
