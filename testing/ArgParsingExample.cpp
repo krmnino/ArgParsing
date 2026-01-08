@@ -30,12 +30,14 @@ int main(int argc, char* argv[]){
     ArgParsing& ap = ArgParsing::get_instance();
 
     APTableEntry arg_table[] = {
-        { "a", "arg1", APDataType::FLAG        , true  },
-        { "x", "arg2", APDataType::TEXT        , false },
-        {      "arg3", APDataType::UNSIGNED_INT, false },
-        { "9", "arg4", APDataType::FLAG        , false },
-        { "z", "arg5", APDataType::TEXT        , true  },
-        { "m", "test", 123  },
+        { "a", "arg1", APDataType::FLAG        , true   },
+        { "z", "arg2", APDataType::TEXT        , true   },
+        {      "arg3", APDataType::UNSIGNED_INT, false  },
+        { "9", "arg4", APDataType::FLAG        , false  },
+        { "m", "arg5", 123                              },
+        { "n", "arg6", "initial_value"                  },
+        { "x", "arg7", true                             },
+        { "y", "arg8", std::string("init text")         },
     };
     
     ret = ap.set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
@@ -54,16 +56,20 @@ int main(int argc, char* argv[]){
 
     std::cout << "a/arg1: " << ap.get_arg_value<bool>("arg1", false) << std::endl;
     std::cout << "a/arg1 byte_size: " << ap.get_arg_value_bytesize("arg1", false) << std::endl;
-    std::cout << "x/arg2: " << ap.get_arg_value<std::string>("x", true) << std::endl;
-    std::cout << "x/arg2 byte_size: " << ap.get_arg_value_bytesize("x", true) << std::endl;
+    std::cout << "x/arg2: " << ap.get_arg_value<std::string>("z", true) << std::endl;
+    std::cout << "x/arg2 byte_size: " << ap.get_arg_value_bytesize("z", true) << std::endl;
     std::cout << "  arg3: " << ap.get_arg_value<uint64_t>("arg3", false) << std::endl;
     std::cout << "  arg3 byte_size: " << ap.get_arg_value_bytesize("arg3", false) << std::endl;
     std::cout << "9/arg4: " << ap.get_arg_value<bool>("9", true) << std::endl;
     std::cout << "9/arg4 byte_size: " << ap.get_arg_value_bytesize("9", true) << std::endl;
-    std::cout << "z/arg5: " << ap.get_arg_value<std::string>("z", true) << std::endl;
-    std::cout << "z/arg5 byte_size: " << ap.get_arg_value_bytesize("z", true) << std::endl;
-    std::cout << "m/arg6: " << ap.get_arg_value<int64_t>("m", true) << std::endl;
-    std::cout << "m/arg6 byte_size: " << ap.get_arg_value_bytesize("m", true) << std::endl;
+    std::cout << "m/arg5: " << ap.get_arg_value<int64_t>("m", true) << std::endl;
+    std::cout << "m/arg5 byte_size: " << ap.get_arg_value_bytesize("m", true) << std::endl;
+    std::cout << "n/arg6: " << ap.get_arg_value<std::string>("n", true) << std::endl;
+    std::cout << "n/arg6 byte_size: " << ap.get_arg_value_bytesize("n", true) << std::endl;
+    std::cout << "x/arg7: " << ap.get_arg_value<bool>("x", true) << std::endl;
+    std::cout << "x/arg7 byte_size: " << ap.get_arg_value_bytesize("x", true) << std::endl;
+    std::cout << "y/arg8: " << ap.get_arg_value<std::string>("y", true) << std::endl;
+    std::cout << "y/arg8 byte_size: " << ap.get_arg_value_bytesize("y", true) << std::endl;
     
     return 0;
 }
