@@ -365,10 +365,10 @@ void ArgParsing::arg_value(){
         if(value.size() >= 2){
             if(this->is_valid_hex(value)){
                 value = value.substr(2);
-                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoul(value, nullptr, 16);
+                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoul(value, nullptr, 16);
             }
             else if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoul(value);
+                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoul(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -380,7 +380,7 @@ void ArgParsing::arg_value(){
         }
         else{
             if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].data.intdata.number_u64 = std::stoi(value);
+                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoi(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -639,10 +639,10 @@ void ArgParsing::display_arg_table(){
                 }
                 break;        
             case APDataType::UNSIGNED_INT:
-                value_str = std::to_string(this->arg_table[i].data.intdata.number_u64);
+                value_str = std::to_string(this->arg_table[i].data.number_u64);
                 break;        
             case APDataType::SIGNED_INT:
-                value_str = std::to_string(this->arg_table[i].data.intdata.number_i64);
+                value_str = std::to_string(this->arg_table[i].data.number_i64);
                 break;        
             case APDataType::TEXT:
                 value_str = *this->arg_table[i].data.text;
@@ -731,6 +731,25 @@ int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_tabl
         default:
             return -1;
             break;
+        }
+        if(input_entry_curr->default_value){
+            switch (input_entry_curr->data_type){
+            case TEXT:
+                new_entry.data.text = new std::string(input_entry_curr->data.text);
+                break;        
+            case FLAG:
+                new_entry.data.flag = input_entry_curr->data.flag;
+                break;        
+            case UNSIGNED_INT:
+                new_entry.data.number_u64 = input_entry_curr->data.intdata.number_u64;
+                break;        
+            case SIGNED_INT:
+                new_entry.data.number_i64 = input_entry_curr->data.intdata.number_i64;
+                break;        
+            default:
+                return -1;
+                break;
+            }
         }
         new_arg_table.push_back(new_entry);
         new_entry = {};

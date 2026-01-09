@@ -67,10 +67,10 @@ enum class APDataType {
 
 union data {
     std::string* text;
-    union intdata{
+    union{
         uint64_t number_u64;
         int64_t  number_i64;
-    } intdata;
+    };
     bool flag;
 };
 
@@ -104,11 +104,11 @@ struct APTableEntry {
         }
         else if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
-                this->data.intdata.number_i64 = value;
+                this->data.number_i64 = value;
                 this->data_type = APDataType::SIGNED_INT;
             }
             else if constexpr (std::is_unsigned<T>::value) {
-                this->data.intdata.number_u64 = value;
+                this->data.number_u64 = value;
                 this->data_type = APDataType::UNSIGNED_INT;
             }
         }
@@ -213,7 +213,7 @@ public:
         if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
                 if(this->arg_table[arg_table_idx].data_type == APDataType::SIGNED_INT){
-                    ret_value = this->arg_table[arg_table_idx].data.intdata.number_i64;
+                    ret_value = this->arg_table[arg_table_idx].data.number_i64;
                 }
             }
             else if constexpr (std::is_same<T, bool>::value) {
@@ -223,7 +223,7 @@ public:
             }
             else{
                 if(this->arg_table[arg_table_idx].data_type == APDataType::UNSIGNED_INT){
-                    ret_value = this->arg_table[arg_table_idx].data.intdata.number_u64;
+                    ret_value = this->arg_table[arg_table_idx].data.number_u64;
                 }
             }
         }
