@@ -159,19 +159,7 @@ struct APTableEntry {
         return *this;
     }
 
-
-    void clear(){
-        this->abbr_form = "";
-        this->full_form = "";
-        this->data.text.reset();
-        this->data.number_u64 = 0;
-        this->data.flag = false;
-        this->data_type = APDataType::UNSIGNED_INT;
-        this->initialized = false;
-        this->default_value = false;
-    }
-
-
+    
     ~APTableEntry() {}
 };
 
