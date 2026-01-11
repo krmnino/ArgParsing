@@ -133,15 +133,15 @@ std::string bool_to_string(bool data){
 }
 
 
-std::string union_data_to_string(union data* data, APDataType data_type){
+std::string union_data_to_string(APValue* data, APDataType data_type){
     std::string ret{};
 
     switch (data_type){
     case APDataType::UNSIGNED_INT:
-        ret = std::to_string(data->intdata.number_u64);
+        ret = std::to_string(data->number_u64);
         break;
     case APDataType::SIGNED_INT:
-        ret = std::to_string(data->intdata.number_i64);
+        ret = std::to_string(data->number_i64);
         break;
     case APDataType::TEXT:
         if(data->text == nullptr){
@@ -193,7 +193,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         abbr_form_str = arg_table[i].abbr_form;
         full_form_str = arg_table[i].full_form;
         if(arg_table[i].initialized){
-            value_str = union_data_to_string(&arg_table[i].data, arg_table[i].data_type);
+            value_str = union_data_to_string(&arg_table[i].value, arg_table[i].data_type);
         }
         else{
             value_str = "";
