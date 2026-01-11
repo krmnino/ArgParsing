@@ -98,7 +98,7 @@ int main(int argc, char* argv[]){
     memset((void*)&str_buff1, 0, MAX_BUFF_LEN);
     ArgParsing_C_get_value_TEXT(ap, "arg8", false, (char*)&str_buff1, MAX_BUFF_LEN);
     printf("y/arg8: %s\n", str_buff1);
-    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "z", true);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "arg8", false);
     printf("y/arg8 byte_size: %ld\n", arg_txt_len);
 
     return 0;
