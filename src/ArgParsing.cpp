@@ -590,7 +590,7 @@ void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     // For any initialized TEXT type arugments, copy their values
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(target[i].initialized && target[i].data_type == APDataType::TEXT){
-            target[i].data.text = std::make_shared<std::string>(this->arg_table[i].data.text);
+            target[i].value.text = std::make_shared<std::string>(*this->arg_table[i].value.text);
         }
     }
 }
@@ -631,7 +631,7 @@ void ArgParsing::display_arg_table(){
         if(this->arg_table[i].initialized){
             switch (this->arg_table[i].data_type){
             case APDataType::FLAG:
-                if(this->arg_table[i].data.flag){
+                if(this->arg_table[i].value.flag){
                     value_str = "true";
                 }
                 else{
@@ -639,13 +639,13 @@ void ArgParsing::display_arg_table(){
                 }
                 break;        
             case APDataType::UNSIGNED_INT:
-                value_str = std::to_string(this->arg_table[i].data.number_u64);
+                value_str = std::to_string(this->arg_table[i].value.number_u64);
                 break;        
             case APDataType::SIGNED_INT:
-                value_str = std::to_string(this->arg_table[i].data.number_i64);
+                value_str = std::to_string(this->arg_table[i].value.number_i64);
                 break;        
             case APDataType::TEXT:
-                value_str = *this->arg_table[i].data.text;
+                value_str = *this->arg_table[i].value.text;
                 break;        
             default:
                 value_str = "";
