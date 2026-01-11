@@ -39,10 +39,10 @@ typedef struct ArgParsing_C ArgParsing_C;
 
 union data_C {
     char* text;
-    union intdata{
+    union{
         uint64_t number_u64;
         int64_t  number_i64;
-    } intdata;
+    };
     bool flag;
 };
 
@@ -64,6 +64,7 @@ struct APTableEntry_C {
     APDataType_C data_type;
     bool required;
     bool initialized;
+    bool default_value;
 };
 
 

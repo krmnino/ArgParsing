@@ -40,11 +40,14 @@ int main(int argc, char* argv[]){
     ArgParsing_C_set_input_args(ap, argc, argv);
 
     APTableEntry_C arg_table[] = {
-        { .abbr_form = "a", .full_form = "arg1", .data_type=FLAG        , .required=true  },
-        { .abbr_form = "x", .full_form = "arg2", .data_type=TEXT        , .required=false },
-        { .abbr_form = "" , .full_form = "arg3", .data_type=UNSIGNED_INT, .required=false },
-        { .abbr_form = "9", .full_form = "arg4", .data_type=FLAG        , .required=false },
-        { .abbr_form = "z", .full_form = "arg5", .data_type=TEXT        , .required=true  },
+        { .abbr_form="a", .full_form="arg1", .initialized=false, .data_type=FLAG         , .required=true , .default_value=false, .data={0}  },
+        { .abbr_form="z", .full_form="arg2", .initialized=false, .data_type=TEXT         , .required=true , .default_value=false, .data={0}  },
+        { .abbr_form="" , .full_form="arg3", .initialized=false, .data_type=UNSIGNED_INT , .required=false, .default_value=false, .data={0}  },
+        { .abbr_form="9", .full_form="arg4", .initialized=false, .data_type=FLAG         , .required=false, .default_value=false, .data={0}  },
+        { .abbr_form="m", .full_form="arg5", .initialized=false, .data_type=UNSIGNED_INT , .required=false, .default_value=true , .data.number_i64=123 },
+        { .abbr_form="n", .full_form="arg6", .initialized=false, .data_type=TEXT         , .required=false, .default_value=true , .data.text="initial_value" },
+        { .abbr_form="x", .full_form="arg7", .initialized=false, .data_type=FLAG         , .required=false, .default_value=true , .data.flag=true },
+        { .abbr_form="y", .full_form="arg8", .initialized=false, .data_type=TEXT         , .required=false, .default_value=true , .data.text="init text" },
     };
 
     ret = ArgParsing_C_set_arg_table(ap, arg_table, sizeof(arg_table) / sizeof(APTableEntry_C));
@@ -64,10 +67,10 @@ int main(int argc, char* argv[]){
     printf("a/arg1 byte_size: %ld\n", arg_txt_len);
     
     memset((void*)&str_buff1, 0, MAX_BUFF_LEN);
-    ArgParsing_C_get_value_TEXT(ap, "x", true, (char*)&str_buff1, MAX_BUFF_LEN);
-    printf("x/arg2: %s\n", str_buff1);
-    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "x", true);
-    printf("x/arg2 byte_size: %ld\n", arg_txt_len);
+    ArgParsing_C_get_value_TEXT(ap, "z", true, (char*)&str_buff1, MAX_BUFF_LEN);
+    printf("z/arg2: %s\n", str_buff1);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "z", true);
+    printf("z/arg2 byte_size: %ld\n", arg_txt_len);
 
     printf("  arg3: %ld\n", ArgParsing_C_get_value_UNSIGNED_INT(ap, "arg3", false));
     arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "arg3", false);
@@ -77,12 +80,26 @@ int main(int argc, char* argv[]){
     arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "9", true);
     printf("9/arg4 byte_size: %ld\n", arg_txt_len);
 
-    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "z", true);
+    printf("m/arg5: %ld\n", ArgParsing_C_get_value_UNSIGNED_INT(ap, "m", true));
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "m", true);
+    printf("m/arg5 byte_size: %ld\n", arg_txt_len);
+
     str_buff2 = (char*)calloc(arg_txt_len + 1, sizeof(char));
-    ArgParsing_C_get_value_TEXT(ap, "z", true, str_buff2, MAX_BUFF_LEN);
-    printf("z/arg5: %s\n", str_buff2);
-    printf("z/arg5 byte_size: %ld\n", arg_txt_len);
+    ArgParsing_C_get_value_TEXT(ap, "n", true, str_buff2, MAX_BUFF_LEN);
+    printf("n/arg6: %s\n", str_buff2);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "m", true);
+    printf("n/arg6 byte_size: %ld\n", arg_txt_len);
     free(str_buff2);
+
+    printf("x/arg7: %d\n", ArgParsing_C_get_value_FLAG(ap, "x", true));
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "x", true);
+    printf("x/arg7 byte_size: %ld\n", arg_txt_len);
+
+    memset((void*)&str_buff1, 0, MAX_BUFF_LEN);
+    ArgParsing_C_get_value_TEXT(ap, "arg8", false, (char*)&str_buff1, MAX_BUFF_LEN);
+    printf("y/arg8: %s\n", str_buff1);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "z", true);
+    printf("y/arg8 byte_size: %ld\n", arg_txt_len);
 
     return 0;
 }
