@@ -65,6 +65,7 @@ enum class APDataType {
 #define MAX_TYPES (uint32_t)4
 #endif
 
+
 struct data{
     std::shared_ptr<std::string> text{};
     union{
@@ -73,9 +74,12 @@ struct data{
     };
     bool flag;
 
+
     data() : text{}, number_u64(0), flag(false) {}
 
+
     ~data() {}
+
 
     data& operator=(const data& in_data){
         this->text = in_data.text;
@@ -84,6 +88,7 @@ struct data{
         return *this;
     }
 };
+
 
 typedef struct APTableEntry APTableEntry;
 struct APTableEntry {
@@ -159,7 +164,7 @@ struct APTableEntry {
         return *this;
     }
 
-    
+
     ~APTableEntry() {}
 };
 
