@@ -66,7 +66,8 @@ enum class APDataType {
 #endif
 
 
-struct data{
+typedef struct APValue APValue;
+struct APValue{
     std::shared_ptr<std::string> text{};
     union{
         uint64_t number_u64;
@@ -75,13 +76,13 @@ struct data{
     bool flag;
 
 
-    data() : text{}, number_u64(0), flag(false) {}
+    APValue() : text{}, number_u64(0), flag(false) {}
 
 
-    ~data() {}
+    ~APValue() {}
 
 
-    data& operator=(const data& in_data){
+    APValue& operator=(const APValue& in_data){
         this->text = in_data.text;
         this->number_u64 = in_data.number_u64;
         this->flag = in_data.flag;
@@ -94,7 +95,7 @@ typedef struct APTableEntry APTableEntry;
 struct APTableEntry {
     std::string abbr_form{};
     std::string full_form{};
-    struct data data{};
+    APValue value{};
     APDataType data_type{};
     bool required{};
     bool initialized{};
@@ -114,29 +115,29 @@ struct APTableEntry {
         this->full_form = in_full_form;
         // Set the default value appropiately
         if constexpr (std::is_same<T, bool>::value) {
-            this->data.flag = value;
+            this->value.flag = value;
             this->data_type = APDataType::FLAG;
         }
         else if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
-                this->data.number_i64 = value;
+                this->value.number_i64 = value;
                 this->data_type = APDataType::SIGNED_INT;
             }
             else if constexpr (std::is_unsigned<T>::value) {
-                this->data.number_u64 = value;
+                this->value.number_u64 = value;
                 this->data_type = APDataType::UNSIGNED_INT;
             }
         }
         else if constexpr (std::is_same_v<T, const char*>) {
-            this->data.text = std::make_shared<std::string>(value);
+            this->value.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }
         else if constexpr (std::is_same_v<T, char*>) {
-            this->data.text = std::make_shared<std::string>(value);
+            this->value.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }
         else if constexpr (std::is_same_v<T, std::string>) {
-            this->data.text = std::make_shared<std::string>(value);
+            this->value.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }
         this->initialized = false; 
@@ -152,7 +153,7 @@ struct APTableEntry {
     APTableEntry(const APTableEntry& in_apte) {
         this->abbr_form = in_apte.abbr_form;
         this->full_form = in_apte.full_form;
-        this->data = in_apte.data;
+        this->value = in_apte.value;
         this->data_type = in_apte.data_type;
         this->required = in_apte.required;
         this->initialized = in_apte.initialized;
@@ -244,24 +245,24 @@ public:
         if constexpr (std::is_integral<T>::value) {
             if constexpr (std::is_signed<T>::value) {
                 if(this->arg_table[arg_table_idx].data_type == APDataType::SIGNED_INT){
-                    ret_value = this->arg_table[arg_table_idx].data.number_i64;
+                    ret_value = this->arg_table[arg_table_idx].value.number_i64;
                 }
             }
             else if constexpr (std::is_same<T, bool>::value) {
                 if(this->arg_table[arg_table_idx].data_type == APDataType::FLAG){
-                    ret_value = this->arg_table[arg_table_idx].data.flag;
+                    ret_value = this->arg_table[arg_table_idx].value.flag;
                 }
             }
             else{
                 if(this->arg_table[arg_table_idx].data_type == APDataType::UNSIGNED_INT){
-                    ret_value = this->arg_table[arg_table_idx].data.number_u64;
+                    ret_value = this->arg_table[arg_table_idx].value.number_u64;
                 }
             }
         }
         else if constexpr (std::is_same_v<T, std::string>) {
-            if(this->arg_table[arg_table_idx].data.text != nullptr && 
+            if(this->arg_table[arg_table_idx].value.text != nullptr && 
                this->arg_table[arg_table_idx].data_type == APDataType::TEXT){
-                ret_value = *this->arg_table[arg_table_idx].data.text;
+                ret_value = *this->arg_table[arg_table_idx].value.text;
             }
         }
         return ret_value;
