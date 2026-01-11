@@ -26,6 +26,7 @@ SOFTWARE.
 
 
 #include <iostream>
+#include <memory>
 #include <stdint.h>
 #include <string.h>
 #include <vector>
@@ -64,22 +65,31 @@ enum class APDataType {
 #define MAX_TYPES (uint32_t)4
 #endif
 
-
-union data {
-    std::string* text;
+struct data{
+    std::shared_ptr<std::string> text{};
     union{
         uint64_t number_u64;
         int64_t  number_i64;
     };
     bool flag;
-};
 
+    data() : text{} {}
+
+    ~data() {}
+
+    data& operator=(const data& in_data){
+        this->text = in_data.text;
+        this->number_u64 = in_data.number_u64;
+        this->flag = in_data.flag;
+        return *this;
+    }
+};
 
 typedef struct APTableEntry APTableEntry;
 struct APTableEntry {
     std::string abbr_form{};
     std::string full_form{};
-    union data data{};
+    struct data data{};
     APDataType data_type{};
     bool required{};
     bool initialized{};
@@ -113,11 +123,11 @@ struct APTableEntry {
             }
         }
         else if constexpr (std::is_same_v<T, const char*>) {
-            this->data.text = new std::string(value);
+            this->data.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }
         else if constexpr (std::is_same_v<T, std::string>) {
-            this->data.text = new std::string(value);
+            this->data.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }
         this->initialized = false; 
@@ -130,11 +140,35 @@ struct APTableEntry {
     APTableEntry() : abbr_form(""), full_form(""), data_type(APDataType::UNSIGNED_INT), required(false), initialized(false) {}
 
 
-    ~APTableEntry() {
-        if(this->initialized && this->data_type == APDataType::TEXT){
-            delete this->data.text;
-        }
+    APTableEntry(const APTableEntry& in_apte) {
+        this->abbr_form = in_apte.abbr_form;
+        this->full_form = in_apte.full_form;
+        this->data = in_apte.data;
+        this->data_type = in_apte.data_type;
+        this->required = in_apte.required;
+        this->initialized = in_apte.initialized;
+        this->default_value = in_apte.default_value;
     }
+    
+
+    APTableEntry& operator=(const APTableEntry& in_apte) {
+        return *this;
+    }
+
+
+    void clear(){
+        this->abbr_form = "";
+        this->full_form = "";
+        this->data.text.reset();
+        this->data.number_u64 = 0;
+        this->data.flag = false;
+        this->data_type = APDataType::UNSIGNED_INT;
+        this->initialized = false;
+        this->default_value = false;
+    }
+
+
+    ~APTableEntry() {}
 };
 
 

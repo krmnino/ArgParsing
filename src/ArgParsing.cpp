@@ -392,7 +392,7 @@ void ArgParsing::arg_value(){
         }
         break;
     case APDataType::TEXT:
-        this->arg_table[this->eval_arg_idx].data.text = new std::string(value);
+        this->arg_table[this->eval_arg_idx].data.text = std::make_shared<std::string>(value);
         break;
     case APDataType::FLAG:
         if(this->validate_flag_value(value)){
@@ -590,7 +590,7 @@ void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     // For any initialized TEXT type arugments, copy their values
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(target[i].initialized && target[i].data_type == APDataType::TEXT){
-            target[i].data.text = new std::string(*this->arg_table[i].data.text);
+            target[i].data.text = std::make_shared<std::string>(this->arg_table[i].data.text);
         }
     }
 }
@@ -715,6 +715,7 @@ int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_tabl
         }
         new_entry.full_form = input_entry_curr->full_form;
         new_entry.required = input_entry_curr->required;
+        std::string tmp;
         switch (input_entry_curr->data_type){
         case TEXT:
             new_entry.data_type = APDataType::TEXT;
@@ -730,30 +731,29 @@ int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_tabl
             break;        
         default:
             return -1;
-            break;
         }
+        new_arg_table.push_back(new_entry);
         if(input_entry_curr->default_value){
             switch (input_entry_curr->data_type){
             case TEXT:
-                new_entry.data.text = new std::string(input_entry_curr->data.text);
+                new_entry.data.text = std::make_shared<std::string>(input_entry_curr->data.text);
                 break;        
             case FLAG:
                 new_entry.data.flag = input_entry_curr->data.flag;
                 break;        
             case UNSIGNED_INT:
-                new_entry.data.number_u64 = input_entry_curr->data.intdata.number_u64;
+                new_entry.data.number_u64 = input_entry_curr->data.number_u64;
                 break;        
             case SIGNED_INT:
-                new_entry.data.number_i64 = input_entry_curr->data.intdata.number_i64;
+                new_entry.data.number_i64 = input_entry_curr->data.number_i64;
                 break;        
             default:
                 return -1;
                 break;
             }
         }
-        new_arg_table.push_back(new_entry);
-        new_entry = {};
         input_entry_curr++;
+        new_entry.clear();
     }
     return reinterpret_cast<ArgParsing*>(apc)->set_arg_table(new_arg_table);
 }

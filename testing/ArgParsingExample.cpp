@@ -39,13 +39,13 @@ int main(int argc, char* argv[]){
         { "x", "arg7", true                             },
         { "y", "arg8", std::string("init text")         },
     };
-    
+
     ret = ap.set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
     if(ret != 0){
         std::cerr << "ERROR: ArgParsing::set_arg_table() return code -> " << ret << std::endl;
         return -1;
     }
-
+    
     ap.set_input_args(argc, argv);
     
     ret = ap.parse();
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
         std::cerr << "ERROR: ArgParsing::set_input_args() return code -> " << ret << std::endl;
         return -1;
     }
-
+    
     std::cout << "a/arg1: " << ap.get_arg_value<bool>("arg1", false) << std::endl;
     std::cout << "a/arg1 byte_size: " << ap.get_arg_value_bytesize("arg1", false) << std::endl;
     std::cout << "x/arg2: " << ap.get_arg_value<std::string>("z", true) << std::endl;
