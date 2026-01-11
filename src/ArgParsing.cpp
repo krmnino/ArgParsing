@@ -155,8 +155,8 @@ size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input
     // Set the size value to return
     switch (this->arg_table[arg_table_idx].data_type){
     case APDataType::TEXT:
-        if(this->arg_table[arg_table_idx].data.text != nullptr){
-            ret_size = (*this->arg_table[arg_table_idx].data.text).size();
+        if(this->arg_table[arg_table_idx].value.text != nullptr){
+            ret_size = (*this->arg_table[arg_table_idx].value.text).size();
         }
         break;
     case APDataType::FLAG:
@@ -275,7 +275,7 @@ void ArgParsing::arg_abbr_form(){
         }
         // Set FLAG argument value to true
         if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
-            this->arg_table[this->eval_arg_idx].data.flag = true;
+            this->arg_table[this->eval_arg_idx].value.flag = true;
         }
         // Set to initialized and update state
         this->arg_table[this->eval_arg_idx].initialized = true;
@@ -309,7 +309,7 @@ void ArgParsing::arg_abbr_form(){
                 this->err_msg_data.push_back("-" + abbr_arg);
                 return;    
             }
-            this->arg_table[this->eval_arg_idx].data.flag = true;
+            this->arg_table[this->eval_arg_idx].value.flag = true;
             this->arg_table[this->eval_arg_idx].initialized = true;
         }
         this->state = APState::ARGV_BEGIN;
@@ -342,7 +342,7 @@ void ArgParsing::arg_full_form(){
     }    
     // Set FLAG argument value to true
     if(this->arg_table[this->eval_arg_idx].data_type == APDataType::FLAG){
-        this->arg_table[this->eval_arg_idx].data.flag = true;
+        this->arg_table[this->eval_arg_idx].value.flag = true;
     }
 
     // Set to initialized and update state
@@ -365,10 +365,10 @@ void ArgParsing::arg_value(){
         if(value.size() >= 2){
             if(this->is_valid_hex(value)){
                 value = value.substr(2);
-                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoul(value, nullptr, 16);
+                this->arg_table[this->eval_arg_idx].value.number_u64 = std::stoul(value, nullptr, 16);
             }
             else if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoul(value);
+                this->arg_table[this->eval_arg_idx].value.number_u64 = std::stoul(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -380,7 +380,7 @@ void ArgParsing::arg_value(){
         }
         else{
             if(this->is_valid_dec(value)){
-                this->arg_table[this->eval_arg_idx].data.number_u64 = std::stoi(value);
+                this->arg_table[this->eval_arg_idx].value.number_u64 = std::stoi(value);
             }
             else{
                 this->state = APState::ERROR;
@@ -392,7 +392,7 @@ void ArgParsing::arg_value(){
         }
         break;
     case APDataType::TEXT:
-        this->arg_table[this->eval_arg_idx].data.text = std::make_shared<std::string>(value);
+        this->arg_table[this->eval_arg_idx].value.text = std::make_shared<std::string>(value);
         break;
     case APDataType::FLAG:
         if(this->validate_flag_value(value)){
@@ -485,18 +485,18 @@ bool ArgParsing::validate_flag_value(std::string& value){
         if(this->prev_argv_element[1] == '-'){
             prev_arg_id = this->prev_argv_element.substr(2);
             table_idx = get_index_in_arg_table(prev_arg_id, false);
-            this->arg_table[table_idx].data.flag = true;
+            this->arg_table[table_idx].value.flag = true;
         }
         else{
             prev_arg_id = this->prev_argv_element.substr(1);
             table_idx = get_index_in_arg_table(prev_arg_id, true);
-            this->arg_table[table_idx].data.flag = true;
+            this->arg_table[table_idx].value.flag = true;
         }
         if(value == "1" || value == "true" || value == "TRUE"){
-            this->arg_table[table_idx].data.flag = true;
+            this->arg_table[table_idx].value.flag = true;
         }
         else{
-            this->arg_table[table_idx].data.flag = false;
+            this->arg_table[table_idx].value.flag = false;
         }
     }
     // Check if it is a valid abbreviated/full form identifier that can be processed
