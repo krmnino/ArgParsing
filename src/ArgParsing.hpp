@@ -73,7 +73,7 @@ struct data{
     };
     bool flag;
 
-    data() : text{} {}
+    data() : text{}, number_u64(0), flag(false) {}
 
     ~data() {}
 
@@ -123,6 +123,10 @@ struct APTableEntry {
             }
         }
         else if constexpr (std::is_same_v<T, const char*>) {
+            this->data.text = std::make_shared<std::string>(value);
+            this->data_type = APDataType::TEXT;
+        }
+        else if constexpr (std::is_same_v<T, char*>) {
             this->data.text = std::make_shared<std::string>(value);
             this->data_type = APDataType::TEXT;
         }

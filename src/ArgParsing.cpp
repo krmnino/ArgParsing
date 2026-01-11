@@ -707,53 +707,42 @@ int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_tabl
 
     // Loop though each entry in the array and copy the data to the vector
     for(size_t i = 0; i < n_entries; i++){
-        if(strlen(input_entry_curr->abbr_form) != 0){
-            new_entry.abbr_form = input_entry_curr->abbr_form;
-        }
         if(strlen(input_entry_curr->full_form) == 0){
             return -1;
         }
-        new_entry.full_form = input_entry_curr->full_form;
-        new_entry.required = input_entry_curr->required;
-        std::string tmp;
-        switch (input_entry_curr->data_type){
-        case TEXT:
-            new_entry.data_type = APDataType::TEXT;
-            break;        
-        case FLAG:
-            new_entry.data_type = APDataType::FLAG;
-            break;        
-        case UNSIGNED_INT:
-            new_entry.data_type = APDataType::UNSIGNED_INT;
-            break;        
-        case SIGNED_INT:
-            new_entry.data_type = APDataType::SIGNED_INT;
-            break;        
-        default:
-            return -1;
-        }
-        new_arg_table.push_back(new_entry);
         if(input_entry_curr->default_value){
             switch (input_entry_curr->data_type){
             case TEXT:
-                new_entry.data.text = std::make_shared<std::string>(input_entry_curr->data.text);
-                break;        
+                new_arg_table.push_back(APTableEntry(std::string(input_entry_curr->abbr_form),
+                                                     std::string(input_entry_curr->full_form),
+                                                     input_entry_curr->data.text));
+                break;
             case FLAG:
-                new_entry.data.flag = input_entry_curr->data.flag;
-                break;        
+                new_arg_table.push_back(APTableEntry(std::string(input_entry_curr->abbr_form),
+                                                     std::string(input_entry_curr->full_form), 
+                                                     input_entry_curr->data.flag));
+                break;
             case UNSIGNED_INT:
-                new_entry.data.number_u64 = input_entry_curr->data.number_u64;
-                break;        
+                new_arg_table.push_back(APTableEntry(std::string(input_entry_curr->abbr_form),
+                                                     std::string(input_entry_curr->full_form),
+                                                     input_entry_curr->data.number_u64));
+                break;
             case SIGNED_INT:
-                new_entry.data.number_i64 = input_entry_curr->data.number_i64;
-                break;        
+                new_arg_table.push_back(APTableEntry(std::string(input_entry_curr->abbr_form),
+                                                     std::string(input_entry_curr->full_form),
+                                                     input_entry_curr->data.number_i64));
+                break;
             default:
-                return -1;
                 break;
             }
         }
+        else{
+            new_arg_table.push_back(APTableEntry(std::string(input_entry_curr->abbr_form),
+                                                 std::string(input_entry_curr->full_form),
+                                                 (APDataType)input_entry_curr->data_type, 
+                                                 input_entry_curr->required));
+        }
         input_entry_curr++;
-        new_entry.clear();
     }
     return reinterpret_cast<ArgParsing*>(apc)->set_arg_table(new_arg_table);
 }
@@ -775,8 +764,7 @@ int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_
     
     arg_value_len = reinterpret_cast<ArgParsing*>(apc)->get_arg_value_bytesize((std::string)arg_key, is_abbr_input);
     // If argument value length is 0 or if output buffer is smaller than argument length, then stop it
-    if(arg_value_len == 0 || 
-       arg_value_len > len_output_buffer + 1){
+    if(arg_value_len == 0 || arg_value_len > len_output_buffer + 1){
         return -1;
     }
     
