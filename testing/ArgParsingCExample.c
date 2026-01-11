@@ -87,7 +87,7 @@ int main(int argc, char* argv[]){
     str_buff2 = (char*)calloc(arg_txt_len + 1, sizeof(char));
     ArgParsing_C_get_value_TEXT(ap, "n", true, str_buff2, MAX_BUFF_LEN);
     printf("n/arg6: %s\n", str_buff2);
-    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "m", true);
+    arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "n", true);
     printf("n/arg6 byte_size: %ld\n", arg_txt_len);
     free(str_buff2);
 
