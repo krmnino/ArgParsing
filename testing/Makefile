@@ -53,11 +53,10 @@ single:
 	g++ -g -c -Wall -std=c++17 $(FILE) -D DEBUG
 
 example:
+	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp ../src/ArgParsing.cpp
+	g++ ArgParsingExample.o ArgParsing.o -o $(BD)aptest
 	make -C ../src
-	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp
 	gcc -g -c -Wall -std=c17 ArgParsingCExample.c
-	g++ ArgParsingExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
-							-o $(BD)aptest
 	gcc ArgParsingCExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
 							-o $(BD)aptest_c
 
