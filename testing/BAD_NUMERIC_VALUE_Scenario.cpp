@@ -62,7 +62,7 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
     std::string no_dashes_arg_id{};
     std::string value_for_argv{};
     std::string flag_value{};
-    union data value{};
+    APValue loc_value{};
     size_t rand_idx{};
     size_t n_initialized{};
     uint32_t result_u32{};
@@ -179,14 +179,14 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
                 value_for_argv = generate_bad_number<uint64_t>(rnd);
             }
             else{
-                value.intdata.number_u64 = rnd->gen_integral<uint64_t>();
+                loc_value.number_u64 = rnd->gen_integral<uint64_t>();
                 // Pick between hex or decimal
                 result_bool = rnd->gen_bool();
                 if(result_bool){
-                    value_for_argv = integer_to_hex_string<uint64_t>(value.intdata.number_u64);
+                    value_for_argv = integer_to_hex_string<uint64_t>(loc_value.number_u64);
                 }
                 else{
-                    value_for_argv = std::to_string(value.intdata.number_u64);
+                    value_for_argv = std::to_string(loc_value.number_u64);
                 }
             }
             break;    
@@ -196,32 +196,32 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
                 value_for_argv = generate_bad_number<int64_t>(rnd);
             }
             else{
-                value.intdata.number_i64 = rnd->gen_integral<int64_t>();
+                loc_value.number_i64 = rnd->gen_integral<int64_t>();
                 // Pick between hex or decimal
                 result_bool = rnd->gen_bool();
                 if(result_bool){
-                    value_for_argv = integer_to_hex_string<int64_t>(value.intdata.number_i64);
+                    value_for_argv = integer_to_hex_string<int64_t>(loc_value.number_i64);
                 }
                 else{
-                    value_for_argv = std::to_string(value.intdata.number_i64);
+                    value_for_argv = std::to_string(loc_value.number_i64);
                 }
             }
             break; 
         case APDataType::TEXT:
             result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
-            value.text = new std::string(rnd->gen_string(result_u32, nullptr));
-            value_for_argv = *value.text;
+            loc_value.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
+            value_for_argv = *loc_value.text;
             break;     
         case APDataType::FLAG:
             use_flag_value = rnd->gen_bool();
             // Whether to include a value for FLAG argument or not
             if(use_flag_value){
-                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
+                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) - 1);
                 flag_value = valid_flag_values[result_u32];
-                value.flag = valid_flag_values_dict.at(flag_value);
+                loc_value.flag = valid_flag_values_dict.at(flag_value);
             }
             else{
-                value.flag = true;
+                loc_value.flag = true;
             }
             break;     
         default:
@@ -231,16 +231,16 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
         // Set argument value
         switch(sc.exp_argtab[arg_table_idx].data_type){
         case APDataType::UNSIGNED_INT:
-            sc.exp_argtab[arg_table_idx].data.intdata.number_u64 = value.intdata.number_u64;
+            sc.exp_argtab[arg_table_idx].value.number_u64 = loc_value.number_u64;
             break;
         case APDataType::SIGNED_INT:
-            sc.exp_argtab[arg_table_idx].data.intdata.number_i64 = value.intdata.number_i64;
+            sc.exp_argtab[arg_table_idx].value.number_i64 = loc_value.number_i64;
             break;
         case APDataType::TEXT:
-            sc.exp_argtab[arg_table_idx].data.text = new std::string(*value.text);
+            sc.exp_argtab[arg_table_idx].value.text = std::make_shared<std::string>(*loc_value.text);
             break;
         case APDataType::FLAG:
-            sc.exp_argtab[arg_table_idx].data.flag = value.flag;
+            sc.exp_argtab[arg_table_idx].value.flag = loc_value.flag;
             break;
         default:
             break;
@@ -279,11 +279,6 @@ void build_BAD_NUMERIC_VALUE_scenario(Randomizer* rnd, ScenarioData& sc){
             sc.exp_error_message = APErrRsn_to_string(APErrRsn::BAD_NUMERIC_VALUE) + "" ": \"" + value_for_argv +
                                    "\" provided to the argument --" + sc.exp_argtab[error_table_idx].full_form +
                                    " is not a valid numeric value.";
-        }
-
-        // Deallocate text value if used
-        if(sc.exp_argtab[arg_table_idx].data_type == APDataType::TEXT){
-            delete value.text;
         }
     }
 
