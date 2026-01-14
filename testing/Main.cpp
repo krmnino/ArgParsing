@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
     APTableEntry arg_table[] = {
         { "s", "seed"       , APDataType::UNSIGNED_INT , true  },
         { "n", "n_tests"    , APDataType::UNSIGNED_INT , true  },
-        { "c", "n_scenarios", APDataType::UNSIGNED_INT , true  },
+        { "c", "n_scenarios", (uint64_t)1                      },
         { "t", "types"      , APDataType::UNSIGNED_INT , true  },
         { "r", "trace"      , APDataType::FLAG         , false },
     };
