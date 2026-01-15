@@ -319,3 +319,26 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::stri
     }
     return -1;
 }
+
+void gen_arg_value(Randomizer* rnd, APValue& apv, APDataType data_type){
+    uint32_t result_u32;
+
+    result_u32 = 0;
+    switch (data_type){
+    case APDataType::UNSIGNED_INT:
+        apv.number_u64 = rnd->gen_integral<uint64_t>();
+        break;    
+    case APDataType::SIGNED_INT:
+        apv.number_i64 = rnd->gen_integral<int64_t>();
+        break;    
+    case APDataType::TEXT:
+        result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
+        apv.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
+        break;    
+    case APDataType::FLAG:
+        apv.flag = rnd->gen_bool();
+        break;    
+    default:
+        break;
+    }
+}

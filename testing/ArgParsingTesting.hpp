@@ -129,6 +129,7 @@ size_t arg_table_count_type(std::vector<APTableEntry>&, APDataType);
 bool arg_table_is_abbr_form_available(std::vector<APTableEntry>&, size_t);
 size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
+void gen_arg_value(Randomizer*, APValue&, APDataType);
 
 
 // ArgTableBuilder.cpp

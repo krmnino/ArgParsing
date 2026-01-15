@@ -53,6 +53,7 @@ int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APTableEntry new_entry{};
     std::string result_str{};
+    APValue loc_value{};
     uint32_t result_u32{};
     uint32_t attempt_counter{};
     uint32_t shifter{};
@@ -137,6 +138,14 @@ int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     else{
         new_entry.required = true;
     }
+    
+    // If APTableEntry.required -> Make it have a default value 60% of the time
+    result_u32 = rnd->gen_integral_range<uint32_t>(1, 10);
+    if(!new_entry.required && result_u32 <= 6){
+        gen_arg_value(rnd, loc_value, new_entry.data_type);
+        new_entry.default_value = true;
+    }
+    
     arg_table.push_back(new_entry);
     new_entry = {};
     return 0;
