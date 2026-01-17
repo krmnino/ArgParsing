@@ -127,7 +127,7 @@ std::string describe_argv(int, char**);
 std::string ScenarioType_to_string(ScenarioType);
 std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
-std::string union_data_to_string(union data*, APDataType);
+std::string APValue_to_string(APValue&, APDataType);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
 std::string APErrRsn_to_string(APErrRsn);
 void vector_to_char_array(std::vector<std::string>&, char**&);
