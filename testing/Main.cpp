@@ -45,8 +45,9 @@ int main(int argc, char* argv[]){
     ErrorReporter* er{};
     TestcaseData* testcase{};
     uint64_t testcase_counter{};
-    uint32_t n_tests{};
-    uint32_t n_scenarios{};
+    uint64_t n_tests{};
+    uint64_t n_scenarios{};
+    uint64_t max_errors{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
     bool infinite_loop{};
@@ -55,9 +56,10 @@ int main(int argc, char* argv[]){
     APTableEntry arg_table[] = {
         { "s", "seed"       , APDataType::UNSIGNED_INT , true  },
         { "n", "n_tests"    , APDataType::UNSIGNED_INT , true  },
-        { "c", "n_scenarios", (uint64_t)1                      },
-        { "t", "types"      , APDataType::UNSIGNED_INT , true  },
-        { "r", "trace"      , APDataType::FLAG         , false },
+        { "" , "n_scenarios", (uint64_t)1                      },
+        { "e", "max_errors" , (uint64_t)1                      },
+        { "" , "types"      , (uint64_t)0x2FF                  },
+        { "t", "trace"      , APDataType::FLAG         , false },
     };
     
     // Start the argument parser
@@ -98,7 +100,7 @@ int main(int argc, char* argv[]){
     sigaction(SIGINT, &sa_struct, NULL);
     
     // Read n_tests argument
-    n_tests = pgm_ap->get_arg_value<uint32_t>("n_tests", false);
+    n_tests = pgm_ap->get_arg_value<uint64_t>("n_tests", false);
     // Ignore pass counter if n_tests is 0
     if(n_tests == 0){
         infinite_loop = true;
@@ -106,9 +108,12 @@ int main(int argc, char* argv[]){
     else{
         infinite_loop = false;
     }
+
+    // Read max_errors argument
+    max_errors = pgm_ap->get_arg_value<uint64_t>("max_errors", false);
     
     // Read n_scenarios argument
-    n_scenarios = pgm_ap->get_arg_value<uint32_t>("n_scenarios", false);
+    n_scenarios = pgm_ap->get_arg_value<uint64_t>("n_scenarios", false);
     
     // Read and validate types argument
     user_allowed_scenario_types = pgm_ap->get_arg_value<uint32_t>("types", false);
@@ -132,7 +137,7 @@ int main(int argc, char* argv[]){
     std::cout << "STARTING TEST MAIN LOOP... " << std::endl;    
     
     // Main driver
-    while((testcase_counter < n_tests || infinite_loop) && running){
+    while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
         build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
