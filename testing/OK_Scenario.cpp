@@ -202,7 +202,8 @@ void validate_OK_scenario(ErrorReporter* er, ScenarioData& sc){
             er->log_it("Expected : initialized = " + bool_to_string(sc.exp_argtab[i].initialized));
         }
         // value should match the expected
-        if(sc.exp_argtab[i].initialized){
+        // uninitialized arguments with default values must remain unchanged
+        if(sc.exp_argtab[i].initialized || (!sc.exp_argtab[i].initialized && sc.exp_argtab[i].default_value)){
             switch(sc.exp_argtab[i].data_type){
             case APDataType::UNSIGNED_INT:
                 if(sc.res_argtab[i].value.number_u64 != sc.exp_argtab[i].value.number_u64){
