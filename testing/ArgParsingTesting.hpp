@@ -114,10 +114,10 @@ class TestcaseData{
 
 typedef struct APValuePackage APValuePackage;
 struct APValuePackage{
-    APValue apv;
-    std::string stringified;
-    APDataType data_type;
-    bool to_string;
+    APValue apv;                // Output
+    std::string stringified;    // Output
+    APDataType data_type;       // Input
+    bool to_string;             // Input
 };
 
 
