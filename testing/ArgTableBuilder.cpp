@@ -51,6 +51,7 @@ int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint
 int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    APValuePackage arg_val_package;
     APTableEntry new_entry{};
     std::string result_str{};
     APValue loc_value{};
@@ -142,11 +143,17 @@ int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     // If APTableEntry.required -> Make it have a default value 60% of the time
     result_u32 = rnd->gen_integral_range<uint32_t>(1, 10);
     if(!new_entry.required && result_u32 <= 6){
-        gen_arg_value(rnd, loc_value, new_entry.data_type);
+        // Prepare package before generating argument default value
+        arg_val_package.data_type = new_entry.data_type;
+        arg_val_package.to_string = false;
+        gen_arg_value(rnd, arg_val_package);
+        // Copy argument value from package APTableEntry object 
+        copy_APValue(arg_val_package.apv, new_entry.value, arg_val_package.data_type);
         new_entry.default_value = true;
     }
     
     arg_table.push_back(new_entry);
     new_entry = {};
+    arg_val_package = {};
     return 0;
 }

@@ -169,6 +169,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     std::string full_form_str{};
     std::string data_type_str{};
     std::string required_str{};
+    std::string default_value_str{};
     std::string initialized_str{};
     std::string value_str{};
 
@@ -178,6 +179,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     buffer << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
     buffer << space_padding("DATA TYPE", PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
     buffer << space_padding("REQUIRED", PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("DEFAULT_V", PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
     buffer << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
     buffer << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << "\n";
     buffer << "-";
@@ -186,6 +188,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     buffer << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_DATA_TYPE_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_REQUIRED_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_DEFAULT_V_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_INITIALIZED_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_VALUE_STR_WIDTH, "-") << "\n";
     for(size_t i = 0; i < arg_table.size(); i++){
@@ -200,6 +203,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         }
         data_type_str = APDataType_to_string(arg_table[i].data_type);
         required_str = bool_to_string(arg_table[i].required);
+        default_value_str = bool_to_string(arg_table[i].default_value);
         initialized_str = bool_to_string(arg_table[i].initialized);
         buffer << " ";
         buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
@@ -207,6 +211,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
         buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
         buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
         buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
         buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
     }
@@ -320,23 +325,72 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::stri
     return -1;
 }
 
-void gen_arg_value(Randomizer* rnd, APValue& apv, APDataType data_type){
+void gen_arg_value(Randomizer* rnd, APValuePackage& package){
+    const char* valid_flag_values[] = VALID_FLAG_VALUES;
     uint32_t result_u32;
+    bool result_bool;
 
     result_u32 = 0;
-    switch (data_type){
+    switch (package.data_type){
     case APDataType::UNSIGNED_INT:
-        apv.number_u64 = rnd->gen_integral<uint64_t>();
+        package.apv.number_u64 = rnd->gen_integral<uint64_t>();
+        if(package.to_string){
+            result_bool = rnd->gen_bool();
+            if(package.to_string){
+                package.stringified = integer_to_hex_string<uint64_t>(package.apv.number_u64);
+            }
+            else{
+                package.stringified = std::to_string(package.apv.number_u64);
+            }
+        }
         break;    
     case APDataType::SIGNED_INT:
-        apv.number_i64 = rnd->gen_integral<int64_t>();
+        package.apv.number_i64 = rnd->gen_integral<int64_t>();
+        if(package.to_string){
+            result_bool = rnd->gen_bool();
+            if(result_bool){
+                package.stringified = integer_to_hex_string<int64_t>(package.apv.number_i64);
+            }
+            else{
+                package.stringified = std::to_string(package.apv.number_i64);
+            }
+        }
         break;    
     case APDataType::TEXT:
         result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
-        apv.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
+        package.apv.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
+        if(package.to_string){
+            package.stringified = *package.apv.text;
+        }
         break;    
     case APDataType::FLAG:
-        apv.flag = rnd->gen_bool();
+        if(package.to_string){
+            result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) - 1);
+            package.stringified = valid_flag_values[result_u32];
+            package.apv.flag = valid_flag_values_dict.at(package.stringified);
+        }
+        else{
+            package.apv.flag = rnd->gen_bool();
+        }
+        break;    
+    default:
+        break;
+    }
+}
+
+void copy_APValue(APValue& source, APValue& target, APDataType data_type){
+    switch (data_type){
+    case APDataType::UNSIGNED_INT:
+        target.number_u64 = source.number_u64;
+        break;    
+    case APDataType::SIGNED_INT:
+        target.number_i64 = source.number_i64;
+        break;    
+    case APDataType::TEXT:
+        target.text = std::make_shared<std::string>(*source.text);
+        break;    
+    case APDataType::FLAG:
+        target.flag = source.flag;
         break;    
     default:
         break;

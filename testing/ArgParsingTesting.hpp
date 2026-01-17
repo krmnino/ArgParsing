@@ -47,6 +47,7 @@ SOFTWARE.
 #define PRT_FULL_FORM_STR_WIDTH 10
 #define PRT_DATA_TYPE_STR_WIDTH 24
 #define PRT_REQUIRED_STR_WIDTH 8
+#define PRT_DEFAULT_V_STR_WIDTH 9
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
 
@@ -111,6 +112,14 @@ class TestcaseData{
     }
 };
 
+typedef struct APValuePackage APValuePackage;
+struct APValuePackage{
+    APValue apv;
+    std::string stringified;
+    APDataType data_type;
+    bool to_string;
+};
+
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
@@ -129,7 +138,8 @@ size_t arg_table_count_type(std::vector<APTableEntry>&, APDataType);
 bool arg_table_is_abbr_form_available(std::vector<APTableEntry>&, size_t);
 size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
-void gen_arg_value(Randomizer*, APValue&, APDataType);
+void gen_arg_value(Randomizer*, APValuePackage&);
+void copy_APValue(APValue&, APValue&, APDataType);
 
 
 // ArgTableBuilder.cpp
