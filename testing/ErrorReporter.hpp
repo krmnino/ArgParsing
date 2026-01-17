@@ -125,6 +125,11 @@ public:
     }
 
 
+    size_t get_error_counter(){
+        return this->error_counter;
+    }
+
+
     void log_everything(bool flag){
         this->log_everything_flag = flag;
     }
