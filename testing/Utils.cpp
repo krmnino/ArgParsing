@@ -265,9 +265,11 @@ size_t arg_table_count_data_type(std::vector<APTableEntry>& arg_table, APDataTyp
     return accumulator;
 }
 
+
 bool arg_table_is_required_arg(std::vector<APTableEntry>& arg_table, size_t idx){
     return (arg_table[idx].required) ? true : false;
 }
+
 
 size_t arg_table_count_required(std::vector<APTableEntry>& arg_table){
     size_t accumulator{};
@@ -281,6 +283,7 @@ size_t arg_table_count_required(std::vector<APTableEntry>& arg_table){
     return accumulator;
 }
 
+
 size_t arg_table_count_type(std::vector<APTableEntry>& arg_table, APDataType input_data_type){
     size_t accumulator{};
     
@@ -293,9 +296,11 @@ size_t arg_table_count_type(std::vector<APTableEntry>& arg_table, APDataType inp
     return accumulator;
 }
 
+
 bool arg_table_is_abbr_form_available(std::vector<APTableEntry>& arg_table, size_t idx){
     return (arg_table[idx].abbr_form.size() == 0) ? false : true;
 }
+
 
 size_t arg_table_count_abbr_form(std::vector<APTableEntry>& arg_table){
     size_t accumulator{};
@@ -308,6 +313,7 @@ size_t arg_table_count_abbr_form(std::vector<APTableEntry>& arg_table){
     }
     return accumulator;
 }
+
 
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::string& arg_key, bool is_abbr_input){
     for(size_t i = 0; i < arg_table.size(); i++){
@@ -324,6 +330,7 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::stri
     }
     return -1;
 }
+
 
 void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
@@ -377,6 +384,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
         break;
     }
 }
+
 
 void copy_APValue(APValue& source, APValue& target, APDataType data_type){
     switch (data_type){
