@@ -72,11 +72,11 @@ struct APValue{
     union{
         uint64_t number_u64;
         int64_t  number_i64;
+        bool flag;
     };
-    bool flag;
 
 
-    APValue() : text{}, number_u64(0), flag(false) {}
+    APValue() : text{}, number_u64(0) {}
 
 
     ~APValue() {}
