@@ -133,26 +133,26 @@ std::string bool_to_string(bool data){
 }
 
 
-std::string union_data_to_string(APValue* data, APDataType data_type){
+std::string APValue_to_string(APValue& value, APDataType data_type){
     std::string ret{};
 
     switch (data_type){
     case APDataType::UNSIGNED_INT:
-        ret = std::to_string(data->number_u64);
+        ret = std::to_string(value.number_u64);
         break;
     case APDataType::SIGNED_INT:
-        ret = std::to_string(data->number_i64);
+        ret = std::to_string(value.number_i64);
         break;
     case APDataType::TEXT:
-        if(data->text == nullptr){
+        if(value.text == nullptr){
             ret = "";
         }
         else{
-            ret = *data->text;
+            ret = *value.text;
         }
         break;
     case APDataType::FLAG:
-        ret = bool_to_string(data->flag);
+        ret = bool_to_string(value.flag);
         break;
     default:
         ret = "";
@@ -195,8 +195,8 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         idx_str = std::to_string(i);
         abbr_form_str = arg_table[i].abbr_form;
         full_form_str = arg_table[i].full_form;
-        if(arg_table[i].initialized){
-            value_str = union_data_to_string(&arg_table[i].value, arg_table[i].data_type);
+        if(arg_table[i].initialized || arg_table[i].default_value){
+            value_str = APValue_to_string(arg_table[i].value, arg_table[i].data_type);
         }
         else{
             value_str = "";
@@ -342,6 +342,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     case APDataType::UNSIGNED_INT:
         package.apv.number_u64 = rnd->gen_integral<uint64_t>();
         if(package.to_string){
+            // Stringify as hexadecimal or decimal
             result_bool = rnd->gen_bool();
             if(package.to_string){
                 package.stringified = integer_to_hex_string<uint64_t>(package.apv.number_u64);
@@ -354,6 +355,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     case APDataType::SIGNED_INT:
         package.apv.number_i64 = rnd->gen_integral<int64_t>();
         if(package.to_string){
+            // Stringify as hexadecimal or decimal
             result_bool = rnd->gen_bool();
             if(result_bool){
                 package.stringified = integer_to_hex_string<int64_t>(package.apv.number_i64);
