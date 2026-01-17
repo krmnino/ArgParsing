@@ -263,8 +263,8 @@ void validate_VALID_FLAG_GROUP_scenario(ErrorReporter* er, ScenarioData& sc){
         er->log_it("!!! ERROR: error_message MISMATCH");
     }
     // Result vs. Expected argument table size
-    er->log_it("Result   : size of result argtab = " + std::to_string(sc.res_argtab.size()));
-    er->log_it("Expected : size of result argtab = " + std::to_string(sc.exp_argtab.size()));
+    er->log_it("Result   : size of argtab = " + std::to_string(sc.res_argtab.size()));
+    er->log_it("Expected : size of argtab = " + std::to_string(sc.exp_argtab.size()));
     if(sc.res_argtab.size() != sc.exp_argtab.size()){
         er->mark_error();
         er->log_it("!!! ERROR: size of argtab MISMATCH");
