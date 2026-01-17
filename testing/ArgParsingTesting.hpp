@@ -159,6 +159,9 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 // Validation.cpp
 void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
+void validate_error_msg(ErrorReporter*, std::string&, std::string&);
+void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
+void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 
 
 // OK_Scenario.cpp

@@ -144,108 +144,11 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& sc){
 
 void validate_OK_scenario(ErrorReporter* er, ScenarioData& sc){
     std::string buffer{};
-
-    // Result vs. Expected error mesage
-    er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
-    er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");
-    if(sc.res_error_message != sc.exp_error_message){
-        er->mark_error();
-        er->log_it("!!! ERROR: error_message MISMATCH");
-    }
-    // Result vs. Expected argument table size
-    er->log_it("Result   : size of argtab = " + std::to_string(sc.res_argtab.size()));
-    er->log_it("Expected : size of argtab = " + std::to_string(sc.exp_argtab.size()));
-    if(sc.res_argtab.size() != sc.exp_argtab.size()){
-        er->mark_error();
-        er->log_it("!!! ERROR: size of argtab MISMATCH");
-    }
-    // Result vs. Expected argument tables
-    for(size_t i = 0; i < sc.exp_argtab.size(); i++){
-        // abbr_form field should not be altered
-        if(sc.res_argtab[i].abbr_form != sc.exp_argtab[i].abbr_form){
-            er->mark_error();
-            er->log_it("!!! ERROR: abbr_form FIELD MISMATCH");
-            er->log_it("Index    : " + std::to_string(i));
-            er->log_it("Result   : abbr_form = " + sc.res_argtab[i].abbr_form);
-            er->log_it("Expected : abbr_form = " + sc.exp_argtab[i].abbr_form);
-        }
-        // full_form field should not be altered
-        if(sc.res_argtab[i].full_form != sc.exp_argtab[i].full_form){
-            er->mark_error();
-            er->log_it("!!! ERROR: full_form FIELD MISMATCH");
-            er->log_it("Index    : " + std::to_string(i));
-            er->log_it("Result   : full_form = " + sc.res_argtab[i].full_form);
-            er->log_it("Expected : full_form = " + sc.exp_argtab[i].full_form);
-        }
-        // data_type field should not be altered
-        if(sc.res_argtab[i].data_type != sc.exp_argtab[i].data_type){
-            er->mark_error();
-            er->log_it("!!! ERROR: data_type FIELD MISMATCH");
-            er->log_it("Index    : " + std::to_string(i));
-            er->log_it("Result   : data_type = " + APDataType_to_string(sc.res_argtab[i].data_type));
-            er->log_it("Expected : data_type = " + APDataType_to_string(sc.exp_argtab[i].data_type));
-        }
-        // required field should not be altered
-        if(sc.res_argtab[i].required != sc.exp_argtab[i].required){
-            er->mark_error();
-            er->log_it("!!! ERROR: required FIELD MISMATCH");
-            er->log_it("Index    : " + std::to_string(i));
-            er->log_it("Result   : required = " + bool_to_string(sc.res_argtab[i].required));
-            er->log_it("Expected : required = " + bool_to_string(sc.exp_argtab[i].required));
-        }
-        // initialized should match the expected
-        if(sc.res_argtab[i].initialized != sc.exp_argtab[i].initialized){
-            er->mark_error();
-            er->log_it("!!! ERROR: initialized FIELD MISMATCH");
-            er->log_it("Index    : " + std::to_string(i));
-            er->log_it("Result   : initialized = " + bool_to_string(sc.res_argtab[i].initialized));
-            er->log_it("Expected : initialized = " + bool_to_string(sc.exp_argtab[i].initialized));
-        }
-        // value should match the expected
-        // uninitialized arguments with default values must remain unchanged
-        if(sc.exp_argtab[i].initialized || (!sc.exp_argtab[i].initialized && sc.exp_argtab[i].default_value)){
-            switch(sc.exp_argtab[i].data_type){
-            case APDataType::UNSIGNED_INT:
-                if(sc.res_argtab[i].value.number_u64 != sc.exp_argtab[i].value.number_u64){
-                    er->mark_error();
-                    er->log_it("!!! ERROR: value FIELD MISMATCH");
-                    er->log_it("Index    : " + std::to_string(i));
-                    er->log_it("Result   : value = " + sc.res_argtab[i].value.number_u64);
-                    er->log_it("Expected : value = " + sc.exp_argtab[i].value.number_u64);
-                }
-                break;
-            case APDataType::SIGNED_INT:
-                if(sc.res_argtab[i].value.number_i64 != sc.exp_argtab[i].value.number_i64){
-                    er->mark_error();
-                    er->log_it("!!! ERROR: value FIELD MISMATCH");
-                    er->log_it("Index    : " + std::to_string(i));
-                    er->log_it("Result   : value = " + sc.res_argtab[i].value.number_i64);
-                    er->log_it("Expected : value = " + sc.exp_argtab[i].value.number_i64);
-                }
-                break;
-            case APDataType::TEXT:
-                if(*sc.res_argtab[i].value.text != *sc.exp_argtab[i].value.text){
-                    er->mark_error();
-                    er->log_it("!!! ERROR: value FIELD MISMATCH");
-                    er->log_it("Index    : " + std::to_string(i));
-                    er->log_it("Result   : value = " + *sc.res_argtab[i].value.text);
-                    er->log_it("Expected : value = " + *sc.exp_argtab[i].value.text);
-                }
-                break;
-            case APDataType::FLAG:
-                if(sc.res_argtab[i].value.flag != sc.exp_argtab[i].value.flag){
-                    er->mark_error();
-                    er->log_it("!!! ERROR: value FIELD MISMATCH");
-                    er->log_it("Index    : " + std::to_string(i));
-                    er->log_it("Result   : value = " + sc.res_argtab[i].value.flag);
-                    er->log_it("Expected : value = " + sc.exp_argtab[i].value.flag);
-                }
-                break;
-            default:
-                break;
-            }
-        }
-    }
+    
+    er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
+    buffer = arg_table_to_string(sc.exp_argtab);
+    er->log_it(buffer);
+    er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
     er->log_it(">>> START OF ARGV <<<");
     er->log_it(describe_argv(sc.argc, sc.argv));
     er->log_it(">>> END OF ARGV <<<");
@@ -253,8 +156,13 @@ void validate_OK_scenario(ErrorReporter* er, ScenarioData& sc){
     buffer = arg_table_to_string(sc.res_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
-    er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.exp_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
+
+    // Result vs. Expected error mesage
+    validate_error_msg(er, sc.res_error_message, sc.exp_error_message);
+    
+    // Result vs. Expected argument tables (excluding values)
+    validate_arg_table_ex_values(er, sc.res_argtab, sc.exp_argtab);
+        
+    // Result vs. Expected argument tables (argument values only)
+    validate_arg_table_values_only(er, sc.res_argtab, sc.exp_argtab);
 }
