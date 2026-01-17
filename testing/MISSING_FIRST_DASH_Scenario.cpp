@@ -25,7 +25,7 @@ SOFTWARE.
 
 
 void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
-    const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    APValuePackage arg_val_package;
     std::vector<std::string> argv{};
     std::string arg_id{};
     std::string value_for_argv{};
@@ -35,7 +35,6 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     size_t error_arg_idx{};
     size_t n_initialized{};
     size_t error_arg_n{};
-    uint32_t result_u32{};
     bool result_bool{};
     bool use_flag_value{};
 
@@ -73,6 +72,8 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
                 continue;
             }
         }
+        // Mark randomly picked argument as initialized
+        sc.exp_argtab[rand_idx].initialized = true; 
 
         // Is it time to inject the error?
         if(n_initialized == error_arg_n){
@@ -90,96 +91,29 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
         }
 
         // Generate data for arguments that need it
-        use_flag_value = false;
-        switch (sc.exp_argtab[rand_idx].data_type){
-        case APDataType::UNSIGNED_INT:
-            loc_value.number_u64 = rnd->gen_integral<uint64_t>();
-            // Pick between hex or decimal
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                value_for_argv = integer_to_hex_string<uint64_t>(loc_value.number_u64);
-            }
-            else{
-                value_for_argv = std::to_string(loc_value.number_u64);
-            }
-            break;   
-        case APDataType::SIGNED_INT:
-            loc_value.number_i64 = rnd->gen_integral<int64_t>();
-            // Pick between hex or decimal
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                value_for_argv = integer_to_hex_string<int64_t>(loc_value.number_i64);
-            }
-            else{
-                value_for_argv = std::to_string(loc_value.number_i64);
-            }
-            break;  
-        case APDataType::TEXT:
-            result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
-            loc_value.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
-            value_for_argv = *loc_value.text;
-            break;   
-        case APDataType::FLAG:
-            use_flag_value = rnd->gen_bool();
-            // Whether to include a value for FLAG argument or not
-            if(use_flag_value){
-                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) - 1);
-                flag_value = valid_flag_values[result_u32];
-                loc_value.flag = valid_flag_values_dict.at(flag_value);
-            }
-            else{
-                loc_value.flag = true;
-            }
-            break;    
-        default:
-            break;
-        }
+        arg_val_package.data_type = sc.exp_argtab[rand_idx].data_type;
+        arg_val_package.to_string = true;
+        gen_arg_value(rnd, arg_val_package);
 
-        // Update the expected argument table
-        sc.exp_argtab[rand_idx].initialized = true; 
-        switch(sc.exp_argtab[rand_idx].data_type){
-        case APDataType::UNSIGNED_INT:
-            sc.exp_argtab[rand_idx].value.number_u64 = loc_value.number_u64;
-            break;
-        case APDataType::SIGNED_INT:
-            sc.exp_argtab[rand_idx].value.number_i64 = loc_value.number_i64;
-            break;
-        case APDataType::TEXT:
-            sc.exp_argtab[rand_idx].value.text = std::make_shared<std::string>(*loc_value.text);
-            break;
-        case APDataType::FLAG:
-            sc.exp_argtab[rand_idx].value.flag = loc_value.flag;
-            break;
-        default:
-            break;
-        }
+        // Set argument value
+        copy_APValue(arg_val_package.apv, sc.exp_argtab[rand_idx].value, sc.exp_argtab[rand_idx].data_type);
 
         // Update the argv vector with argument we just created
+        // Update argc appropiately
         argv.push_back(arg_id);
         if(sc.exp_argtab[rand_idx].data_type != APDataType::FLAG){
-            argv.push_back(value_for_argv);
-        }
-        else if(sc.exp_argtab[rand_idx].data_type == APDataType::FLAG && use_flag_value){
-            argv.push_back(flag_value);
-        }
-
-        // Update argc appropiately
-        switch (sc.exp_argtab[rand_idx].data_type){
-        case APDataType::UNSIGNED_INT:
-        case APDataType::SIGNED_INT:
-        case APDataType::TEXT:
+            argv.push_back(arg_val_package.stringified);
             sc.argc += 2;
-            break;
-        case APDataType::FLAG:
-            if(use_flag_value){
+        }
+        else{
+            use_flag_value = rnd->gen_bool();
+            if(use_flag_value || !sc.exp_argtab[rand_idx].value.flag){
+                argv.push_back(arg_val_package.stringified);
                 sc.argc += 2;
             }
             else{
                 sc.argc++;
             }
-            break;
-        default:
-            break;
         }
         
         n_initialized++;
