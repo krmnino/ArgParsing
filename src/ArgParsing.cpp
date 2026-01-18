@@ -271,6 +271,7 @@ void ArgParsing::arg_abbr_form(){
             this->state = APState::ERROR;
             this->reason = APErrRsn::REPEATED_ARGUMENT;
             this->err_msg_data.push_back("-" + abbr_arg);
+            this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
             return;    
         }
         // Set FLAG argument value to true
@@ -300,6 +301,7 @@ void ArgParsing::arg_abbr_form(){
                 this->state = APState::ERROR;
                 this->reason = APErrRsn::REPEATED_ARGUMENT;
                 this->err_msg_data.push_back("-" + abbr_arg);
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 return;    
             }
             // Since it is a group of identifiers, we can only accept arguments of type FLAG
@@ -337,6 +339,9 @@ void ArgParsing::arg_full_form(){
     if(this->arg_table[this->eval_arg_idx].initialized){
         this->state = APState::ERROR;
         this->reason = APErrRsn::REPEATED_ARGUMENT;
+        if(this->arg_table[this->eval_arg_idx].abbr_form.size() != 0){
+            this->err_msg_data.push_back("-" + this->arg_table[this->eval_arg_idx].abbr_form);
+        }
         this->err_msg_data.push_back("--" + full_arg);
         return;    
     }    
@@ -437,19 +442,24 @@ void ArgParsing::display_error_msg(){
         this->error_msg = rsn_str + ": all argument identifiers must start with a dash (-).";
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
-        this->error_msg = rsn_str + ": the required argument " + err_msg_data[0] + " is missing.";
+        this->error_msg = rsn_str + ": the required argument " + this->err_msg_data[0] + " is missing.";
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
-        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is an unknown.";
+        this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + " is an unknown.";
         break;
-    case APErrRsn::REPEATED_ARGUMENT:    
-        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is repeated.";
+    case APErrRsn::REPEATED_ARGUMENT:
+        if(this->err_msg_data.size() > 1){
+            this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + "/" +  this->err_msg_data[1] + " is repeated.";
+        }
+        else{
+            this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + " is repeated.";
+        }
         break;
     case APErrRsn::MUST_BE_FLAG:    
-        this->error_msg = rsn_str + ": the provided argument " + err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
+        this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
         break;
     case APErrRsn::BAD_NUMERIC_VALUE:    
-        this->error_msg = rsn_str + ": \"" + err_msg_data[0] + "\" provided to the argument " + err_msg_data[1] + " is not a valid numeric value.";
+        this->error_msg = rsn_str + ": \"" + this->err_msg_data[0] + "\" provided to the argument " + this->err_msg_data[1] + " is not a valid numeric value.";
         break;
     default:
         break;
