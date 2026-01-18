@@ -26,7 +26,7 @@ SOFTWARE.
 
 void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     const char* alphanum_dict = ALPHANUM_DICT;
-    const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    APValuePackage arg_val_package;
     std::vector<std::string> arg_id_accumulator{};
     std::vector<std::string> argv{};
     std::string arg_id{};
@@ -151,98 +151,34 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             }
             arg_data_type = sc.exp_argtab[arg_table_idx].data_type;
         }
+
         // Generate data for arguments that need it
-        use_flag_value = false;
-        switch (arg_data_type){
-        case APDataType::UNSIGNED_INT:
-            loc_value.number_u64 = rnd->gen_integral<uint64_t>();
-            // Pick between hex or decimal
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                value_for_argv = integer_to_hex_string<uint64_t>(loc_value.number_u64);
-            }
-            else{
-                value_for_argv = std::to_string(loc_value.number_u64);
-            }
-            break;     
-        case APDataType::SIGNED_INT:
-            loc_value.number_i64 = rnd->gen_integral<int64_t>();
-            // Pick between hex or decimal
-            result_bool = rnd->gen_bool();
-            if(result_bool){
-                value_for_argv = integer_to_hex_string<int64_t>(loc_value.number_i64);
-            }
-            else{
-                value_for_argv = std::to_string(loc_value.number_i64);
-            }
-            break; 
-        case APDataType::TEXT:
-            result_u32 = rnd->gen_integral_range<uint32_t>(1, MAX_TEXT_ARG_LEN);
-            loc_value.text = std::make_shared<std::string>(rnd->gen_string(result_u32, nullptr));
-            value_for_argv = *loc_value.text;
-            break;     
-        case APDataType::FLAG:
-            use_flag_value = rnd->gen_bool();
-            // Whether to include a value for FLAG argument or not
-            if(use_flag_value){
-                result_u32 = rnd->gen_integral_range<uint32_t>(0, (sizeof(valid_flag_values) / sizeof(valid_flag_values[0])) -1);
-                flag_value = valid_flag_values[result_u32];
-                loc_value.flag = valid_flag_values_dict.at(flag_value);
-            }
-            else{
-                loc_value.flag = true;
-            }
-            break;  
-        default:
-            break;
-        }
+        arg_val_package.data_type = arg_data_type;
+        arg_val_package.to_string = true;
+        gen_arg_value(rnd, arg_val_package);
         
         // Set argument value (only for valid arguments)
         if(arg_id != error_arg){
-            switch(arg_data_type){
-            case APDataType::UNSIGNED_INT:
-                sc.exp_argtab[arg_table_idx].value.number_u64 = loc_value.number_u64;
-                break;
-            case APDataType::SIGNED_INT:
-                sc.exp_argtab[arg_table_idx].value.number_i64 = loc_value.number_i64;
-                break;
-            case APDataType::TEXT:
-                sc.exp_argtab[arg_table_idx].value.text = std::make_shared<std::string>(*loc_value.text);
-                break;
-            case APDataType::FLAG:
-                sc.exp_argtab[arg_table_idx].value.flag = loc_value.flag;
-                break;
-            default:
-                break;
-            }
+            // Set argument value
+            copy_APValue(arg_val_package.apv, sc.exp_argtab[arg_table_idx].value, sc.exp_argtab[arg_table_idx].data_type);
         }
 
         // Update the argv vector with argument we just created
+        // Update argc appropiately
         argv.push_back(arg_id);
         if(arg_data_type != APDataType::FLAG){
-            argv.push_back(value_for_argv);
-        }
-        else if(arg_data_type == APDataType::FLAG && use_flag_value){
-            argv.push_back(flag_value);
-        }
-
-        // Update argc appropiately
-        switch (arg_data_type){
-        case APDataType::UNSIGNED_INT:
-        case APDataType::SIGNED_INT:
-        case APDataType::TEXT:
+            argv.push_back(arg_val_package.stringified);
             sc.argc += 2;
-            break;
-        case APDataType::FLAG:
-            if(use_flag_value){
+        }
+        else{
+            use_flag_value = rnd->gen_bool();
+            if(use_flag_value || !arg_val_package.apv.flag){
+                argv.push_back(arg_val_package.stringified);
                 sc.argc += 2;
             }
             else{
                 sc.argc++;
             }
-            break;
-        default:
-            break;
         }
     }
 
@@ -254,29 +190,21 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
 void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er, ScenarioData& sc){
     std::string buffer{};
 
-    // Result vs. Expected error mesage
-    er->log_it("Result   : res_error_message = \"" + sc.res_error_message + "\"");
-    er->log_it("Expected : exp_error_message = \"" + sc.exp_error_message + "\"");
-    if(sc.res_error_message != sc.exp_error_message){
-        er->mark_error();
-        er->log_it("!!! ERROR: error_message MISMATCH");
-    }
-    er->log_it(">>> START OF ARGV <<<");
-    er->log_it(describe_argv(sc.argc, sc.argv));
-    er->log_it(">>> END OF ARGV <<<");
-    // Result vs. Expected argument table size
-    er->log_it("Result   : size of result argtab = " + std::to_string(sc.res_argtab.size()));
-    er->log_it("Expected : size of result argtab = " + std::to_string(sc.exp_argtab.size()));
-    if(sc.res_argtab.size() != sc.exp_argtab.size()){
-        er->mark_error();
-        er->log_it("!!! ERROR: size of argtab MISMATCH");
-    }
-    er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.res_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
     er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
     buffer = arg_table_to_string(sc.exp_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
+    er->log_it(">>> START OF ARGV <<<");
+    er->log_it(describe_argv(sc.argc, sc.argv));
+    er->log_it(">>> END OF ARGV <<<");
+    er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
+    buffer = arg_table_to_string(sc.res_argtab);
+    er->log_it(buffer);
+    er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
+
+    // Result vs. Expected error mesage
+    validate_error_msg(er, sc.res_error_message, sc.exp_error_message);
+    
+    // Result vs. Expected argument tables (excluding values)
+    validate_arg_table_ex_values(er, sc.res_argtab, sc.exp_argtab);
 }
