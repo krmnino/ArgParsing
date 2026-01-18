@@ -31,10 +31,8 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     std::vector<std::string> argv{};
     std::string arg_id{};
     std::string no_dashes_arg_id{};
-    std::string value_for_argv{};
     std::string flag_value{};
     std::string error_arg{};
-    APValue loc_value{};
     size_t rand_idx{};
     size_t n_initialized{};
     uint32_t result_u32{};
