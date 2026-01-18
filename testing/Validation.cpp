@@ -135,6 +135,13 @@ void validate_arg_table_ex_values(ErrorReporter* er, std::vector<APTableEntry>& 
             er->log_it("Result   : required = " + bool_to_string(res[i].required));
             er->log_it("Expected : required = " + bool_to_string(exp[i].required));
         }
+    }
+}
+
+
+void validate_arg_table_values_only(ErrorReporter* er, std::vector<APTableEntry>& res, std::vector<APTableEntry>& exp){
+    // Result vs. Expected argument tables
+    for(size_t i = 0; i < exp.size(); i++){
         // initialized should match the expected
         if(res[i].initialized != exp[i].initialized){
             er->mark_error();
@@ -143,13 +150,6 @@ void validate_arg_table_ex_values(ErrorReporter* er, std::vector<APTableEntry>& 
             er->log_it("Result   : initialized = " + bool_to_string(res[i].initialized));
             er->log_it("Expected : initialized = " + bool_to_string(exp[i].initialized));
         }
-    }
-}
-
-
-void validate_arg_table_values_only(ErrorReporter* er, std::vector<APTableEntry>& res, std::vector<APTableEntry>& exp){
-    // Result vs. Expected argument tables
-    for(size_t i = 0; i < exp.size(); i++){
         // value should match the expected
         // uninitialized arguments with default values must remain unchanged
         if(exp[i].initialized || (!exp[i].initialized && exp[i].default_value)){
