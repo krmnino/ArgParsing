@@ -135,6 +135,14 @@ void validate_arg_table_ex_values(ErrorReporter* er, std::vector<APTableEntry>& 
             er->log_it("Result   : required = " + bool_to_string(res[i].required));
             er->log_it("Expected : required = " + bool_to_string(exp[i].required));
         }
+        // default_value field should not be altered
+        if(res[i].default_value != exp[i].default_value){
+            er->mark_error();
+            er->log_it("!!! ERROR: default_value FIELD MISMATCH");
+            er->log_it("Index    : " + std::to_string(i));
+            er->log_it("Result   : default_value = " + bool_to_string(res[i].default_value));
+            er->log_it("Expected : default_value = " + bool_to_string(exp[i].default_value));
+        }
     }
 }
 
