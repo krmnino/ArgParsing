@@ -191,6 +191,18 @@ void validate_arg_table_values_only(ErrorReporter* er, std::vector<APTableEntry>
                 }
                 break;
             default:
+                switch(exp[i].data_type){
+                case APDataType::UNSIGNED_INT:
+                case APDataType::SIGNED_INT:
+                case APDataType::TEXT:
+                case APDataType::FLAG:
+                default:                    
+                    er->mark_error();
+                    er->log_it("!!! ERROR: Unrecognized argument APDataType value found");
+                    er->log_it("From Result   : APDataType = " + (uint64_t)res[i].data_type);
+                    er->log_it("From Expected : APDataType = " + (uint64_t)exp[i].data_type);
+                    break;
+                }
                 break;
             }
         }
