@@ -28,9 +28,7 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     APValuePackage arg_val_package;
     std::vector<std::string> argv{};
     std::string arg_id{};
-    std::string value_for_argv{};
     std::string flag_value{};
-    APValue loc_value{};
     size_t rand_idx{};
     size_t error_arg_idx{};
     size_t n_initialized{};

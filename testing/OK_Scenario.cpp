@@ -30,9 +30,7 @@ void build_OK_scenario(Randomizer* rnd, ScenarioData& sc){
     std::vector<std::string> argv{};
     std::string arg_id{};
     std::string no_dashes_arg_id{};
-    std::string value_for_argv{};
     std::string flag_value{};
-    APValue loc_value{};
     size_t rand_idx{};
     size_t n_initialized{};
     int32_t arg_table_idx{};

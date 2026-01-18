@@ -54,7 +54,6 @@ int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     APValuePackage arg_val_package;
     APTableEntry new_entry{};
     std::string result_str{};
-    APValue loc_value{};
     uint32_t result_u32{};
     uint32_t attempt_counter{};
     uint32_t shifter{};
