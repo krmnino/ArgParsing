@@ -58,20 +58,32 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         }
     }
     // Pick identifier type, initialize it, add it to the accumulator
-    // 50% chance of using abbreviated form if available
-    result_bool = rnd->gen_bool();
-    if(arg_table_is_abbr_form_available(sc.exp_argtab, error_table_idx) && result_bool){
-        arg_id = "-" + sc.exp_argtab[error_table_idx].abbr_form;
+    if(arg_table_is_abbr_form_available(sc.exp_argtab, error_table_idx)){
+        result_bool = rnd->gen_bool();
+        // 50% chance of using abbreviated form if available
+        if(result_bool){
+            arg_id = "-" + sc.exp_argtab[error_table_idx].abbr_form;
+        }
+        else{
+            arg_id = "--" + sc.exp_argtab[error_table_idx].full_form;
+        }
+        // Set expected error message 
+        sc.exp_error_message = APErrRsn_to_string(APErrRsn::MUST_BE_FLAG) + ": the provided argument -" + 
+                               sc.exp_argtab[error_table_idx].abbr_form + "/--" +
+                               sc.exp_argtab[error_table_idx].full_form +
+                               " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
     }
     else{
         arg_id = "--" + sc.exp_argtab[error_table_idx].full_form;
+        // Set expected error message 
+        sc.exp_error_message = APErrRsn_to_string(APErrRsn::MUST_BE_FLAG) + ": the provided argument --" + 
+                               sc.exp_argtab[error_table_idx].full_form +
+                               " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
     }
     arg_id_accumulator.push_back(arg_id);
     sc.exp_argtab[error_table_idx].initialized = true;
     n_initialized++;
 
-    // Set expected error message 
-    sc.exp_error_message = APErrRsn_to_string(APErrRsn::MUST_BE_FLAG) + ": the provided argument " + arg_id + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
     
     // Loop through sequentially and initialize all the required arguments first
     for(size_t i = 0; i < sc.exp_argtab.size(); i++){
