@@ -16,7 +16,7 @@ A simple command-line argument parser library for C/C++ programs.
 
 1. Navigate into `src`.
 2. Issue the command `sh Initialize.sh` to prepare the environment before creating the library file.
-3. Issue the command `make`. This will generate and place the library file in `res/libArgParsing.so`.
+3. Issue the command `make`. This will generate the shared object file in `res/libArgParsing.so`.
 4. You can now copy the shared object file `res/libArgParsing.so` to a desired location for your project.
 5. If you intend to integrate `ArgParsing` to a C++ project, you should copy the header file `src/ArgParsing.hpp` to a desired location for your project.
 6. If you intend to integrate `ArgParsing` to a C project, you should copy the header file `src/ArgParsing_C.h` to a desired location for your project.
@@ -24,8 +24,6 @@ A simple command-line argument parser library for C/C++ programs.
 ## Usage for C++ Integration
 
 The file `testing/ArgParsingExample.cpp` is an integration example on how the `ArgParsing` library can be used within a C++ program.
-
-Additionally, the file `testing/ArgParsingCExample.c` is an integration example on how the `ArgParsing` library can be used within a C program.
 
 Below you will find the publicly exposed methods belonging to the `ArgParsing` class.
 
@@ -180,6 +178,12 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - This function calls the `ArgParsing` method `size_t get_arg_value_bytesize(std::string arg_id, bool is_abbr_input)`.
 
 ## Changelog
+
+### v1.3
+- Support for argument default values.
+- Definition of the `template<typename T> APTableEntry(std::string, std::string, T)` constructor method to allow setting default argument values in C++ and C interface.
+- The error codes `APErrRsn::MISSING_REQUIRED_ARG`, `APErrRsn::MUST_BE_FLAG`, and `APErrRsn::REPEATED_ARGUMENT` messages now display abbreviated form identifier, if and only if it has been definied in the argument table, and full form identifier.
+- Miscellaneous bug fixes and general code clean up.
 
 ### v1.2.1
 - Refactored `int ArgParsing_C_get_value_TEXT(ArgParsing_C*, const char*, bool, char*, size_t)`, fix issue to allow handling longer `APDataType::TEXT` argument types by copying the value into a caller's allocated buffer.
