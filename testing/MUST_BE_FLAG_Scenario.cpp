@@ -146,7 +146,8 @@ void build_MUST_BE_FLAG_scenario(Randomizer* rnd, ScenarioData& sc){
         // If we are injecting the error, pick a different data type for it
         // Else, use the data type that's in the argument table
         if(arg_table_idx == error_table_idx){
-            err_data_types = (uint32_t)APDataType::UNSIGNED_INT || 
+            err_data_types = (uint32_t)APDataType::UNSIGNED_INT ||
+                             (uint32_t)APDataType::SIGNED_INT ||
                              (uint32_t)APDataType::TEXT;
             while(true){
                 shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
