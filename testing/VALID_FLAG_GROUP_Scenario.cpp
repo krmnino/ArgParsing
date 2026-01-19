@@ -50,7 +50,7 @@ void build_VALID_FLAG_GROUP_scenario(Randomizer* rnd, ScenarioData& sc){
     valid_args_for_group = 0;
     for(size_t i = 0; i < sc.exp_argtab.size(); i++){
         if(sc.exp_argtab[i].abbr_form != "" && sc.exp_argtab[i].data_type == APDataType::FLAG){
-                valid_args_for_group++;
+            valid_args_for_group++;
         }
     }
     args_in_group = rnd->gen_integral_range<size_t>(2, valid_args_for_group);
