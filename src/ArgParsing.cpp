@@ -308,7 +308,8 @@ void ArgParsing::arg_abbr_form(){
             if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
                 this->state = APState::ERROR;
                 this->reason = APErrRsn::MUST_BE_FLAG;
-                this->err_msg_data.push_back("-" + abbr_arg);
+                this->err_msg_data.push_back("-" + this->arg_table[this->eval_arg_idx].abbr_form);
+                this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
                 return;    
             }
             this->arg_table[this->eval_arg_idx].value.flag = true;
@@ -442,7 +443,12 @@ void ArgParsing::display_error_msg(){
         this->error_msg = rsn_str + ": all argument identifiers must start with a dash (-).";
         break;
     case APErrRsn::MISSING_REQUIRED_ARG:    
-        this->error_msg = rsn_str + ": the required argument " + this->err_msg_data[0] + " is missing.";
+        if(this->err_msg_data.size() > 1){
+            this->error_msg = rsn_str + ": the required argument " + this->err_msg_data[0] + "/" +  this->err_msg_data[1] + " is missing.";
+        }
+        else{
+            this->error_msg = rsn_str + ": the required argument " + this->err_msg_data[0] + " is missing.";
+        }
         break;
     case APErrRsn::UNKNOWN_ARGUMENT:    
         this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + " is an unknown.";
@@ -456,7 +462,17 @@ void ArgParsing::display_error_msg(){
         }
         break;
     case APErrRsn::MUST_BE_FLAG:    
-        this->error_msg = rsn_str + ": the provided argument " + this->err_msg_data[0] + " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
+        if(this->err_msg_data.size() > 1){
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] + "/" +
+                              this->err_msg_data[1] +
+                              " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
+        }
+        else{
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] +
+                              " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
+        }
         break;
     case APErrRsn::BAD_NUMERIC_VALUE:    
         this->error_msg = rsn_str + ": \"" + this->err_msg_data[0] + "\" provided to the argument " + this->err_msg_data[1] + " is not a valid numeric value.";
@@ -479,9 +495,6 @@ bool ArgParsing::validate_flag_value(std::string& value){
     bool group_id{}; 
     bool arg_value_fn_quick_exit{}; 
     
-    arg_value_fn_quick_exit = false;
-    found = false;
-    group_id = false;
     for(size_t i = 0; i < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); i++){
         if(value == valid_flag_values[i]){
             found = true;
@@ -553,7 +566,22 @@ bool ArgParsing::validate_flag_value(std::string& value){
         else{
             this->state = APState::ERROR;
             this->reason = APErrRsn::MUST_BE_FLAG;
-            this->err_msg_data.push_back(this->prev_argv_element);
+            // Check the previous identifier if it is in full or abbreviated form
+            if(this->prev_argv_element[1] == '-'){
+                prev_arg_id = this->prev_argv_element.substr(2);
+                table_idx = get_index_in_arg_table(prev_arg_id, false);
+                // Check if abbreviated from is available
+                if(this->arg_table[table_idx].abbr_form.size() != 0){
+                    this->err_msg_data.push_back("-" + this->arg_table[table_idx].abbr_form);
+                }
+                this->err_msg_data.push_back("--" + this->arg_table[table_idx].full_form);
+            }
+            else{
+                prev_arg_id = this->prev_argv_element.substr(1);
+                table_idx = get_index_in_arg_table(prev_arg_id, true);
+                this->err_msg_data.push_back("-" + this->arg_table[table_idx].abbr_form);
+                this->err_msg_data.push_back("--" + this->arg_table[table_idx].full_form);
+            }
             arg_value_fn_quick_exit = true;
         }
     }
@@ -581,6 +609,9 @@ int ArgParsing::parse(){
         if(this->arg_table[i].required && !this->arg_table[i].initialized){
             this->state = APState::ERROR;
             this->reason = APErrRsn::MISSING_REQUIRED_ARG;
+            if(this->arg_table[i].abbr_form.size() != 0){
+                this->err_msg_data.push_back("-" + this->arg_table[i].abbr_form);
+            }
             this->err_msg_data.push_back("--" + this->arg_table[i].full_form);
             break;
         }
