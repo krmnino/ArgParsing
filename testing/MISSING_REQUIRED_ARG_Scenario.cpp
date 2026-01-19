@@ -49,7 +49,14 @@ void build_MISSING_REQUIRED_ARG_scenario(Randomizer* rnd, ScenarioData& sc){
     }
 
     // Set expected error message 
-    sc.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_REQUIRED_ARG) + ": the required argument --" + sc.exp_argtab[rand_idx].full_form + " is missing.";
+    if(arg_table_is_abbr_form_available(sc.exp_argtab, error_arg_idx)){
+        sc.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_REQUIRED_ARG) + ": the required argument -" + 
+                               sc.exp_argtab[error_arg_idx].abbr_form + "/--" +
+                               sc.exp_argtab[error_arg_idx].full_form + " is missing.";
+    }
+    else{
+        sc.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_REQUIRED_ARG) + ": the required argument --" + sc.exp_argtab[error_arg_idx].full_form + " is missing.";
+    }
 
     // Loop through sequentially and initialize all the required arguments first, except the one we picked for error injection
     n_initialized = 0;
