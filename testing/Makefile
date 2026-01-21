@@ -1,9 +1,10 @@
-RD = ../res/
-BD = ../bin/
-SD = ../src/
+RD = $(realpath ../res)
+BD = $(realpath ../bin)
+SD = $(realpath ../src)
 
-SRC_FILES = $(SD)ArgParsing.cpp					\
-			ArgTableBuilder.cpp					\
+SRC_FILES = ArgParsing.cpp
+
+TST_FILES = ArgTableBuilder.cpp					\
 			TestcaseBuilder.cpp					\
 			ScenarioBuilder.cpp					\
 			Validation.cpp						\
@@ -20,45 +21,31 @@ SRC_FILES = $(SD)ArgParsing.cpp					\
 			INVALID_FLAG_GROUP_Scenario.cpp		\
 			Main.cpp
 
-OBJ_FILES = ArgParsing.o						\
-			ArgTableBuilder.o					\
-			TestcaseBuilder.o					\
-			ScenarioBuilder.o					\
-			Validation.o						\
-			Utils.o  							\
-			OK_Scenario.o						\
-			MISSING_FIRST_DASH_Scenario.o		\
-			MISSING_REQUIRED_ARG_Scenario.o		\
-			UNKNOWN_ARGUMENT_Scenario.o			\
-			REPEATED_ARGUMENT_Scenario.o		\
-			MUST_BE_FLAG_Scenario.o				\
-			BAD_NUMERIC_VALUE_Scenario.o		\
-			EMPTY_ARG_LIST_Scenario.o			\
-			VALID_FLAG_GROUP_Scenario.o			\
-			INVALID_FLAG_GROUP_Scenario.o		\
-			Main.o
+OBJ_FILES = $(patsubst %.cpp,%.o,$(TST_FILES) $(SRC_FILES))
+OBJ_PATHS = $(addprefix $(BD)/,$(OBJ_FILES))
 
 ###################################################################################################
 
 all: compile link
 
 compile:
-	g++ -g -c -Wall -D DEBUG -std=c++17 $(SRC_FILES) 
+	g++ -g -c -Wall -D DEBUG -std=c++17 $(SD)/$(SRC_FILES) $(TST_FILES)
+	mv *.o $(BD)
 
 link: 
-	g++ $(OBJ_FILES) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\
-					 -o $(BD)argparsing
+	g++ $(OBJ_PATHS) -L$(RD) -lRandomizer -Wl,-rpath,$(RD)	\
+					 -o $(BD)/argparsing
 
 single:
-	g++ -g -c -Wall -std=c++17 $(FILE) -D DEBUG
+	g++ -g -c -Wall -D DEBUG -std=c++17 $(FILE)
 
 example:
-	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp ../src/ArgParsing.cpp
-	g++ ArgParsingExample.o ArgParsing.o -o $(BD)aptest
-	make -C ../src
+	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp $(SD)/$(SRC_FILES)
 	gcc -g -c -Wall -std=c17 ArgParsingCExample.c
-	gcc ArgParsingCExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD)	\
-							-o $(BD)aptest_c
+	mv *.o $(BD)
+	make -C $(SD)
+	g++ $(BD)/ArgParsingExample.o $(BD)/ArgParsing.o -o $(BD)/aptest
+	gcc $(BD)/ArgParsingCExample.o -L$(RD) -lArgParsing -Wl,-rpath,$(RD) -o $(BD)/aptest_c
 
 clean:
-	rm $(BD)argparsing $(BD)argtest *.o ../src/*.gch
+	rm $(BD)/argparsing $(BD)/aptest* $(BD)/*.o *.o $(SD)*.gch
