@@ -52,6 +52,7 @@ enum class APErrRsn {
     REPEATED_ARGUMENT     =  0x00000008,
     MUST_BE_FLAG          =  0x00000010,
     BAD_NUMERIC_VALUE     =  0x00000020,
+    EXPECTING_VALUE       =  0x00000040,
 };
 
 
