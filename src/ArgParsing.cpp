@@ -427,6 +427,8 @@ std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
         return "APErrRsn::MUST_BE_FLAG";
     case APErrRsn::BAD_NUMERIC_VALUE:
         return "APErrRsn::BAD_NUMERIC_VALUE";
+    case APErrRsn::EXPECTING_VALUE:
+        return "APErrRsn::EXPECTING_VALUE";
     default:
         break;
     }
@@ -474,10 +476,24 @@ void ArgParsing::display_error_msg(){
                               " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
         }
         break;
+    case APErrRsn::EXPECTING_VALUE:
+        if(this->err_msg_data.size() > 1){
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] + "/" +
+                              this->err_msg_data[1] +
+                              " expects a value.";
+        }
+        else{
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] +
+                              " expects a value.";
+        }
+        break;
     case APErrRsn::BAD_NUMERIC_VALUE:    
         this->error_msg = rsn_str + ": \"" + this->err_msg_data[0] + "\" provided to the argument " + this->err_msg_data[1] + " is not a valid numeric value.";
         break;
     default:
+        this->error_msg = "Unexpected error -> APErrRsn: " + std::to_string((int)this->reason);
         break;
     }
     #ifndef DEBUG
@@ -590,6 +606,7 @@ bool ArgParsing::validate_flag_value(std::string& value){
 
 
 int ArgParsing::parse(){
+    // Loop through the argv list
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
             break;
@@ -601,10 +618,28 @@ int ArgParsing::parse(){
             this->arg_value();
         }
     }
-    if(this->state == APState::ERROR){
+    // When the list is exhausted, check the current state
+    switch (this->state){
+    case APState::ARGV_VALUE:
+        // If we are in ARGV_VALUE and current argument is not FLAG type, throw an error
+        if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::EXPECTING_VALUE;
+            if(this->arg_table[this->eval_arg_idx].abbr_form.size() != 0){
+                this->err_msg_data.push_back("-" + this->arg_table[this->eval_arg_idx].abbr_form);
+            }
+            this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
+            this->display_error_msg();
+            return -1;
+        }
+        break;
+    case APState::ERROR:
         this->display_error_msg();
         return -1;
+    default:
+        break;
     }
+    // Loop through the argument table and check every required argument has been initialized
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(this->arg_table[i].required && !this->arg_table[i].initialized){
             this->state = APState::ERROR;
