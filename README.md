@@ -179,6 +179,10 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 ## Changelog
 
+### v1.3.1
+- Fixed bug when last argument in `argv` is not a `APDataType::FLAG` and no value is provided, `ArgParsing` should report an error with reason `APErrRsn::EXPECTING_VALUE`.
+- Updated Makefiles.
+
 ### v1.3
 - Support for argument default values.
 - Definition of the `template<typename T> APTableEntry(std::string, std::string, T)` constructor method to allow setting default argument values in C++ and C interface.
