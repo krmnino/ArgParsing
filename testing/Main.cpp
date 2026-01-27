@@ -50,6 +50,7 @@ int main(int argc, char* argv[]){
     uint64_t max_errors{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
+    int ret;
     bool infinite_loop{};
 
     // Program argument table 
@@ -58,7 +59,7 @@ int main(int argc, char* argv[]){
         { "n", "n_tests"    , APDataType::UNSIGNED_INT , true  },
         { "" , "n_scenarios", (uint64_t)1                      },
         { "e", "max_errors" , (uint64_t)1                      },
-        { "" , "types"      , (uint64_t)0x2FF                  },
+        { "" , "types"      , (uint64_t)0x7FF                  },
         { "t", "trace"      , APDataType::FLAG         , false },
     };
     
@@ -140,7 +141,12 @@ int main(int argc, char* argv[]){
     while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
         testcase = new TestcaseData();
         // Build a testcase and its multiple scenarios
-        build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
+        ret = build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
+        if(ret != 0){
+            delete testcase;
+            break;
+        }
+        // Run the scenarios on ArgParsing
         for(uint32_t i = 0; i < n_scenarios; i++){
             ap_test = new ArgParsing();
             ap_test->set_arg_table(testcase->ini_argtab);
