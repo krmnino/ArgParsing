@@ -27,13 +27,13 @@ The file `testing/ArgParsingExample.cpp` is an integration example on how the `A
 
 Below you will find the publicly exposed methods belonging to the `ArgParsing` class.
 
-### `static ArgParsing& get_instance()`
+#### `static ArgParsing& get_instance()`
 
 - **Input arguments**: none.
 - **Output**: a static reference to the singleton ArgParsing object.
 - Only one instance of the `ArgParsing` class is allowed to exist throughout the execution of the program.
 
-### `int set_input_args(int input_argc, char** input_argv)`
+#### `int set_input_args(int input_argc, char** input_argv)`
 
 - **Input arguments**:
   - `input_argc`: the number of C strings in program's argv to be passed to the `ArgParsing` object.
@@ -41,7 +41,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - **Output**: return 0 if no errors occurred. Return -1 if `input_argc` is less than 1 or `input_argv` is a `nullptr`.
 - This method will assign the pointer to the array of strings containing the program's argument list (argv) and how many of them are in the list (argc) to the `ArgParsing` instance.
 
-### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
+#### `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
 
 - **Input arguments**:
   - `arg_table_ptr`: a pointer to an array of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
@@ -50,14 +50,14 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - This method will initialize an argument table in the `ArgParsing` object. This table of arguments will be used to validate the program's command line arguments and hold their values once parsed and validated.
 - This method performs validation to prevent duplicate argument identifiers, use of reserved keywords, etc.
 
-### `int set_arg_table(std::vector<APTableEntry>& arg_table)`
+#### `int set_arg_table(std::vector<APTableEntry>& arg_table)`
 
 - **Input arguments**:
   - `arg_table`: a reference to a vector of `APTableEntry` objects that will be used to define `ArgParsing`'s argument table.
 - **Output**: return 0 if no errors occurred. Return -1 if an error was encountred plus an informational message.
 - Method overloading, calls `set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`.
 
-### `int parse()`
+#### `int parse()`
 
 - **Input arguments**: none.
 - **Output**: return 0 if no errors occurred. Return -1 if an error was encountred plus an informational message is reported.
@@ -65,7 +65,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - When an error is encontered, the `ArgParsing` object will switch to an error state and reason for error is set.
 - An informational message is reported describing the cause of the error.
 
-### `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)`
+#### `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `arg_key`: a string containing the argument identifier
@@ -80,7 +80,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 |`UNSIGNED_INT` |`uint64_t`       |
 |`SIGNED_INT`   |`int64_t`        |
 
-### `size_t get_arg_value_size(std::string arg_key, bool is_abbr_input)`
+#### `size_t get_arg_value_size(std::string arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `arg_key`: a string containing the argument identifier
@@ -95,13 +95,13 @@ The file `testing/ArgParsingCExample.c` is an integration example on how the `Ar
 
 Below you will find the C interface functions to interact with the `ArgParsing` class.
 
-### `ArgParsing_C* ArgParsing_C_get_instance()`
+#### `ArgParsing_C* ArgParsing_C_get_instance()`
 
 - **Input arguments**: none.
 - **Output**: a pointer to `ArgParsing_C` object.
 - The returned `ArgParsing_C` pointer points to a statically allocated `ArgParsing` object.
 
-### `int ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv)`
+#### `int ArgParsing_C_set_input_args(ArgParsing_C* apc, int input_argc, char** input_argv)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -110,7 +110,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - **Output**: return 0 if no errors occurred. Return -1 if `input_argc` is less than 1 or `input_argv` is a `nullptr`.
 - This function calls the `ArgParsing` method `int set_input_args(int input_argc, char** input_argv)`.
 
-### `int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries)`
+#### `int ArgParsing_C_set_arg_table(ArgParsing_C* apc, APTableEntry_C* input_arg_table, size_t n_entries)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -120,14 +120,14 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - Iterates through each element in the input array, converting them into `APTableEntry` objects, and placing these new objects into a vector.
 - This function calls the `ArgParsing` method `int ArgParsing::set_arg_table(std::vector<APTableEntry>& arg_table)`.
 
-### `int ArgParsing_C_parse(ArgParsing_C*)`
+#### `int ArgParsing_C_parse(ArgParsing_C*)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
 - **Output**: return 0 if no errors occurred. Return -1 if an error was encountred plus an informational message is reported.
 - This function calls the `ArgParsing` method `int parse()`.
 
-### `int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input, char* output_buffer, size_t len_output_buffer)`
+#### `int ArgParsing_C_get_value_TEXT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input, char* output_buffer, size_t len_output_buffer)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -141,7 +141,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - To verify the argument string value length, the caller may invoke `ArgParsing_C_get_arg_value_bytesize` to retrieve the number of characters that form the argument's value string.
 - It is highly recommended that `output_buffer` is initialized with zeros.
 
-### `bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
+#### `bool ArgParsing_C_get_value_FLAG(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -150,7 +150,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - **Output**: if the argument exists, the `bool` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `bool`.
 
-### `uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
+#### `uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -159,7 +159,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - **Output**: if the argument exists, the `uint64_t` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `uint64_t`.
 
-### `int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
+#### `int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
@@ -168,7 +168,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 - **Output**: if the argument exists, the `int64_t` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `int64_t`.
 
-### `size_t ArgParsing_C_get_arg_value_bytesize(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
+#### `size_t ArgParsing_C_get_arg_value_bytesize(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
