@@ -19,6 +19,7 @@ TST_FILES = ArgTableBuilder.cpp					\
 			EMPTY_ARG_LIST_Scenario.cpp			\
 			VALID_FLAG_GROUP_Scenario.cpp		\
 			INVALID_FLAG_GROUP_Scenario.cpp		\
+			EXPECTING_VALUE_Scenario.cpp		\
 			Main.cpp
 
 OBJ_FILES = $(patsubst %.cpp,%.o,$(TST_FILES) $(SRC_FILES))

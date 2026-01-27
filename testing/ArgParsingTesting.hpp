@@ -39,7 +39,7 @@ SOFTWARE.
 #define BUILD_MAX_ATTEMPTS 1000
 #define MAX_TEXT_ARG_LEN 128
 #define MAX_ARGS 100
-#define MAX_SCENARIO_TYPES 10
+#define MAX_SCENARIO_TYPES 11
 #define ALPHANUM_DICT "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 #define PRT_IDX_STR_WIDTH 5
@@ -63,6 +63,7 @@ enum class ScenarioType {
     EMPTY_ARG_LIST        =  0x00000080,
     VALID_FLAG_GROUP      =  0x00000100,
     INVALID_FLAG_GROUP    =  0x00000200,
+    EXPECTING_VALUE       =  0x00000400,
 };
 
 
@@ -143,21 +144,21 @@ void copy_APValue(APValue&, APValue&, APDataType);
 
 
 // ArgTableBuilder.cpp
-int32_t build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
-int32_t build_entry(Randomizer*, std::vector<APTableEntry>&);
+int build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
+int build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 
 // TestcaseBuilder.cpp
-int32_t build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
+int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 
 // ScenarioBuilder.cpp
-void build_scenario(Randomizer*, ScenarioData&);
+int build_scenario(Randomizer*, ScenarioData&);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
 // Validation.cpp
-void validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
+int validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
 void collect_ap_data(ScenarioData&, ArgParsing*);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
@@ -212,6 +213,11 @@ void validate_VALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
 // INVALID_FLAG_GROUP_Scenario.cpp
 void build_INVALID_FLAG_GROUP_scenario(Randomizer*, ScenarioData&);
 void validate_INVALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
+
+
+// EXPECTING_VALUE_Scenario.cpp
+void build_EXPECTING_VALUE_scenario(Randomizer*, ScenarioData&);
+void validate_EXPECTING_VALUE_scenario(ErrorReporter*, ScenarioData&);
 
 
 // Template utility functions
