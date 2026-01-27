@@ -25,7 +25,7 @@ SOFTWARE.
 #include <algorithm>
 
 
-void build_scenario(Randomizer* rnd, ScenarioData& scenario){
+int build_scenario(Randomizer* rnd, ScenarioData& scenario){
     switch(scenario.type){
     case ScenarioType::OK:
         scenario.n_args = rnd->gen_integral_range<uint32_t>(arg_table_count_required(scenario.exp_argtab), scenario.exp_argtab.size());
@@ -70,9 +70,15 @@ void build_scenario(Randomizer* rnd, ScenarioData& scenario){
         scenario.n_args = rnd->gen_integral_range<uint32_t>(2, scenario.exp_argtab.size());
         build_INVALID_FLAG_GROUP_scenario(rnd, scenario);
         break;
-    default:
+    case ScenarioType::EXPECTING_VALUE:
+        scenario.n_args = rnd->gen_integral_range<uint32_t>(2, scenario.exp_argtab.size());
+        build_EXPECTING_VALUE_scenario(rnd, scenario);
         break;
+    default:
+        std::cerr << "ERROR: Invalid ScenarioType provided to build_scenario(): " << (int)scenario.type << std::endl;
+        return -1;
     }
+    return 0;
 }
 
 
@@ -91,13 +97,14 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
                         (uint32_t)ScenarioType::BAD_NUMERIC_VALUE      |
                         (uint32_t)ScenarioType::EMPTY_ARG_LIST         |
                         (uint32_t)ScenarioType::VALID_FLAG_GROUP       |
-                        (uint32_t)ScenarioType::INVALID_FLAG_GROUP     ;
+                        (uint32_t)ScenarioType::INVALID_FLAG_GROUP     |
+                        (uint32_t)ScenarioType::EXPECTING_VALUE        ;
     
     // Mask out with input parm before disabling scenario by scenario based on input argument table
     allowed_scenarios = allowed_scenarios & input_allowed_scenarios;
 
-    // Check if Scenarios::OK scenario can be tested
-    // Check if Scenarios::REPEATED_ARGUMENT scenario can be tested
+    // Check if ScenarioType::OK scenario can be tested
+    // Check if ScenarioType::REPEATED_ARGUMENT scenario can be tested
     if(arg_table.size() == 0){
         mask = ~(uint32_t)ScenarioType::OK;
         allowed_scenarios = allowed_scenarios & mask;
@@ -105,41 +112,41 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
         allowed_scenarios = allowed_scenarios & mask;
     }
     
-    // Scenarios::UNKNOWN_ARGUMENT is always allowed
+    // ScenarioType::UNKNOWN_ARGUMENT is always allowed
     
-    // Check if Scenarios::MISSING_FIRST_DASH scenario can be tested
+    // Check if ScenarioType::MISSING_FIRST_DASH scenario can be tested
     if(arg_table_count_abbr_form(arg_table) == 0){
         mask = ~(uint32_t)ScenarioType::MISSING_FIRST_DASH;
         allowed_scenarios = allowed_scenarios & mask;
     }
 
-    // Check if Scenarios::MISSING_REQUIRED_ARG scenario can be tested
+    // Check if ScenarioType::MISSING_REQUIRED_ARG scenario can be tested
     if(arg_table_count_required(arg_table) == 0){
         mask = ~(uint32_t)ScenarioType::MISSING_REQUIRED_ARG;
         allowed_scenarios = allowed_scenarios & mask;
     }
     
-    // Check if Scenarios::MUST_BE_FLAG scenario can be tested
+    // Check if ScenarioType::MUST_BE_FLAG scenario can be tested
     if(arg_table_count_data_type(arg_table, APDataType::FLAG) == 0){
         mask = ~(uint32_t)ScenarioType::MUST_BE_FLAG;
         allowed_scenarios = allowed_scenarios & mask;
     }
     
-    // Check if Scenarios::BAD_NUMERIC_VALUE scenario can be tested
+    // Check if ScenarioType::BAD_NUMERIC_VALUE scenario can be tested
     if(arg_table_count_data_type(arg_table, APDataType::UNSIGNED_INT) == 0 && 
        arg_table_count_data_type(arg_table, APDataType::SIGNED_INT) == 0){
         mask = ~(uint32_t)ScenarioType::BAD_NUMERIC_VALUE;
         allowed_scenarios = allowed_scenarios & mask;
     }
 
-    // Check if Scenarios::EMPTY_ARG_LIST scenario can be tested
+    // Check if ScenarioType::EMPTY_ARG_LIST scenario can be tested
     if(arg_table.size() != 0){
         mask = ~(uint32_t)ScenarioType::EMPTY_ARG_LIST;
         allowed_scenarios = allowed_scenarios & mask;
     }
     
-    // Check if Scenarios::VALID_FLAG_GROUP scenario can be tested
-    // Check if Scenarios::INVALID_FLAG_GROUP scenario can be tested
+    // Check if ScenarioType::VALID_FLAG_GROUP scenario can be tested
+    // Check if ScenarioType::INVALID_FLAG_GROUP scenario can be tested
     valid_args_for_group = 0;
     for(size_t i = 0; i < arg_table.size(); i++){
         if(arg_table[i].abbr_form != "" && arg_table[i].data_type == APDataType::FLAG){
@@ -150,6 +157,14 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
         mask = ~(uint32_t)ScenarioType::VALID_FLAG_GROUP;
         allowed_scenarios = allowed_scenarios & mask;
         mask = ~(uint32_t)ScenarioType::INVALID_FLAG_GROUP;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+
+    // Check if ScenarioType::EXPECTING_VALUE scenario can be tested
+    if(arg_table_count_data_type(arg_table, APDataType::TEXT) == 0 &&
+       arg_table_count_data_type(arg_table, APDataType::UNSIGNED_INT) == 0 &&  
+       arg_table_count_data_type(arg_table, APDataType::SIGNED_INT) == 0){
+        mask = ~(uint32_t)ScenarioType::EXPECTING_VALUE;
         allowed_scenarios = allowed_scenarios & mask;
     }
 
