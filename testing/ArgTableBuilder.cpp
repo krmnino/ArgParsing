@@ -67,7 +67,6 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
         while (true){
             // If counter expired, stop trying and return to the caller
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
-                std::cerr << "ERROR: build_entry() reached maximum build attempts." << std::endl;
                 return -1;
             }
             result_str = rnd->gen_string(MAX_ABBR_FORM_ID_LEN, alphanum_dict);
