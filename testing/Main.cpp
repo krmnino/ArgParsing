@@ -156,7 +156,11 @@ int main(int argc, char* argv[]){
             collect_ap_data(testcase->s_arr[i], ap_test);
             delete ap_test;
         }
-        validate(er, rnd->get_root_seed(), testcase_counter, *testcase);
+        ret = validate(er, rnd->get_root_seed(), testcase_counter, *testcase);
+        if(ret != 0){
+            delete testcase;
+            break;
+        }
         delete testcase;
         rnd->root_seed_next();
         testcase_counter++;
