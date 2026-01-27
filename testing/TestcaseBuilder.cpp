@@ -24,13 +24,13 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
+int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
     uint32_t attempt_counter{};
     uint32_t shifter{};
     uint32_t n_args{};
-    int32_t ret{};
+    int ret{};
     bool invalid{};
     
     // Set the number of scenarios for this testcase
@@ -41,6 +41,7 @@ int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenario
     while(true){
         invalid = false;
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
+            std::cerr << "ERROR: build_testcase()[1] reached maximum build attempts." << std::endl;
             return -1;
         }
         n_args = rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
@@ -68,6 +69,7 @@ int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenario
         attempt_counter = 0;
         while(true){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
+                std::cerr << "ERROR: build_testcase()[2] reached maximum build attempts." << std::endl;
                 return -1;
             }
             shifter = rnd->gen_integral_range<uint32_t>(0, MAX_SCENARIO_TYPES - 1);
@@ -82,7 +84,10 @@ int32_t build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenario
         tdata.s_arr[i].exp_argtab.reserve(tdata.ini_argtab.size());
         tdata.s_arr[i].exp_argtab = tdata.ini_argtab;
         // Build the scenario: expected table and argv
-        build_scenario(rnd, tdata.s_arr[i]);
+        ret = build_scenario(rnd, tdata.s_arr[i]);
+        if(ret != 0){
+            return -1;
+        }
     }
 
     return 0;
