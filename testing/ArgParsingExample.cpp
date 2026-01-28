@@ -27,8 +27,11 @@ SOFTWARE.
 int main(int argc, char* argv[]){
     int ret;
 
+    // First, obtain Singleton instance of ArgParsing
     ArgParsing& ap = ArgParsing::get_instance();
 
+    // Define the argument table using the APTableEntry constructor methods to set
+    // the desired identifiers, data types, and flag values
     APTableEntry arg_table[] = {
         { "a", "arg1", APDataType::FLAG        , true   },
         { "z", "arg2", APDataType::TEXT        , true   },
@@ -40,20 +43,25 @@ int main(int argc, char* argv[]){
         { "y", "arg8", std::string("init text")         },
     };
 
+    // Provide the argument table to the ArgParsing instance.
+    // ArgParsing will validate the table and is important to check the return value
     ret = ap.set_arg_table(arg_table, sizeof(arg_table) / sizeof(APTableEntry));
     if(ret != 0){
         std::cerr << "ERROR: ArgParsing::set_arg_table() return code -> " << ret << std::endl;
         return -1;
     }
     
+    // Provide the main() program's argc and argv values to ArgParsing
     ap.set_input_args(argc, argv);
     
+    // Finally, tell ArgParsing process the arguments and its values
     ret = ap.parse();
     if(ret != 0){
         std::cerr << "ERROR: ArgParsing::set_input_args() return code -> " << ret << std::endl;
         return -1;
     }
     
+    // After a successful operation, the argument values can be accessed in the following ways...
     std::cout << "a/arg1: " << ap.get_arg_value<bool>("arg1", false) << std::endl;
     std::cout << "a/arg1 byte_size: " << ap.get_arg_value_bytesize("arg1", false) << std::endl;
     std::cout << "x/arg2: " << ap.get_arg_value<std::string>("z", true) << std::endl;
