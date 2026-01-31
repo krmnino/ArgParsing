@@ -46,13 +46,14 @@ enum class APState {
 
 
 enum class APErrRsn {
-    MISSING_FIRST_DASH    =  0x00000001,
-    MISSING_REQUIRED_ARG  =  0x00000002,
-    UNKNOWN_ARGUMENT      =  0x00000004,
-    REPEATED_ARGUMENT     =  0x00000008,
-    MUST_BE_FLAG          =  0x00000010,
-    BAD_NUMERIC_VALUE     =  0x00000020,
-    EXPECTING_VALUE       =  0x00000040,
+    ERROR_INIT            =  0x00000001,
+    MISSING_FIRST_DASH    =  0x00000002,
+    MISSING_REQUIRED_ARG  =  0x00000004,
+    UNKNOWN_ARGUMENT      =  0x00000008,
+    REPEATED_ARGUMENT     =  0x00000010,
+    MUST_BE_FLAG          =  0x00000020,
+    BAD_NUMERIC_VALUE     =  0x00000040,
+    EXPECTING_VALUE       =  0x00000080,
 };
 
 
@@ -202,6 +203,7 @@ private:
     void arg_full_form();
     void arg_value();
     std::string APErrRsn_to_string(APErrRsn);
+    std::string bool_to_string(bool);
     void display_error_msg();
     bool validate_flag_value(std::string&);
     
