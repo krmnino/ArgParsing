@@ -68,7 +68,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 #### `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: the argument value on its corresponding data type that `APDataType` maps will be returned if `ArgParsing`'s argument table has an entry with an argument identifier that matches the input argument.
 - `APDataType` mappings described below:
@@ -83,7 +83,7 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 #### `size_t get_arg_value_size(std::string arg_key, bool is_abbr_input)`
 
 - **Input arguments**:
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: the size in bytes of the argument's current value.
 - If the argument is of type `APDataType::FLAG`, `APDataType::UNSIGNED_INT`, or `APDataType::SIGNED_INT` then returned value is the length in bytes of its corresponding base C++ data type. If the argument is of type `APDataType::TEXT`, the return value is the number of characters that forms the string.
@@ -131,7 +131,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
   - `output_buffer`: a chunk of memory allocated by the caller.
   - `len_output_buffer`: the size in bytes of the chunk of memory allocated by the caller.
@@ -145,7 +145,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: if the argument exists, the `bool` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `bool`.
@@ -154,7 +154,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: if the argument exists, the `uint64_t` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `uint64_t`.
@@ -163,7 +163,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: if the argument exists, the `int64_t` value associated with the argument is returned.
 - This function calls the `ArgParsing` method `template<typename T> get_arg_value(std::string arg_key, bool is_abbr_input)` with `T` being `int64_t`.
@@ -172,7 +172,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 - **Input arguments**:
   - `apc`: a pointer to a `ArgParsing_C` object.
-  - `arg_key`: a string containing the argument identifier
+  - `arg_key`: a string containing the argument identifier.
   - `is_abbr_input`: a flag indicating whether the argument identifier string is in abbreviated or full form.
 - **Output**: the size in bytes of the argument's current value.
 - This function calls the `ArgParsing` method `size_t get_arg_value_bytesize(std::string arg_id, bool is_abbr_input)`.
@@ -181,7 +181,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 ### v1.3.1
 - Fixed bug when last argument in `argv` is not a `APDataType::FLAG` and no value is provided, `ArgParsing` should report an error with reason `APErrRsn::EXPECTING_VALUE`.
-- Additional validation done in `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
+- Additional validation done in `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`.
 - Updated Makefiles.
 
 ### v1.3
