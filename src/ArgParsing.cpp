@@ -85,12 +85,21 @@ int ArgParsing::set_input_args(int input_argc, char** input_argv){
 
 int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    
+    // Validate input
     if(this->is_table_set){
+        std::cerr << "ERROR: Argument table has already been set." << std::endl;
         return -1;
     }
+    if(arg_table_ptr == nullptr){
+        std::cerr << "ERROR: arg_table_ptr is a nullptr." << std::endl;
+        return -1;
+    }
+
     // Copy array contents over to std::vector
     this->arg_table.assign(arg_table_ptr, arg_table_ptr + n_entries);
 
+    // Check that no argument identifiers use reserved keywords
     for(size_t i = 0; i < this->arg_table.size(); i++){
         for(size_t j = 0; j < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); j++){
             if(this->arg_table[i].abbr_form != "" && this->arg_table[i].abbr_form == valid_flag_values[j]){
@@ -127,7 +136,7 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
             }
         }
     }
-    is_table_set = true;
+    this->is_table_set = true;
     return 0;
 }
 
