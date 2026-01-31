@@ -181,6 +181,7 @@ Below you will find the C interface functions to interact with the `ArgParsing` 
 
 ### v1.3.1
 - Fixed bug when last argument in `argv` is not a `APDataType::FLAG` and no value is provided, `ArgParsing` should report an error with reason `APErrRsn::EXPECTING_VALUE`.
+- Additional validation done in `int set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries)`
 - Updated Makefiles.
 
 ### v1.3
