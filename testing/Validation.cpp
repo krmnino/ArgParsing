@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& tc){
+int validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& tc){
     std::string buffer{};
 
     for(size_t i = 0; i < tc.n_scenarios; i++){
@@ -69,11 +69,17 @@ void validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData&
         case ScenarioType::INVALID_FLAG_GROUP:
             validate_INVALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
             break;
+        case ScenarioType::EXPECTING_VALUE:
+            validate_EXPECTING_VALUE_scenario(er, tc.s_arr[i]);
+            break;
         default:
+            std::cerr << "ERROR: Invalid ScenarioType provided to validate(): " << (int)tc.s_arr[i].type << std::endl;
+            return -1;
         break;
         }
         er->end_test();
     }
+    return 0;
 }
 
 

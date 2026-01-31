@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
+int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
     uint32_t attempt_counter{};
                                   
     // Empty the vector and reserve space
@@ -48,7 +48,7 @@ int32_t build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint
 }
 
 
-int32_t build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
+int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APValuePackage arg_val_package;

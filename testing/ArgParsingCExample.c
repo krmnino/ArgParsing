@@ -35,10 +35,10 @@ int main(int argc, char* argv[]){
     char* str_buff2;
     size_t arg_txt_len;
 
+    // First, obtain an instance of ArgParsing_C
     ArgParsing_C* ap = ArgParsing_C_get_instance();
 
-    ArgParsing_C_set_input_args(ap, argc, argv);
-
+    // Define the argument table to set the desired identifiers, data types, and flag values
     APTableEntry_C arg_table[] = {
         { .abbr_form="a", .full_form="arg1", .initialized=false, .data_type=FLAG         , .required=true , .default_value=false, .data={0}  },
         { .abbr_form="z", .full_form="arg2", .initialized=false, .data_type=TEXT         , .required=true , .default_value=false, .data={0}  },
@@ -49,19 +49,26 @@ int main(int argc, char* argv[]){
         { .abbr_form="x", .full_form="arg7", .initialized=false, .data_type=FLAG         , .required=false, .default_value=true , .data.flag=true },
         { .abbr_form="y", .full_form="arg8", .initialized=false, .data_type=TEXT         , .required=false, .default_value=true , .data.text="init text" },
     };
-
+    
+    // Provide the argument table to the ArgParsing_C instance.
+    // The ArgParsing library will validate the table and is important to check the return value
     ret = ArgParsing_C_set_arg_table(ap, arg_table, sizeof(arg_table) / sizeof(APTableEntry_C));
     if(ret != 0){
         printf("ERROR: ArgParsing_C_set_arg_table() return code -> %d\n", ret);
         return -1;
     }
+
+    // Provide the main() program's argc and argv values to ArgParsing_C
+    ArgParsing_C_set_input_args(ap, argc, argv);
     
+    // Finally, tell ArgParsing_C process the arguments and its values
     ret = ArgParsing_C_parse(ap);
     if(ret != 0){
         printf("ERROR: ArgParsing_C_parse() return code -> %d\n", ret);
         return -1;
     }
 
+    // After a successful operation, the argument values can be accessed in the following ways...
     printf("a/arg1: %d\n", ArgParsing_C_get_value_FLAG(ap, "arg1", false));
     arg_txt_len = ArgParsing_C_get_arg_value_bytesize(ap, "arg1", false);
     printf("a/arg1 byte_size: %ld\n", arg_txt_len);

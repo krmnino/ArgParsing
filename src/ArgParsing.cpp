@@ -54,10 +54,13 @@ int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_in
             }    
         }
     }
-    #ifndef DEBUG
-    std::cerr << "ERROR: Argument with identification \"" << arg_key <<
-              "\" [is_abbr_input:" << is_abbr_input << "]" <<" does not exist within the argument table." << std::endl;
-    #endif
+    this->reason = APErrRsn::ERROR_INIT;
+    this->err_msg_data.push_back("ERROR: Argument with identification \"");
+    this->err_msg_data.push_back(arg_key);
+    this->err_msg_data.push_back("\" [is_abbr_input:");
+    this->err_msg_data.push_back(this->bool_to_string(is_abbr_input));
+    this->err_msg_data.push_back(" does not exist within the argument table.");
+    this->display_error_msg();
     return -1;
 }
 
@@ -65,15 +68,15 @@ int32_t ArgParsing::get_index_in_arg_table(std::string& arg_key, bool is_abbr_in
 int ArgParsing::set_input_args(int input_argc, char** input_argv){
     // Validate input
     if(input_argv == nullptr){
-        #ifndef DEBUG
-        std::cerr << "ERROR: input_argc cannot be less than 1." << std::endl;
-        #endif
+        this->reason = APErrRsn::ERROR_INIT;
+        this->err_msg_data.push_back("ERROR: input_argc cannot be less than 1.");
+        this->display_error_msg();
         return -1;
     }
     if(input_argv == nullptr){
-        #ifndef DEBUG
-        std::cerr << "ERROR: input_argv is a nullptr." << std::endl;
-        #endif
+        this->reason = APErrRsn::ERROR_INIT;
+        this->err_msg_data.push_back("ERROR: input_argv is a nullptr.");
+        this->display_error_msg();
         return -1;
     }
 
@@ -85,20 +88,41 @@ int ArgParsing::set_input_args(int input_argc, char** input_argv){
 
 int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    
+    // Validate input
     if(this->is_table_set){
+        this->reason = APErrRsn::ERROR_INIT;
+        this->err_msg_data.push_back("ERROR: Argument table has already been set.");
+        this->display_error_msg();
         return -1;
     }
+    if(arg_table_ptr == nullptr){
+        this->reason = APErrRsn::ERROR_INIT;
+        this->err_msg_data.push_back("ERROR: arg_table_ptr is a nullptr.");
+        this->display_error_msg();
+        return -1;
+    }
+
     // Copy array contents over to std::vector
     this->arg_table.assign(arg_table_ptr, arg_table_ptr + n_entries);
 
+    // Check that no argument identifiers use reserved keywords
     for(size_t i = 0; i < this->arg_table.size(); i++){
         for(size_t j = 0; j < sizeof(valid_flag_values) / sizeof(valid_flag_values[0]); j++){
             if(this->arg_table[i].abbr_form != "" && this->arg_table[i].abbr_form == valid_flag_values[j]){
-                std::cerr << "ERROR: -" << this->arg_table[i].abbr_form << " is not an allowed abbreviated form argument identifer." << std::endl;
+                this->reason = APErrRsn::ERROR_INIT;
+                this->err_msg_data.push_back("ERROR: -");
+                this->err_msg_data.push_back(this->arg_table[i].abbr_form);
+                this->err_msg_data.push_back(" is not an allowed abbreviated form argument identifer.");
+                this->display_error_msg();
                 return -1;
             }
             if(this->arg_table[i].full_form == valid_flag_values[j]){
-                std::cerr << "ERROR: --" << this->arg_table[i].full_form << " is not an allowed full form argument identifer." << std::endl;
+                this->reason = APErrRsn::ERROR_INIT;
+                this->err_msg_data.push_back("ERROR: --");
+                this->err_msg_data.push_back(this->arg_table[i].full_form);
+                this->err_msg_data.push_back(" is not an allowed full form argument identifer.");
+                this->display_error_msg();
                 return -1;
             }
         }
@@ -110,7 +134,11 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
         }
         for(size_t j = i + 1; j < this->arg_table.size(); j++){
             if(this->arg_table[i].abbr_form == this->arg_table[j].abbr_form){
-                std::cerr << "ERROR: -" << this->arg_table[j].abbr_form << " is a duplicate abbreviated form argument identifier." << std::endl;
+                this->reason = APErrRsn::ERROR_INIT;
+                this->err_msg_data.push_back("ERROR: -");
+                this->err_msg_data.push_back(this->arg_table[j].abbr_form);
+                this->err_msg_data.push_back(" is a duplicate abbreviated form argument identifier.");
+                this->display_error_msg();
                 return -1;
             }
         }
@@ -122,12 +150,16 @@ int ArgParsing::set_arg_table(APTableEntry* arg_table_ptr, size_t n_entries){
                 continue;
             }
             if(this->arg_table[i].full_form == this->arg_table[j].full_form){
-                std::cerr << "ERROR: --" << this->arg_table[j].full_form << " is a duplicate full form argument identifier." << std::endl;
+                this->reason = APErrRsn::ERROR_INIT;
+                this->err_msg_data.push_back("ERROR: --");
+                this->err_msg_data.push_back(this->arg_table[j].full_form);
+                this->err_msg_data.push_back(" is a duplicate full form argument identifier.");
+                this->display_error_msg();
                 return -1;
             }
         }
     }
-    is_table_set = true;
+    this->is_table_set = true;
     return 0;
 }
 
@@ -427,6 +459,8 @@ std::string ArgParsing::APErrRsn_to_string(APErrRsn rsn){
         return "APErrRsn::MUST_BE_FLAG";
     case APErrRsn::BAD_NUMERIC_VALUE:
         return "APErrRsn::BAD_NUMERIC_VALUE";
+    case APErrRsn::EXPECTING_VALUE:
+        return "APErrRsn::EXPECTING_VALUE";
     default:
         break;
     }
@@ -474,15 +508,48 @@ void ArgParsing::display_error_msg(){
                               " is of type FLAG. It must be especified alone or followed by one of these values: \"0\", \"1\", \"false\", or \"true\".";
         }
         break;
+    case APErrRsn::EXPECTING_VALUE:
+        if(this->err_msg_data.size() > 1){
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] + "/" +
+                              this->err_msg_data[1] +
+                              " expects a value.";
+        }
+        else{
+            this->error_msg = rsn_str + ": the provided argument " +
+                              this->err_msg_data[0] +
+                              " expects a value.";
+        }
+        break;
     case APErrRsn::BAD_NUMERIC_VALUE:    
         this->error_msg = rsn_str + ": \"" + this->err_msg_data[0] + "\" provided to the argument " + this->err_msg_data[1] + " is not a valid numeric value.";
         break;
+    #ifndef DEBUG
+    case APErrRsn::ERROR_INIT:
+        this->error_msg = "";
+        for(size_t i = 0; i < this->err_msg_data.size(); i++){
+            this->error_msg += this->err_msg_data[i];
+        }
+        break;
     default:
+        this->error_msg = "Unexpected error -> APErrRsn: " + std::to_string((int)this->reason);
         break;
     }
-    #ifndef DEBUG
-    std::cout << this->error_msg << std::endl;
+    std::cerr << this->error_msg << std::endl;
+    #else
+    case APErrRsn::ERROR_INIT:
+        this->err_msg_data.clear();
+        break;
+    default:
+        this->error_msg = "Unexpected error -> APErrRsn: " + std::to_string((int)this->reason);
+        break;
+    }
     #endif
+}
+
+
+std::string ArgParsing::bool_to_string(bool data){
+    return (data) ? "true" : "false";
 }
 
 
@@ -590,6 +657,7 @@ bool ArgParsing::validate_flag_value(std::string& value){
 
 
 int ArgParsing::parse(){
+    // Loop through the argv list
     while(this->argv_idx < this->argc){
         if(this->state == APState::ERROR){
             break;
@@ -601,10 +669,28 @@ int ArgParsing::parse(){
             this->arg_value();
         }
     }
-    if(this->state == APState::ERROR){
+    // When the list is exhausted, check the current state
+    switch (this->state){
+    case APState::ARGV_VALUE:
+        // If we are in ARGV_VALUE and current argument is not FLAG type, throw an error
+        if(this->arg_table[this->eval_arg_idx].data_type != APDataType::FLAG){
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::EXPECTING_VALUE;
+            if(this->arg_table[this->eval_arg_idx].abbr_form.size() != 0){
+                this->err_msg_data.push_back("-" + this->arg_table[this->eval_arg_idx].abbr_form);
+            }
+            this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
+            this->display_error_msg();
+            return -1;
+        }
+        break;
+    case APState::ERROR:
         this->display_error_msg();
         return -1;
+    default:
+        break;
     }
+    // Loop through the argument table and check every required argument has been initialized
     for(size_t i = 0; i < this->arg_table.size(); i++){
         if(this->arg_table[i].required && !this->arg_table[i].initialized){
             this->state = APState::ERROR;
@@ -630,7 +716,7 @@ void ArgParsing::get_arg_table(std::vector<APTableEntry>& target){
     target = this->arg_table;
     // For any initialized TEXT type arugments, copy their values
     for(size_t i = 0; i < this->arg_table.size(); i++){
-        if(target[i].initialized && target[i].data_type == APDataType::TEXT){
+        if(target[i].initialized && target[i].data_type == APDataType::TEXT && this->arg_table[i].value.text != nullptr){
             target[i].value.text = std::make_shared<std::string>(*this->arg_table[i].value.text);
         }
     }

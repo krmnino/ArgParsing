@@ -95,6 +95,9 @@ std::string ScenarioType_to_string(ScenarioType st){
     case ScenarioType::INVALID_FLAG_GROUP:
         ret += "INVALID_FLAG_GROUP";
         break;
+    case ScenarioType::EXPECTING_VALUE:
+        ret += "EXPECTING_VALUE";
+        break;
     default:
         ret += "UNDEFINED";
         break;
@@ -233,6 +236,8 @@ std::string APErrRsn_to_string(APErrRsn rsn){
         return "APErrRsn::MUST_BE_FLAG";
     case APErrRsn::BAD_NUMERIC_VALUE:
         return "APErrRsn::BAD_NUMERIC_VALUE";
+    case APErrRsn::EXPECTING_VALUE:
+        return "APErrRsn::EXPECTING_VALUE";
     default:
         break;
     }
