@@ -23,6 +23,8 @@ A simple command-line argument parser library for C/C++ programs.
 
 ## Usage for C++ Integration
 
+Add the flags `-L$<path> -lArgParsing -Wl,-rpath,<path>` to the linker `gcc` command of your project, where `<path>` the the absolute path to the directory where `libArgParsing.so` has been moved in the `Build` section `Step 4`.
+
 The file `testing/ArgParsingExample.cpp` is an integration example on how the `ArgParsing` library can be used within a C++ program.
 
 Below you will find the publicly exposed methods belonging to the `ArgParsing` class.
@@ -88,8 +90,9 @@ Below you will find the publicly exposed methods belonging to the `ArgParsing` c
 - **Output**: the size in bytes of the argument's current value.
 - If the argument is of type `APDataType::FLAG`, `APDataType::UNSIGNED_INT`, or `APDataType::SIGNED_INT` then returned value is the length in bytes of its corresponding base C++ data type. If the argument is of type `APDataType::TEXT`, the return value is the number of characters that forms the string.
 
-
 ## Usage for C Integration
+
+Add the flags `-L$<path> -lArgParsing -Wl,-rpath,<path>` to the linker `gcc` command of your project, where `<path>` the the absolute path to the directory where `libArgParsing.so` has been moved in the `Build` section `Step 4`.
 
 The file `testing/ArgParsingCExample.c` is an integration example on how the `ArgParsing` library can be used within a C program.
 
