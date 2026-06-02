@@ -39,6 +39,7 @@ link:
 
 single:
 	g++ -g -c -Wall -D DEBUG -std=c++17 $(FILE)
+	mv *.o $(BD)
 
 example:
 	g++ -g -c -Wall -std=c++17 ArgParsingExample.cpp $(SD)/$(SRC_FILES)
