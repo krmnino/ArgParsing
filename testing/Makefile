@@ -5,7 +5,7 @@ SD = $(realpath ../src)
 SRC_FILES = ArgParsing.cpp
 
 TST_FILES = ArgTableBuilder.cpp					\
-			TestcaseBuilder.cpp					\
+			TestcaseData.cpp					\
 			ScenarioBuilder.cpp					\
 			Validation.cpp						\
 			Utils.cpp							\
