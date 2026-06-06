@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include <atomic>
 #include <iostream>
+#include <memory>
 #include <signal.h>
 #include <sstream>
 #include <unordered_map>
@@ -101,17 +102,21 @@ class ScenarioData{
 };
 
 
+/*===================================================================*/
+/*                         TestcaseData.cpp                          */
+/*===================================================================*/
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab; // Initial argument table
     ScenarioData* s_arr;
     uint32_t n_scenarios;
-    uint32_t allowed_data_types;
     TestcaseData() {}
     ~TestcaseData() {
         delete[] this->s_arr;
     }
 };
+int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
+
 
 typedef struct APValuePackage APValuePackage;
 struct APValuePackage{
@@ -146,10 +151,6 @@ void copy_APValue(APValue&, APValue&, APDataType);
 // ArgTableBuilder.cpp
 int build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 int build_entry(Randomizer*, std::vector<APTableEntry>&);
-
-
-// TestcaseBuilder.cpp
-int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 
 // ScenarioBuilder.cpp
