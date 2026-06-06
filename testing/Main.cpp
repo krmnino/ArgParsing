@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
     ArgParsing* ap_test{};
     Randomizer* rnd{};
     ErrorReporter* er{};
-    TestcaseData* testcase{};
+    std::shared_ptr<TestcaseData> testcase;
     uint64_t testcase_counter{};
     uint64_t n_tests{};
     uint64_t n_scenarios{};
@@ -94,12 +94,6 @@ int main(int argc, char* argv[]){
         return -1;
     }
     
-    // Set up signal handler to stop program
-    sa_struct.sa_handler = terminating_handler;
-    sigemptyset(&sa_struct.sa_mask);
-    sa_struct.sa_flags = 0;
-    sigaction(SIGINT, &sa_struct, NULL);
-    
     // Read n_tests argument
     n_tests = pgm_ap->get_arg_value<uint64_t>("n_tests", false);
     // Ignore pass counter if n_tests is 0
@@ -123,9 +117,6 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    // Reset pass counter
-    testcase_counter = 0;
-
     // Allow tracing?
     if(pgm_ap->get_arg_value<bool>("trace", false)){
         er->log_everything(true);
@@ -134,16 +125,20 @@ int main(int argc, char* argv[]){
         er->log_everything(false);
     }
 
-    std::cout << std::endl;
-    std::cout << "STARTING TEST MAIN LOOP... " << std::endl;    
+    // Set up signal handler to stop program
+    sa_struct.sa_handler = terminating_handler;
+    sigemptyset(&sa_struct.sa_mask);
+    sa_struct.sa_flags = 0;
+    sigaction(SIGINT, &sa_struct, NULL);
+
+    std::cout << std::endl << "STARTING TEST MAIN LOOP... " << std::endl;    
     
-    // Main driver
+    // Main loop
     while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
-        testcase = new TestcaseData();
+        testcase = std::make_shared<TestcaseData>();
         // Build a testcase and its multiple scenarios
         ret = build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
         if(ret != 0){
-            delete testcase;
             break;
         }
         // Run the scenarios on ArgParsing
@@ -158,10 +153,8 @@ int main(int argc, char* argv[]){
         }
         ret = validate(er, rnd->get_root_seed(), testcase_counter, *testcase);
         if(ret != 0){
-            delete testcase;
             break;
         }
-        delete testcase;
         rnd->root_seed_next();
         testcase_counter++;
         if(!running){
