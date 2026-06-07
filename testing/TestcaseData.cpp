@@ -25,6 +25,7 @@ SOFTWARE.
 
 
 int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
+    ScenarioData local_sc{};
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
     uint32_t attempt_counter{};
@@ -63,7 +64,7 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
     }
 
     // Generate scenarios based on argument table and allowed scenario types
-    tdata.s_arr = new ScenarioData[n_scenarios];
+    tdata.s_arr.reserve(n_scenarios);
     for(size_t i = 0; i < n_scenarios; i++){
         // Pick a single scenario from the pool
         attempt_counter = 0;
@@ -79,10 +80,11 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
             }
             attempt_counter++;
         }
-        tdata.s_arr[i].type = (ScenarioType)picked_scenario_type;
+        local_sc.type = (ScenarioType)picked_scenario_type;
         // Copy initial arg table to scenario expected table data 
-        tdata.s_arr[i].exp_argtab.reserve(tdata.ini_argtab.size());
-        tdata.s_arr[i].exp_argtab = tdata.ini_argtab;
+        local_sc.exp_argtab.reserve(tdata.ini_argtab.size());
+        local_sc.exp_argtab = tdata.ini_argtab;
+        tdata.s_arr.push_back(local_sc);
         // Build the scenario: expected table and argv
         ret = build_scenario(rnd, tdata.s_arr[i]);
         if(ret != 0){

@@ -84,7 +84,7 @@ class ScenarioData{
     std::vector<APTableEntry> exp_argtab; // Expected argument table
     std::string res_error_message;
     std::string exp_error_message;
-    char** argv;
+    char** argv{};
     uint32_t n_args;
     int argc;
     ScenarioType type;
@@ -99,6 +99,23 @@ class ScenarioData{
             delete[] this->argv;
         }
     }
+    ScenarioData& operator=(const ScenarioData& in_data){
+        this->res_argtab = in_data.res_argtab;
+        this->exp_argtab = in_data.exp_argtab;
+        this->res_error_message = in_data.res_error_message;
+        this->exp_error_message = in_data.exp_error_message;
+        this->n_args = in_data.n_args;
+        this->argc = in_data.argc;
+        if(in_data.argv != nullptr){
+            this->argv = new char*[in_data.argc + 1];
+            for(int i = 0; i < in_data.argc; i++){
+                this->argv[i] = new char[in_data.argc + 1];
+                strcpy(this->argv[i], in_data.argv[i]);
+            }
+        }
+        this->argv = in_data.argv;
+        return *this;
+    }
 };
 
 
@@ -108,12 +125,10 @@ class ScenarioData{
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab; // Initial argument table
-    ScenarioData* s_arr;
+    std::vector<ScenarioData> s_arr;
     uint32_t n_scenarios;
     TestcaseData() {}
-    ~TestcaseData() {
-        delete[] this->s_arr;
-    }
+    ~TestcaseData() {}
 };
 int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
