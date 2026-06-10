@@ -24,6 +24,12 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
+TestcaseData::TestcaseData() {}
+
+
+TestcaseData::~TestcaseData() {}
+
+
 int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
     ScenarioData local_sc{};
     uint32_t scenario_type_pool{};

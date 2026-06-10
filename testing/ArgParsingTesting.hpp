@@ -124,11 +124,12 @@ class ScenarioData{
 /*===================================================================*/
 class TestcaseData{
     public:
-    std::vector<APTableEntry> ini_argtab; // Initial argument table
-    std::vector<ScenarioData> s_arr;
-    uint32_t n_scenarios;
-    TestcaseData() {}
-    ~TestcaseData() {}
+    std::vector<APTableEntry> ini_argtab{}; // Initial argument table
+    std::vector<ScenarioData> s_arr{};
+    uint32_t n_scenarios{};
+
+    TestcaseData();
+    ~TestcaseData();
 };
 int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
