@@ -26,8 +26,10 @@ SOFTWARE.
 
 int validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& tc){
     std::string buffer{};
+    size_t tc_n_scenarios{};
 
-    for(size_t i = 0; i < tc.n_scenarios; i++){
+    tc_n_scenarios = tc.s_arr.size();
+    for(size_t i = 0; i < tc_n_scenarios; i++){
         buffer = "ArgParsingTesting - " + ScenarioType_to_string(tc.s_arr[i].type);
         er->begin_test(buffer);
         buffer = "SEED             : " + std::to_string(seed);

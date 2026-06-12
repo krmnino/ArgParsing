@@ -30,7 +30,7 @@ TestcaseData::TestcaseData() {}
 TestcaseData::~TestcaseData() {}
 
 
-int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, uint32_t user_allowed_scenario_types){
+TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types){
     ScenarioData local_sc{};
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
@@ -40,24 +40,26 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
     int ret{};
     bool invalid{};
     
-    // Set the number of scenarios for this testcase
-    tdata.n_scenarios = n_scenarios;
-
+    if(this->status != TDBuildStatus::UNINITIALIZED){
+        this->status = TDBuildStatus::ALREADY_INITIALIZED;
+        return;
+    }
+    
     // Attempt building a argument table and check scenarios that can be tested
     attempt_counter = 0;
     while(true){
         invalid = false;
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
-            std::cerr << "ERROR: build_testcase()[1] reached maximum build attempts." << std::endl;
-            return -1;
+            this->status = TDBuildStatus::MAX_ATTMPTS_ARG_TABLE;
+            return;
         }
-        n_args = rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
-        ret = build_arg_table(rnd, tdata.ini_argtab, n_args);
+        n_args = in_rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
+        ret = build_arg_table(in_rnd, this->ini_argtab, n_args);
         // If returned -1, set invalid on
         if(ret != 0){
             invalid = true;
         }
-        scenario_type_pool = check_allowed_scenarios(tdata.ini_argtab, user_allowed_scenario_types);
+        scenario_type_pool = check_allowed_scenarios(this->ini_argtab, in_scenario_types);
         // If returned scenario pool is zero/empty, set invalid on
         if(scenario_type_pool == 0x00000000){
             invalid = true;
@@ -68,18 +70,18 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
         }
         attempt_counter++;
     }
-
+    
     // Generate scenarios based on argument table and allowed scenario types
-    tdata.s_arr.reserve(n_scenarios);
-    for(size_t i = 0; i < n_scenarios; i++){
+    this->s_arr.reserve(in_n_scenarios);
+    for(size_t i = 0; i < in_n_scenarios; i++){
         // Pick a single scenario from the pool
         attempt_counter = 0;
         while(true){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
-                std::cerr << "ERROR: build_testcase()[2] reached maximum build attempts." << std::endl;
-                return -1;
+                this->status = TDBuildStatus::MAX_ATTMPTS_SCENARIOS;
+                return;
             }
-            shifter = rnd->gen_integral_range<uint32_t>(0, MAX_SCENARIO_TYPES - 1);
+            shifter = in_rnd->gen_integral_range<uint32_t>(0, MAX_SCENARIO_TYPES - 1);
             picked_scenario_type = (1 << shifter);
             if((scenario_type_pool & picked_scenario_type) != 0){
                 break;
@@ -88,15 +90,15 @@ int build_testcase(Randomizer* rnd, TestcaseData& tdata, uint32_t n_scenarios, u
         }
         local_sc.type = (ScenarioType)picked_scenario_type;
         // Copy initial arg table to scenario expected table data 
-        local_sc.exp_argtab.reserve(tdata.ini_argtab.size());
-        local_sc.exp_argtab = tdata.ini_argtab;
-        tdata.s_arr.push_back(local_sc);
+        local_sc.exp_argtab.reserve(this->ini_argtab.size());
+        local_sc.exp_argtab = this->ini_argtab;
+        this->s_arr.push_back(local_sc);
         // Build the scenario: expected table and argv
-        ret = build_scenario(rnd, tdata.s_arr[i]);
+        ret = build_scenario(in_rnd, this->s_arr[i]);
         if(ret != 0){
-            return -1;
+            this->status = TDBuildStatus::MAX_ATTMPTS_SCENARIOS;
+            return;
         }
     }
-
-    return 0;
+    this->status = TDBuildStatus::OK;
 }

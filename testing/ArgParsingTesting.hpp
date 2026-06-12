@@ -122,16 +122,25 @@ class ScenarioData{
 /*===================================================================*/
 /*                         TestcaseData.cpp                          */
 /*===================================================================*/
+enum class TDBuildStatus{
+    UNINITIALIZED         = 0,
+    OK                    = 1,
+    ALREADY_INITIALIZED   = 2,
+    MAX_ATTMPTS_ARG_TABLE = 3,
+    MAX_ATTMPTS_SCENARIOS = 4,
+};
+
+
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
-    uint32_t n_scenarios{};
+    TDBuildStatus status{};
 
     TestcaseData();
+    TestcaseData(Randomizer*, uint32_t, uint32_t);
     ~TestcaseData();
 };
-int build_testcase(Randomizer*, TestcaseData&, uint32_t, uint32_t);
 
 
 typedef struct APValuePackage APValuePackage;
