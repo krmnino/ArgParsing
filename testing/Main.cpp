@@ -43,7 +43,6 @@ int main(int argc, char* argv[]){
     ArgParsing* ap_test{};
     Randomizer* rnd{};
     ErrorReporter* er{};
-    std::shared_ptr<TestcaseData> testcase;
     uint64_t testcase_counter{};
     uint64_t n_tests{};
     uint64_t n_scenarios{};
@@ -135,23 +134,19 @@ int main(int argc, char* argv[]){
     
     // Main loop
     while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
-        testcase = std::make_shared<TestcaseData>();
         // Build a testcase and its multiple scenarios
-        ret = build_testcase(rnd, *testcase, n_scenarios, user_allowed_scenario_types);
-        if(ret != 0){
-            break;
-        }
+        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types);
         // Run the scenarios on ArgParsing
         for(uint32_t i = 0; i < n_scenarios; i++){
             ap_test = new ArgParsing();
-            ap_test->set_arg_table(testcase->ini_argtab);
-            ap_test->set_input_args(testcase->s_arr[i].argc, testcase->s_arr[i].argv);
+            ap_test->set_arg_table(testcase.ini_argtab);
+            ap_test->set_input_args(testcase.s_arr[i].argc, testcase.s_arr[i].argv);
             ap_test->parse();
             // Collect the data from the ArgParsing object and delete ArgParsing object
-            collect_ap_data(testcase->s_arr[i], ap_test);
+            collect_ap_data(testcase.s_arr[i], ap_test);
             delete ap_test;
         }
-        ret = validate(er, rnd->get_root_seed(), testcase_counter, *testcase);
+        ret = validate(er, rnd->get_root_seed(), testcase_counter, testcase);
         if(ret != 0){
             break;
         }
