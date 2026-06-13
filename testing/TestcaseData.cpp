@@ -24,6 +24,24 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
+std::string TDBuildStatus_to_string(TDBuildStatus in_status){
+    switch (in_status){
+    case TDBuildStatus::UNINITIALIZED:
+        return "TDBuildStatus::UNINITIALIZED";
+    case TDBuildStatus::OK:
+        return "TDBuildStatus::OK";
+    case TDBuildStatus::ALREADY_INITIALIZED:
+        return "TDBuildStatus::ALREADY_INITIALIZED";
+    case TDBuildStatus::MAX_ATTMPTS_ARG_TABLE:
+        return "TDBuildStatus::MAX_ATTMPTS_ARG_TABLE";
+    case TDBuildStatus::MAX_ATTMPTS_SCENARIOS:
+        return "TDBuildStatus::MAX_ATTMPTS_SCENARIOS";
+    default:
+        return "TDBuildStatus::UNDEFINED";
+    }
+}
+
+
 TestcaseData::TestcaseData() {}
 
 
