@@ -120,3 +120,8 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
     }
     this->status = TDBuildStatus::OK;
 }
+
+
+TDBuildStatus TestcaseData::get_status(){
+    return this->status;
+}
