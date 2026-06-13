@@ -47,6 +47,7 @@ int main(int argc, char* argv[]){
     uint64_t n_tests{};
     uint64_t n_scenarios{};
     uint64_t max_errors{};
+    TDBuildStatus td_status{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
     int ret;
@@ -136,8 +137,9 @@ int main(int argc, char* argv[]){
     while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
         // Build a testcase and its multiple scenarios
         TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types);
-        if(testcase.status != TDBuildStatus::OK){
-            std::cerr << "Testcase initialization ended with \'" << TDBuildStatus_to_string(testcase.status) << "\'." << std::endl;
+        td_status = testcase.get_status();
+        if(td_status != TDBuildStatus::OK){
+            std::cerr << "Testcase initialization ended with \'" << TDBuildStatus_to_string(td_status) << "\'." << std::endl;
         }
         // Run the scenarios on ArgParsing
         for(uint32_t i = 0; i < n_scenarios; i++){

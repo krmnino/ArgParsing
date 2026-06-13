@@ -135,16 +135,23 @@ std::string TDBuildStatus_to_string(TDBuildStatus);
 
 
 class TestcaseData{
+    private:
+    TDBuildStatus status{};
+
     public:
     std::vector<APTableEntry> ini_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
-    TDBuildStatus status{};
 
+    // Methods
     TestcaseData();
     TestcaseData(Randomizer*, uint32_t, uint32_t);
     ~TestcaseData();
+    TDBuildStatus get_status();
 };
 
+/*===================================================================*/
+/*                         ScenarioData.cpp                          */
+/*===================================================================*/
 
 typedef struct APValuePackage APValuePackage;
 struct APValuePackage{
