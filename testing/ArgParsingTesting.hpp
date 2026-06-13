@@ -131,6 +131,9 @@ enum class TDBuildStatus{
 };
 
 
+std::string TDBuildStatus_to_string(TDBuildStatus);
+
+
 class TestcaseData{
     public:
     std::vector<APTableEntry> ini_argtab{}; // Initial argument table
