@@ -125,3 +125,7 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
 TDBuildStatus TestcaseData::get_status(){
     return this->status;
 }
+
+std::vector<APTableEntry>& TestcaseData::get_init_argtab(){
+    return this->ini_argtab;
+}

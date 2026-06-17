@@ -37,7 +37,7 @@ int validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& 
         buffer = "TESTCASE COUNTER : " + std::to_string(tc_counter);
         er->log_it(buffer);
         er->log_it(">>> START OF INITIAL ARGUMENT TABLE <<<");
-        buffer = arg_table_to_string(tc.ini_argtab);
+        buffer = arg_table_to_string(tc.get_init_argtab());
         er->log_it(buffer);
         er->log_it(">>> END OF INITIAL ARGUMENT TABLE <<<");
         switch (tc.s_arr[i].type){

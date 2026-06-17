@@ -137,9 +137,9 @@ std::string TDBuildStatus_to_string(TDBuildStatus);
 class TestcaseData{
     private:
     TDBuildStatus status{};
+    std::vector<APTableEntry> init_argtab{}; // Initial argument table
 
     public:
-    std::vector<APTableEntry> ini_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
 
     // Methods
@@ -147,6 +147,7 @@ class TestcaseData{
     TestcaseData(Randomizer*, uint32_t, uint32_t);
     ~TestcaseData();
     TDBuildStatus get_status();
+    std::vector<APTableEntry>& get_init_argtab();
 };
 
 /*===================================================================*/
