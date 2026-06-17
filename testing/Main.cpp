@@ -144,7 +144,7 @@ int main(int argc, char* argv[]){
         // Run the scenarios on ArgParsing
         for(uint32_t i = 0; i < n_scenarios; i++){
             ap_test = new ArgParsing();
-            ap_test->set_arg_table(testcase.ini_argtab);
+            ap_test->set_arg_table(testcase.get_init_argtab());
             ap_test->set_input_args(testcase.s_arr[i].argc, testcase.s_arr[i].argv);
             ap_test->parse();
             // Collect the data from the ArgParsing object and delete ArgParsing object
