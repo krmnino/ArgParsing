@@ -72,12 +72,12 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
             return;
         }
         n_args = in_rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
-        ret = build_arg_table(in_rnd, this->ini_argtab, n_args);
+        ret = build_arg_table(in_rnd, this->init_argtab, n_args);
         // If returned -1, set invalid on
         if(ret != 0){
             invalid = true;
         }
-        scenario_type_pool = check_allowed_scenarios(this->ini_argtab, in_scenario_types);
+        scenario_type_pool = check_allowed_scenarios(this->init_argtab, in_scenario_types);
         // If returned scenario pool is zero/empty, set invalid on
         if(scenario_type_pool == 0x00000000){
             invalid = true;
@@ -108,8 +108,8 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
         }
         local_sc.type = (ScenarioType)picked_scenario_type;
         // Copy initial arg table to scenario expected table data 
-        local_sc.exp_argtab.reserve(this->ini_argtab.size());
-        local_sc.exp_argtab = this->ini_argtab;
+        local_sc.exp_argtab.reserve(this->init_argtab.size());
+        local_sc.exp_argtab = this->init_argtab;
         this->s_arr.push_back(local_sc);
         // Build the scenario: expected table and argv
         ret = build_scenario(in_rnd, this->s_arr[i]);
@@ -127,5 +127,5 @@ TDBuildStatus TestcaseData::get_status(){
 }
 
 std::vector<APTableEntry>& TestcaseData::get_init_argtab(){
-    return this->ini_argtab;
+    return this->init_argtab;
 }
