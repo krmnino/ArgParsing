@@ -27,10 +27,11 @@ SOFTWARE.
 int validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& tc){
     std::string buffer{};
     size_t tc_n_scenarios{};
-
-    tc_n_scenarios = tc.s_arr.size();
+    
+    tc_n_scenarios = tc.get_n_scenarios();
     for(size_t i = 0; i < tc_n_scenarios; i++){
-        buffer = "ArgParsingTesting - " + ScenarioType_to_string(tc.s_arr[i].type);
+        ScenarioData& loc_sc = tc.get_scenario(i);
+        buffer = "ArgParsingTesting - " + ScenarioType_to_string(loc_sc.type);
         er->begin_test(buffer);
         buffer = "SEED             : " + std::to_string(seed);
         er->log_it(buffer);
@@ -40,42 +41,42 @@ int validate(ErrorReporter* er, uint32_t seed, size_t tc_counter, TestcaseData& 
         buffer = arg_table_to_string(tc.get_init_argtab());
         er->log_it(buffer);
         er->log_it(">>> END OF INITIAL ARGUMENT TABLE <<<");
-        switch (tc.s_arr[i].type){
+        switch (loc_sc.type){
         case ScenarioType::OK:
-            validate_OK_scenario(er, tc.s_arr[i]);
+            validate_OK_scenario(er, loc_sc);
             break;
         case ScenarioType::MISSING_FIRST_DASH:
-            validate_MISSING_FIRST_DASH_scenario(er, tc.s_arr[i]);
+            validate_MISSING_FIRST_DASH_scenario(er, loc_sc);
             break;
         case ScenarioType::MISSING_REQUIRED_ARG:
-            validate_MISSING_REQUIRED_ARG_scenario(er, tc.s_arr[i]);
+            validate_MISSING_REQUIRED_ARG_scenario(er, loc_sc);
             break;
         case ScenarioType::UNKNOWN_ARGUMENT:
-            validate_UNKNOWN_ARGUMENT_scenario(er, tc.s_arr[i]);
+            validate_UNKNOWN_ARGUMENT_scenario(er, loc_sc);
             break;
         case ScenarioType::REPEATED_ARGUMENT:
-            validate_REPEATED_ARGUMENT_scenario(er, tc.s_arr[i]);
+            validate_REPEATED_ARGUMENT_scenario(er, loc_sc);
             break;
         case ScenarioType::MUST_BE_FLAG:
-            validate_MUST_BE_FLAG_scenario(er, tc.s_arr[i]);
+            validate_MUST_BE_FLAG_scenario(er, loc_sc);
             break;
         case ScenarioType::BAD_NUMERIC_VALUE:
-            validate_BAD_NUMERIC_VALUE_scenario(er, tc.s_arr[i]);
+            validate_BAD_NUMERIC_VALUE_scenario(er, loc_sc);
             break;
         case ScenarioType::EMPTY_ARG_LIST:
-            validate_EMPTY_ARG_LIST_scenario(er, tc.s_arr[i]);
+            validate_EMPTY_ARG_LIST_scenario(er, loc_sc);
             break;
         case ScenarioType::VALID_FLAG_GROUP:
-            validate_VALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
+            validate_VALID_FLAG_GROUP_scenario(er, loc_sc);
             break;
         case ScenarioType::INVALID_FLAG_GROUP:
-            validate_INVALID_FLAG_GROUP_scenario(er, tc.s_arr[i]);
+            validate_INVALID_FLAG_GROUP_scenario(er, loc_sc);
             break;
         case ScenarioType::EXPECTING_VALUE:
-            validate_EXPECTING_VALUE_scenario(er, tc.s_arr[i]);
+            validate_EXPECTING_VALUE_scenario(er, loc_sc);
             break;
         default:
-            std::cerr << "ERROR: Invalid ScenarioType provided to validate(): " << (int)tc.s_arr[i].type << std::endl;
+            std::cerr << "ERROR: Invalid ScenarioType provided to validate(): " << (int)loc_sc.type << std::endl;
             return -1;
         break;
         }
