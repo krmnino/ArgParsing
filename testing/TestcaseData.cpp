@@ -126,6 +126,17 @@ TDBuildStatus TestcaseData::get_status(){
     return this->status;
 }
 
+
 std::vector<APTableEntry>& TestcaseData::get_init_argtab(){
     return this->init_argtab;
+}
+
+
+size_t TestcaseData::get_n_scenarios(){
+    return this->s_arr.size();
+}
+
+
+ScenarioData& TestcaseData::get_scenario(size_t idx){
+    return this->s_arr[idx];
 }
