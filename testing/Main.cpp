@@ -50,7 +50,6 @@ int main(int argc, char* argv[]){
     TDBuildStatus td_status{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
-    int ret;
     bool infinite_loop{};
 
     // Program argument table 
@@ -151,10 +150,7 @@ int main(int argc, char* argv[]){
             // Collect the data from the ArgParsing object and delete ArgParsing object
             collect_ap_data(loc_sc, ap_test);
             delete ap_test;
-        }
-        ret = validate(er, rnd->get_root_seed(), testcase_counter, testcase);
-        if(ret != 0){
-            break;
+            loc_sc.validate(er, rnd->get_root_seed(), testcase_counter);
         }
         rnd->root_seed_next();
         testcase_counter++;

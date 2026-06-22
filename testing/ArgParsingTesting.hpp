@@ -78,7 +78,12 @@ static std::unordered_map<std::string, bool> valid_flag_values_dict = {
 };
 
 
+/*===================================================================*/
+/*                         ScenarioData.cpp                          */
+/*===================================================================*/
 class ScenarioData{
+    private:
+
     public:
     std::vector<APTableEntry> res_argtab; // Result argument table
     std::vector<APTableEntry> exp_argtab; // Expected argument table
@@ -88,34 +93,11 @@ class ScenarioData{
     uint32_t n_args;
     int argc;
     ScenarioType type;
-    ScenarioData() {}
-    ~ScenarioData() {
-        if(this->argv != nullptr){
-            // Loop through the array deallocating strings one by one
-            for(int i = 0; argv[i] != nullptr; i++){
-                delete[] this->argv[i];
-            }
-            // Finally delete the whole array
-            delete[] this->argv;
-        }
-    }
-    ScenarioData& operator=(const ScenarioData& in_data){
-        this->res_argtab = in_data.res_argtab;
-        this->exp_argtab = in_data.exp_argtab;
-        this->res_error_message = in_data.res_error_message;
-        this->exp_error_message = in_data.exp_error_message;
-        this->n_args = in_data.n_args;
-        this->argc = in_data.argc;
-        if(in_data.argv != nullptr){
-            this->argv = new char*[in_data.argc + 1];
-            for(int i = 0; i < in_data.argc; i++){
-                this->argv[i] = new char[in_data.argc + 1];
-                strcpy(this->argv[i], in_data.argv[i]);
-            }
-        }
-        this->argv = in_data.argv;
-        return *this;
-    }
+    // Methods
+    ScenarioData();
+    ~ScenarioData();
+    ScenarioData& operator=(const ScenarioData&);
+    void validate(ErrorReporter*,uint32_t, size_t);
 };
 
 
@@ -152,10 +134,6 @@ class TestcaseData{
     ScenarioData& get_scenario(size_t);
 };
 
-/*===================================================================*/
-/*                         ScenarioData.cpp                          */
-/*===================================================================*/
-
 typedef struct APValuePackage APValuePackage;
 struct APValuePackage{
     APValue apv;                // Output
@@ -184,6 +162,7 @@ size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 void gen_arg_value(Randomizer*, APValuePackage&);
 void copy_APValue(APValue&, APValue&, APDataType);
+void collect_ap_data(ScenarioData&, ArgParsing*);
 
 
 // ArgTableBuilder.cpp
@@ -197,8 +176,6 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
 // Validation.cpp
-int validate(ErrorReporter*, uint32_t, size_t, TestcaseData&);
-void collect_ap_data(ScenarioData&, ArgParsing*);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
