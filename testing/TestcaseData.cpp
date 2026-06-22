@@ -42,6 +42,95 @@ std::string TDBuildStatus_to_string(TDBuildStatus in_status){
 }
 
 
+uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t input_allowed_scenarios){
+    uint32_t mask{};
+    uint32_t allowed_scenarios{};
+    size_t valid_args_for_group{};
+    
+    // Allow everything first
+    allowed_scenarios = (uint32_t)ScenarioType::OK                     |
+                        (uint32_t)ScenarioType::MISSING_FIRST_DASH     |
+                        (uint32_t)ScenarioType::MISSING_REQUIRED_ARG   |
+                        (uint32_t)ScenarioType::UNKNOWN_ARGUMENT       |
+                        (uint32_t)ScenarioType::REPEATED_ARGUMENT      |
+                        (uint32_t)ScenarioType::MUST_BE_FLAG           |
+                        (uint32_t)ScenarioType::BAD_NUMERIC_VALUE      |
+                        (uint32_t)ScenarioType::EMPTY_ARG_LIST         |
+                        (uint32_t)ScenarioType::VALID_FLAG_GROUP       |
+                        (uint32_t)ScenarioType::INVALID_FLAG_GROUP     |
+                        (uint32_t)ScenarioType::EXPECTING_VALUE        ;
+    
+    // Mask out with input parm before disabling scenario by scenario based on input argument table
+    allowed_scenarios = allowed_scenarios & input_allowed_scenarios;
+
+    // Check if ScenarioType::OK scenario can be tested
+    // Check if ScenarioType::REPEATED_ARGUMENT scenario can be tested
+    if(arg_table.size() == 0){
+        mask = ~(uint32_t)ScenarioType::OK;
+        allowed_scenarios = allowed_scenarios & mask;
+        mask = ~(uint32_t)ScenarioType::REPEATED_ARGUMENT;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+    
+    // ScenarioType::UNKNOWN_ARGUMENT is always allowed
+    
+    // Check if ScenarioType::MISSING_FIRST_DASH scenario can be tested
+    if(arg_table_count_abbr_form(arg_table) == 0){
+        mask = ~(uint32_t)ScenarioType::MISSING_FIRST_DASH;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+
+    // Check if ScenarioType::MISSING_REQUIRED_ARG scenario can be tested
+    if(arg_table_count_required(arg_table) == 0){
+        mask = ~(uint32_t)ScenarioType::MISSING_REQUIRED_ARG;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+    
+    // Check if ScenarioType::MUST_BE_FLAG scenario can be tested
+    if(arg_table_count_data_type(arg_table, APDataType::FLAG) == 0){
+        mask = ~(uint32_t)ScenarioType::MUST_BE_FLAG;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+    
+    // Check if ScenarioType::BAD_NUMERIC_VALUE scenario can be tested
+    if(arg_table_count_data_type(arg_table, APDataType::UNSIGNED_INT) == 0 && 
+       arg_table_count_data_type(arg_table, APDataType::SIGNED_INT) == 0){
+        mask = ~(uint32_t)ScenarioType::BAD_NUMERIC_VALUE;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+
+    // Check if ScenarioType::EMPTY_ARG_LIST scenario can be tested
+    if(arg_table.size() != 0){
+        mask = ~(uint32_t)ScenarioType::EMPTY_ARG_LIST;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+    
+    // Check if ScenarioType::VALID_FLAG_GROUP scenario can be tested
+    // Check if ScenarioType::INVALID_FLAG_GROUP scenario can be tested
+    valid_args_for_group = 0;
+    for(size_t i = 0; i < arg_table.size(); i++){
+        if(arg_table[i].abbr_form != "" && arg_table[i].data_type == APDataType::FLAG){
+            valid_args_for_group++;
+        }
+    }
+    if(valid_args_for_group < 2){
+        mask = ~(uint32_t)ScenarioType::VALID_FLAG_GROUP;
+        allowed_scenarios = allowed_scenarios & mask;
+        mask = ~(uint32_t)ScenarioType::INVALID_FLAG_GROUP;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+
+    // Check if ScenarioType::EXPECTING_VALUE scenario can be tested
+    if(arg_table_count_data_type(arg_table, APDataType::TEXT) == 0 &&
+       arg_table_count_data_type(arg_table, APDataType::UNSIGNED_INT) == 0 &&  
+       arg_table_count_data_type(arg_table, APDataType::SIGNED_INT) == 0){
+        mask = ~(uint32_t)ScenarioType::EXPECTING_VALUE;
+        allowed_scenarios = allowed_scenarios & mask;
+    }
+    return allowed_scenarios;
+}
+
+
 TestcaseData::TestcaseData() {}
 
 

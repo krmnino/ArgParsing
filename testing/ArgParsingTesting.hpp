@@ -114,6 +114,7 @@ enum class TDBuildStatus{
 
 
 std::string TDBuildStatus_to_string(TDBuildStatus);
+uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
 class TestcaseData{
@@ -172,7 +173,6 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 // ScenarioBuilder.cpp
 int build_scenario(Randomizer*, ScenarioData&);
-uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
 // Validation.cpp
