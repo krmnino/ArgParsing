@@ -85,14 +85,14 @@ class ScenarioData{
     private:
 
     public:
-    std::vector<APTableEntry> res_argtab; // Result argument table
-    std::vector<APTableEntry> exp_argtab; // Expected argument table
-    std::string res_error_message;
-    std::string exp_error_message;
+    std::vector<APTableEntry> res_argtab{}; // Result argument table
+    std::vector<APTableEntry> exp_argtab{}; // Expected argument table
+    std::string res_error_message{};
+    std::string exp_error_message{};
     char** argv{};
-    uint32_t n_args;
-    int argc;
-    ScenarioType type;
+    uint32_t n_args{};
+    int argc{};
+    ScenarioType type{};
     // Methods
     ScenarioData();
     ~ScenarioData();

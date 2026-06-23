@@ -138,7 +138,6 @@ TestcaseData::~TestcaseData() {}
 
 
 TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types){
-    ScenarioData local_sc{};
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
     uint32_t attempt_counter{};
@@ -181,6 +180,7 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
     // Generate scenarios based on argument table and allowed scenario types
     this->s_arr.reserve(in_n_scenarios);
     for(size_t i = 0; i < in_n_scenarios; i++){
+        ScenarioData local_sc{};
         // Pick a single scenario from the pool
         attempt_counter = 0;
         while(true){
