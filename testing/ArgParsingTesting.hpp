@@ -95,6 +95,8 @@ class ScenarioData{
     ScenarioType type{};
     // Methods
     ScenarioData();
+    ScenarioData(Randomizer*, ScenarioType, std::vector<APTableEntry>&);
+    ScenarioData(const ScenarioData&);
     ~ScenarioData();
     ScenarioData& operator=(const ScenarioData&);
     void validate(ErrorReporter*,uint32_t, size_t);
@@ -104,7 +106,7 @@ class ScenarioData{
 /*===================================================================*/
 /*                         TestcaseData.cpp                          */
 /*===================================================================*/
-enum class TDBuildStatus{
+enum class BuildStatus{
     UNINITIALIZED         = 0,
     OK                    = 1,
     ALREADY_INITIALIZED   = 2,
@@ -113,14 +115,14 @@ enum class TDBuildStatus{
 };
 
 
-std::string TDBuildStatus_to_string(TDBuildStatus);
+std::string BuildStatus_to_string(BuildStatus);
 uint32_t check_allowed_scenarios(std::vector<APTableEntry>&, uint32_t);
 
 
 class TestcaseData{
     private:
     // Attributes
-    TDBuildStatus status{};
+    BuildStatus status{};
     std::vector<APTableEntry> init_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
 
@@ -129,7 +131,7 @@ class TestcaseData{
     TestcaseData();
     TestcaseData(Randomizer*, uint32_t, uint32_t);
     ~TestcaseData();
-    TDBuildStatus get_status();
+    BuildStatus get_status();
     std::vector<APTableEntry>& get_init_argtab();
     size_t get_n_scenarios();
     ScenarioData& get_scenario(size_t);

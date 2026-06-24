@@ -24,20 +24,20 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-std::string TDBuildStatus_to_string(TDBuildStatus in_status){
+std::string BuildStatus_to_string(BuildStatus in_status){
     switch (in_status){
-    case TDBuildStatus::UNINITIALIZED:
-        return "TDBuildStatus::UNINITIALIZED";
-    case TDBuildStatus::OK:
-        return "TDBuildStatus::OK";
-    case TDBuildStatus::ALREADY_INITIALIZED:
-        return "TDBuildStatus::ALREADY_INITIALIZED";
-    case TDBuildStatus::MAX_ATTMPTS_ARG_TABLE:
-        return "TDBuildStatus::MAX_ATTMPTS_ARG_TABLE";
-    case TDBuildStatus::MAX_ATTMPTS_SCENARIOS:
-        return "TDBuildStatus::MAX_ATTMPTS_SCENARIOS";
+    case BuildStatus::UNINITIALIZED:
+        return "BuildStatus::UNINITIALIZED";
+    case BuildStatus::OK:
+        return "BuildStatus::OK";
+    case BuildStatus::ALREADY_INITIALIZED:
+        return "BuildStatus::ALREADY_INITIALIZED";
+    case BuildStatus::MAX_ATTMPTS_ARG_TABLE:
+        return "BuildStatus::MAX_ATTMPTS_ARG_TABLE";
+    case BuildStatus::MAX_ATTMPTS_SCENARIOS:
+        return "BuildStatus::MAX_ATTMPTS_SCENARIOS";
     default:
-        return "TDBuildStatus::UNDEFINED";
+        return "BuildStatus::UNDEFINED";
     }
 }
 
@@ -134,9 +134,6 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
 TestcaseData::TestcaseData() {}
 
 
-TestcaseData::~TestcaseData() {}
-
-
 TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types){
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
@@ -146,8 +143,8 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
     int ret{};
     bool invalid{};
     
-    if(this->status != TDBuildStatus::UNINITIALIZED){
-        this->status = TDBuildStatus::ALREADY_INITIALIZED;
+    if(this->status != BuildStatus::UNINITIALIZED){
+        this->status = BuildStatus::ALREADY_INITIALIZED;
         return;
     }
     
@@ -156,7 +153,7 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
     while(true){
         invalid = false;
         if(attempt_counter > BUILD_MAX_ATTEMPTS){
-            this->status = TDBuildStatus::MAX_ATTMPTS_ARG_TABLE;
+            this->status = BuildStatus::MAX_ATTMPTS_ARG_TABLE;
             return;
         }
         n_args = in_rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
@@ -180,12 +177,11 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
     // Generate scenarios based on argument table and allowed scenario types
     this->s_arr.reserve(in_n_scenarios);
     for(size_t i = 0; i < in_n_scenarios; i++){
-        ScenarioData local_sc{};
         // Pick a single scenario from the pool
         attempt_counter = 0;
         while(true){
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
-                this->status = TDBuildStatus::MAX_ATTMPTS_SCENARIOS;
+                this->status = BuildStatus::MAX_ATTMPTS_SCENARIOS;
                 return;
             }
             shifter = in_rnd->gen_integral_range<uint32_t>(0, MAX_SCENARIO_TYPES - 1);
@@ -195,23 +191,17 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
             }
             attempt_counter++;
         }
-        local_sc.type = (ScenarioType)picked_scenario_type;
-        // Copy initial arg table to scenario expected table data 
-        local_sc.exp_argtab.reserve(this->init_argtab.size());
-        local_sc.exp_argtab = this->init_argtab;
+        ScenarioData local_sc(in_rnd, (ScenarioType)picked_scenario_type, this->init_argtab);
         this->s_arr.push_back(local_sc);
-        // Build the scenario: expected table and argv
-        ret = build_scenario(in_rnd, this->s_arr[i]);
-        if(ret != 0){
-            this->status = TDBuildStatus::MAX_ATTMPTS_SCENARIOS;
-            return;
-        }
     }
-    this->status = TDBuildStatus::OK;
+    this->status = BuildStatus::OK;
 }
 
 
-TDBuildStatus TestcaseData::get_status(){
+TestcaseData::~TestcaseData() {}
+
+
+BuildStatus TestcaseData::get_status(){
     return this->status;
 }
 

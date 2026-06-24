@@ -7,7 +7,6 @@ SRC_FILES = ArgParsing.cpp
 TST_FILES = ArgTableBuilder.cpp					\
 			TestcaseData.cpp					\
 			ScenarioData.cpp					\
-			ScenarioBuilder.cpp					\
 			Validation.cpp						\
 			Utils.cpp							\
 			OK_Scenario.cpp						\
