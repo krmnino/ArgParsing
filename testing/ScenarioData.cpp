@@ -27,10 +27,69 @@ SOFTWARE.
 ScenarioData::ScenarioData() {}
 
 
+ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector<APTableEntry>& in_init_table){
+    // Copy initial arg table to scenario expected table data 
+    this->exp_argtab.reserve(in_init_table.size());
+    this->exp_argtab = in_init_table;
+    this->type = in_type;
+    switch(this->type){
+    case ScenarioType::OK:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
+        build_OK_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::MISSING_FIRST_DASH:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(1, this->exp_argtab.size());
+        build_MISSING_FIRST_DASH_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::MISSING_REQUIRED_ARG:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
+        build_MISSING_REQUIRED_ARG_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::UNKNOWN_ARGUMENT:
+        // Extra room (+1) for unknown argument
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size()) + 1;
+        build_UNKNOWN_ARGUMENT_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::REPEATED_ARGUMENT:
+        // We need at least 1 argument to repeat it
+        // Extra room (+1) for unknown argument
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab) + 1, this->exp_argtab.size()) + 1;
+        build_REPEATED_ARGUMENT_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::MUST_BE_FLAG:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
+        build_MUST_BE_FLAG_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::BAD_NUMERIC_VALUE:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
+        build_BAD_NUMERIC_VALUE_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::EMPTY_ARG_LIST:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(1, MAX_ARGS);
+        build_EMPTY_ARG_LIST_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::VALID_FLAG_GROUP:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
+        build_VALID_FLAG_GROUP_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::INVALID_FLAG_GROUP:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
+        build_INVALID_FLAG_GROUP_scenario(in_rnd, *this);
+        break;
+    case ScenarioType::EXPECTING_VALUE:
+        this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
+        build_EXPECTING_VALUE_scenario(in_rnd, *this);
+        break;
+    default:
+        std::cerr << "ERROR: Invalid ScenarioType provided to build_scenario(): " << (int)this->type << std::endl;
+    }
+}
+
+
 ScenarioData::~ScenarioData() {
     if(this->argv != nullptr){
         // Loop through the array deallocating strings one by one
-        for(int i = 0; argv[i] != nullptr; i++){
+        for(int i = 0; i < this->argc; i++){
             delete[] this->argv[i];
         }
         // Finally delete the whole array
@@ -44,17 +103,35 @@ ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
     this->exp_argtab = in_data.exp_argtab;
     this->res_error_message = in_data.res_error_message;
     this->exp_error_message = in_data.exp_error_message;
+    this->type = in_data.type;
     this->n_args = in_data.n_args;
     this->argc = in_data.argc;
-    if(in_data.argv != nullptr){
+    if(in_data.argv != nullptr && in_data.argc != 0){
         this->argv = new char*[in_data.argc + 1];
         for(int i = 0; i < in_data.argc; i++){
-            this->argv[i] = new char[in_data.argc + 1];
-            strcpy(this->argv[i], in_data.argv[i]);
+            this->argv[i] = new char[std::strlen(in_data.argv[i]) + 1];
+            std::strcpy(this->argv[i], in_data.argv[i]);
         }
     }
-    this->argv = in_data.argv;
     return *this;
+}
+
+
+ScenarioData::ScenarioData(const ScenarioData& in_data){
+    this->res_argtab = in_data.res_argtab;
+    this->exp_argtab = in_data.exp_argtab;
+    this->res_error_message = in_data.res_error_message;
+    this->exp_error_message = in_data.exp_error_message;
+    this->type = in_data.type;
+    this->n_args = in_data.n_args;
+    this->argc = in_data.argc;
+    if(in_data.argv != nullptr && in_data.argc != 0){
+        this->argv = new char*[in_data.argc + 1];
+        for(int i = 0; i < in_data.argc; i++){
+            this->argv[i] = new char[std::strlen(in_data.argv[i]) + 1];
+            std::strcpy(this->argv[i], in_data.argv[i]);
+        }
+    }
 }
 
 
