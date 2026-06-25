@@ -35,7 +35,7 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
     switch(this->type){
     case ScenarioType::OK:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
-        build_OK_scenario(in_rnd, *this);
+        this->build_OK_scenario(in_rnd);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(1, this->exp_argtab.size());
@@ -146,7 +146,7 @@ void ScenarioData::validate(ErrorReporter* er, uint32_t seed, size_t tc_counter)
     er->log_it(buffer);
     switch (this->type){
     case ScenarioType::OK:
-        validate_OK_scenario(er, *this);
+        validate_OK_scenario(er);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
         validate_MISSING_FIRST_DASH_scenario(er, *this);

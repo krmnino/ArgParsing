@@ -100,6 +100,9 @@ class ScenarioData{
     ~ScenarioData();
     ScenarioData& operator=(const ScenarioData&);
     void validate(ErrorReporter*,uint32_t, size_t);
+    // OK_Scenario.cpp
+    void build_OK_scenario(Randomizer*);
+    void validate_OK_scenario(ErrorReporter*);
 };
 
 
@@ -181,11 +184,6 @@ int build_scenario(Randomizer*, ScenarioData&);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
-
-
-// OK_Scenario.cpp
-void build_OK_scenario(Randomizer*, ScenarioData&);
-void validate_OK_scenario(ErrorReporter*, ScenarioData&);
 
 
 // MISSING_FIRST_DASH_Scenario.cpp
