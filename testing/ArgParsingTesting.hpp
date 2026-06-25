@@ -83,7 +83,14 @@ static std::unordered_map<std::string, bool> valid_flag_values_dict = {
 /*===================================================================*/
 class ScenarioData{
     private:
-
+    
+    // OK_Scenario.cpp
+    void build_OK_scenario(Randomizer*);
+    void validate_OK_scenario(ErrorReporter*);
+    // MISSING_FIRST_DASH_Scenario.cpp
+    void build_MISSING_FIRST_DASH_scenario(Randomizer*);
+    void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*);
+    
     public:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
@@ -100,9 +107,6 @@ class ScenarioData{
     ~ScenarioData();
     ScenarioData& operator=(const ScenarioData&);
     void validate(ErrorReporter*,uint32_t, size_t);
-    // OK_Scenario.cpp
-    void build_OK_scenario(Randomizer*);
-    void validate_OK_scenario(ErrorReporter*);
 };
 
 
@@ -180,11 +184,6 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
-
-
-// MISSING_FIRST_DASH_Scenario.cpp
-void build_MISSING_FIRST_DASH_scenario(Randomizer*, ScenarioData&);
-void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*, ScenarioData&);
 
 
 // MISSING_REQUIRED_ARG_Scenario.cpp

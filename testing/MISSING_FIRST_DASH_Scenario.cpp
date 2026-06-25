@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
+void ScenarioData::build_MISSING_FIRST_DASH_scenario(Randomizer* rnd){
     APValuePackage arg_val_package;
     std::vector<std::string> argv{};
     std::string arg_id{};
@@ -37,80 +37,80 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     bool use_flag_value{};
 
     // Add the placeholder program name for the first element of argv
-    sc.argc = 0;
+    this->argc = 0;
     argv.push_back("PGM_PLACEHOLDER");
-    sc.argc++;
+    this->argc++;
     
     // Find which argument to inject error and when to do it
     while(true){
         // Pick a random argument
-        rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1);
-        if(arg_table_is_abbr_form_available(sc.exp_argtab, rand_idx)){
+        rand_idx = rnd->gen_integral_range<size_t>(0, this->exp_argtab.size() - 1);
+        if(arg_table_is_abbr_form_available(this->exp_argtab, rand_idx)){
             error_arg_idx = rand_idx;
             // Find a spot when to inject it
-            error_arg_n = rnd->gen_integral_range<size_t>(0, sc.n_args - 1);
+            error_arg_n = rnd->gen_integral_range<size_t>(0, this->n_args - 1);
             break;
         }
     }
 
     // Set expected error message 
-    sc.exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
+    this->exp_error_message = APErrRsn_to_string(APErrRsn::MISSING_FIRST_DASH) + ": all argument identifiers must start with a dash (-).";
 
     // Initialize any arguments regardless if they are required or not
     n_initialized = 0;
-    while(n_initialized < sc.n_args){
+    while(n_initialized < this->n_args){
         // Is it time to inject the error? If so, get the index from earlier
         if(n_initialized == error_arg_n){
             rand_idx = error_arg_idx;
         }
         else{
             // Pick a random argument from the table
-            rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1); 
-            if(sc.exp_argtab[rand_idx].initialized || rand_idx == error_arg_idx){
+            rand_idx = rnd->gen_integral_range<size_t>(0, this->exp_argtab.size() - 1); 
+            if(this->exp_argtab[rand_idx].initialized || rand_idx == error_arg_idx){
                 continue;
             }
         }
         // Mark randomly picked argument as initialized
-        sc.exp_argtab[rand_idx].initialized = true; 
+        this->exp_argtab[rand_idx].initialized = true; 
 
         // Is it time to inject the error?
         if(n_initialized == error_arg_n){
-            arg_id = sc.exp_argtab[rand_idx].abbr_form;
+            arg_id = this->exp_argtab[rand_idx].abbr_form;
         }
         else{
             // If argument has abbreviated form, then use it 50% of the times
             result_bool = rnd->gen_bool();
-            if(arg_table_is_abbr_form_available(sc.exp_argtab, rand_idx) && result_bool){
-                arg_id = "-" + sc.exp_argtab[rand_idx].abbr_form;
+            if(arg_table_is_abbr_form_available(this->exp_argtab, rand_idx) && result_bool){
+                arg_id = "-" + this->exp_argtab[rand_idx].abbr_form;
             }
             else{
-                arg_id = "--" + sc.exp_argtab[rand_idx].full_form;
+                arg_id = "--" + this->exp_argtab[rand_idx].full_form;
             }
         }
 
         // Generate data for arguments that need it
-        arg_val_package.data_type = sc.exp_argtab[rand_idx].data_type;
+        arg_val_package.data_type = this->exp_argtab[rand_idx].data_type;
         arg_val_package.to_string = true;
         gen_arg_value(rnd, arg_val_package);
 
         // Set argument value
-        copy_APValue(arg_val_package.apv, sc.exp_argtab[rand_idx].value, sc.exp_argtab[rand_idx].data_type);
+        copy_APValue(arg_val_package.apv, this->exp_argtab[rand_idx].value, this->exp_argtab[rand_idx].data_type);
 
         // Update the argv vector with argument we just created
         // Update argc appropiately
         argv.push_back(arg_id);
-        if(sc.exp_argtab[rand_idx].data_type != APDataType::FLAG){
+        if(this->exp_argtab[rand_idx].data_type != APDataType::FLAG){
             argv.push_back(arg_val_package.stringified);
-            sc.argc += 2;
+            this->argc += 2;
         }
         else{
             use_flag_value = rnd->gen_bool();
-            if(use_flag_value || !sc.exp_argtab[rand_idx].value.flag){
+            if(use_flag_value || !this->exp_argtab[rand_idx].value.flag){
                 argv.push_back(arg_val_package.stringified);
-                sc.argc += 2;
+                this->argc += 2;
             }
             else{
-                sc.argc++;
+                this->argc++;
             }
         }
         
@@ -118,28 +118,28 @@ void build_MISSING_FIRST_DASH_scenario(Randomizer* rnd, ScenarioData& sc){
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, sc.argv);
+    vector_to_char_array(argv, this->argv);
 }
 
 
-void validate_MISSING_FIRST_DASH_scenario(ErrorReporter* er, ScenarioData& sc){
+void ScenarioData::validate_MISSING_FIRST_DASH_scenario(ErrorReporter* er){
     std::string buffer{};
 
     er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.exp_argtab);
+    buffer = arg_table_to_string(this->exp_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
     er->log_it(">>> START OF ARGV <<<");
-    er->log_it(describe_argv(sc.argc, sc.argv));
+    er->log_it(describe_argv(this->argc, this->argv));
     er->log_it(">>> END OF ARGV <<<");
     er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.res_argtab);
+    buffer = arg_table_to_string(this->res_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
 
     // Result vs. Expected error mesage
-    validate_error_msg(er, sc.res_error_message, sc.exp_error_message);
+    validate_error_msg(er, this->res_error_message, this->exp_error_message);
     
     // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_ex_values(er, sc.res_argtab, sc.exp_argtab);
+    validate_arg_table_ex_values(er, this->res_argtab, this->exp_argtab);
 }
