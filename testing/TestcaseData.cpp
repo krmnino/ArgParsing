@@ -191,7 +191,10 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
             }
             attempt_counter++;
         }
-        ScenarioData local_sc(in_rnd, (ScenarioType)picked_scenario_type, this->init_argtab);
+        ScenarioData local_sc(in_rnd,
+                              (ScenarioType)picked_scenario_type,
+                              this->init_argtab,
+                              in_rnd->get_root_seed());
         this->s_arr.push_back(local_sc);
     }
     this->status = BuildStatus::OK;

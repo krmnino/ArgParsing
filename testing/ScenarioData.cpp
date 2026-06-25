@@ -27,11 +27,12 @@ SOFTWARE.
 ScenarioData::ScenarioData() {}
 
 
-ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector<APTableEntry>& in_init_table){
+ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector<APTableEntry>& in_init_table, uint32_t in_seed){
+    this->type = in_type;
+    this->seed = in_seed;
     // Copy initial arg table to scenario expected table data 
     this->exp_argtab.reserve(in_init_table.size());
     this->exp_argtab = in_init_table;
-    this->type = in_type;
     switch(this->type){
     case ScenarioType::OK:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
@@ -103,9 +104,10 @@ ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
     this->exp_argtab = in_data.exp_argtab;
     this->res_error_message = in_data.res_error_message;
     this->exp_error_message = in_data.exp_error_message;
-    this->type = in_data.type;
+    this->seed = in_data.seed;
     this->n_args = in_data.n_args;
     this->argc = in_data.argc;
+    this->type = in_data.type;
     if(in_data.argv != nullptr && in_data.argc != 0){
         this->argv = new char*[in_data.argc + 1];
         for(int i = 0; i < in_data.argc; i++){
@@ -122,9 +124,10 @@ ScenarioData::ScenarioData(const ScenarioData& in_data){
     this->exp_argtab = in_data.exp_argtab;
     this->res_error_message = in_data.res_error_message;
     this->exp_error_message = in_data.exp_error_message;
-    this->type = in_data.type;
+    this->seed = in_data.seed;
     this->n_args = in_data.n_args;
     this->argc = in_data.argc;
+    this->type = in_data.type;
     if(in_data.argv != nullptr && in_data.argc != 0){
         this->argv = new char*[in_data.argc + 1];
         for(int i = 0; i < in_data.argc; i++){
@@ -135,12 +138,12 @@ ScenarioData::ScenarioData(const ScenarioData& in_data){
 }
 
 
-void ScenarioData::validate(ErrorReporter* er, uint32_t seed, size_t tc_counter){
+void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     std::string buffer{};
 
     buffer = "ArgParsingTesting - " + ScenarioType_to_string(this->type);
     er->begin_test(buffer);
-    buffer = "SEED             : " + std::to_string(seed);
+    buffer = "SEED             : " + std::to_string(this->seed);
     er->log_it(buffer);
     buffer = "TESTCASE COUNTER : " + std::to_string(tc_counter);
     er->log_it(buffer);
