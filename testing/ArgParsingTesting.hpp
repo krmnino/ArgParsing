@@ -90,23 +90,24 @@ class ScenarioData{
     // MISSING_FIRST_DASH_Scenario.cpp
     void build_MISSING_FIRST_DASH_scenario(Randomizer*);
     void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*);
-    
+
     public:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
     std::string res_error_message{};
     std::string exp_error_message{};
     char** argv{};
+    uint32_t seed{};
     uint32_t n_args{};
     int argc{};
     ScenarioType type{};
     // Methods
     ScenarioData();
-    ScenarioData(Randomizer*, ScenarioType, std::vector<APTableEntry>&);
+    ScenarioData(Randomizer*, ScenarioType, std::vector<APTableEntry>&, uint32_t);
     ScenarioData(const ScenarioData&);
     ~ScenarioData();
     ScenarioData& operator=(const ScenarioData&);
-    void validate(ErrorReporter*,uint32_t, size_t);
+    void validate(ErrorReporter*, size_t);
 };
 
 

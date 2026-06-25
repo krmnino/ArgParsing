@@ -149,7 +149,7 @@ int main(int argc, char* argv[]){
             ap_test->parse();
             // Collect the data from the ArgParsing object and delete ArgParsing object
             collect_ap_data(loc_sc, ap_test);
-            loc_sc.validate(er, rnd->get_root_seed(), testcase_counter);
+            loc_sc.validate(er, testcase_counter);
             rnd->root_seed_next();
             delete ap_test;
         }
