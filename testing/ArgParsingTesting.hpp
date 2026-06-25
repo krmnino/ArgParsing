@@ -176,10 +176,6 @@ int build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 int build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 
-// ScenarioBuilder.cpp
-int build_scenario(Randomizer*, ScenarioData&);
-
-
 // Validation.cpp
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
