@@ -63,11 +63,11 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
-        build_BAD_NUMERIC_VALUE_scenario(in_rnd, *this);
+        this->build_BAD_NUMERIC_VALUE_scenario(in_rnd);
         break;
     case ScenarioType::EMPTY_ARG_LIST:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(1, MAX_ARGS);
-        build_EMPTY_ARG_LIST_scenario(in_rnd, *this);
+        this->build_EMPTY_ARG_LIST_scenario(in_rnd);
         break;
     case ScenarioType::VALID_FLAG_GROUP:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
@@ -167,10 +167,10 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
         this->validate_MUST_BE_FLAG_scenario(er);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
-        validate_BAD_NUMERIC_VALUE_scenario(er, *this);
+        this->validate_BAD_NUMERIC_VALUE_scenario(er);
         break;
     case ScenarioType::EMPTY_ARG_LIST:
-        validate_EMPTY_ARG_LIST_scenario(er, *this);
+        this->validate_EMPTY_ARG_LIST_scenario(er);
         break;
     case ScenarioType::VALID_FLAG_GROUP:
         validate_VALID_FLAG_GROUP_scenario(er, *this);
