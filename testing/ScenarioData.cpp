@@ -187,3 +187,9 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     }
     er->end_test();
 }
+
+
+void ScenarioData::collect_ap_data(ArgParsing* ap){
+    ap->get_arg_table(this->res_argtab);
+    ap->get_error_msg(this->res_error_message);
+}

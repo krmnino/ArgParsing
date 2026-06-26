@@ -83,7 +83,11 @@ static std::unordered_map<std::string, bool> valid_flag_values_dict = {
 /*===================================================================*/
 class ScenarioData{
     private:
-    
+    std::vector<APTableEntry> res_argtab{}; // Result argument table
+    std::vector<APTableEntry> exp_argtab{}; // Expected argument table
+    std::string res_error_message{};
+    std::string exp_error_message{};
+    uint32_t seed{};
     // OK_Scenario.cpp
     void build_OK_scenario(Randomizer*);
     void validate_OK_scenario(ErrorReporter*);
@@ -119,12 +123,7 @@ class ScenarioData{
     void validate_EXPECTING_VALUE_scenario(ErrorReporter*);
 
     public:
-    std::vector<APTableEntry> res_argtab{}; // Result argument table
-    std::vector<APTableEntry> exp_argtab{}; // Expected argument table
-    std::string res_error_message{};
-    std::string exp_error_message{};
     char** argv{};
-    uint32_t seed{};
     uint32_t n_args{};
     int argc{};
     ScenarioType type{};
@@ -135,6 +134,7 @@ class ScenarioData{
     ~ScenarioData();
     ScenarioData& operator=(const ScenarioData&);
     void validate(ErrorReporter*, size_t);
+    void collect_ap_data(ArgParsing*);
 };
 
 
@@ -200,7 +200,6 @@ size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 void gen_arg_value(Randomizer*, APValuePackage&);
 void copy_APValue(APValue&, APValue&, APDataType);
-void collect_ap_data(ScenarioData&, ArgParsing*);
 
 
 // ArgTableBuilder.cpp
