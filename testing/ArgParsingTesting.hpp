@@ -90,6 +90,12 @@ class ScenarioData{
     // MISSING_FIRST_DASH_Scenario.cpp
     void build_MISSING_FIRST_DASH_scenario(Randomizer*);
     void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*);
+    // MISSING_REQUIRED_ARG_Scenario.cpp
+    void build_MISSING_REQUIRED_ARG_scenario(Randomizer*);
+    void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*);
+    // UNKNOWN_ARGUMENT_Scenario.cpp
+    void build_UNKNOWN_ARGUMENT_scenario(Randomizer*);
+    void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter*);
 
     public:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
@@ -185,16 +191,6 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
-
-
-// MISSING_REQUIRED_ARG_Scenario.cpp
-void build_MISSING_REQUIRED_ARG_scenario(Randomizer*, ScenarioData&);
-void validate_MISSING_REQUIRED_ARG_scenario(ErrorReporter*, ScenarioData&);
-
-
-// UNKNOWN_ARGUMENT_Scenario.cpp
-void build_UNKNOWN_ARGUMENT_scenario(Randomizer*, ScenarioData&);
-void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
 
 
 // REPEATED_ARGUMENT_Scenario.cpp

@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
+void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
     const char* alphanum_dict = ALPHANUM_DICT;
     APValuePackage arg_val_package;
     std::vector<std::string> arg_id_accumulator{};
@@ -45,7 +45,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     bool use_flag_value{};
 
     // Make room in the accumulator argv
-    arg_id_accumulator.reserve(sc.n_args);
+    arg_id_accumulator.reserve(this->n_args);
 
     // Try to generate an argument identifer that is not in the table
     n_initialized = 0;
@@ -54,13 +54,13 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
         result_bool = rnd->gen_bool();
         if(result_bool){
             error_arg = rnd->gen_string(MAX_ABBR_FORM_ID_LEN, alphanum_dict);
-            error_arg_idx = arg_table_find_arg_index(sc.exp_argtab, error_arg, true);
+            error_arg_idx = arg_table_find_arg_index(this->exp_argtab, error_arg, true);
             error_arg = "-" + error_arg;
         }
         else{
             result_u32 = rnd->gen_integral_range<uint32_t>(2, MAX_FULL_FORM_ID_LEN);
             error_arg = rnd->gen_string(result_u32, alphanum_dict);
-            error_arg_idx = arg_table_find_arg_index(sc.exp_argtab, error_arg, false);
+            error_arg_idx = arg_table_find_arg_index(this->exp_argtab, error_arg, false);
             error_arg = "--" + error_arg;
         }
         // If no match found, stop it
@@ -77,48 +77,48 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     error_arg_data_type = (APDataType)(1 << shifter);
 
     // Set expected error message 
-    sc.exp_error_message = APErrRsn_to_string(APErrRsn::UNKNOWN_ARGUMENT) + ": the provided argument " + error_arg + " is an unknown.";
+    this->exp_error_message = APErrRsn_to_string(APErrRsn::UNKNOWN_ARGUMENT) + ": the provided argument " + error_arg + " is an unknown.";
 
     // Loop through sequentially and initialize all the required arguments first
-    for(size_t i = 0; i < sc.exp_argtab.size(); i++){
+    for(size_t i = 0; i < this->exp_argtab.size(); i++){
         // If not required, then skip it
-        if(!sc.exp_argtab[i].required){
+        if(!this->exp_argtab[i].required){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
         result_bool = rnd->gen_bool();
-        if(arg_table_is_abbr_form_available(sc.exp_argtab, i) && result_bool){
-            arg_id = "-" + sc.exp_argtab[i].abbr_form;
+        if(arg_table_is_abbr_form_available(this->exp_argtab, i) && result_bool){
+            arg_id = "-" + this->exp_argtab[i].abbr_form;
         }
         else{
-            arg_id = "--" + sc.exp_argtab[i].full_form;
+            arg_id = "--" + this->exp_argtab[i].full_form;
         }
         // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         // Mark randomly picked argument as initialized
-        sc.exp_argtab[i].initialized = true; 
+        this->exp_argtab[i].initialized = true; 
         n_initialized++;
     }
 
     // Then loop and initialize any remaining non-required arguments
-    while(n_initialized < sc.n_args){
+    while(n_initialized < this->n_args){
         // Pick a random argument from the table
-        rand_idx = rnd->gen_integral_range<size_t>(0, sc.exp_argtab.size() - 1); 
-        if(sc.exp_argtab[rand_idx].initialized){
+        rand_idx = rnd->gen_integral_range<size_t>(0, this->exp_argtab.size() - 1); 
+        if(this->exp_argtab[rand_idx].initialized){
             continue;
         }
         // If argument has abbreviated form, then use it 50% of the times
         result_bool = rnd->gen_bool();
-        if(arg_table_is_abbr_form_available(sc.exp_argtab, rand_idx) && result_bool){
-            arg_id = "-" + sc.exp_argtab[rand_idx].abbr_form;
+        if(arg_table_is_abbr_form_available(this->exp_argtab, rand_idx) && result_bool){
+            arg_id = "-" + this->exp_argtab[rand_idx].abbr_form;
         }
         else{
-            arg_id = "--" + sc.exp_argtab[rand_idx].full_form;
+            arg_id = "--" + this->exp_argtab[rand_idx].full_form;
         }
         // Add it to the accumulator
         arg_id_accumulator.push_back(arg_id);
         // Mark randomly picked argument as initialized
-        sc.exp_argtab[rand_idx].initialized = true; 
+        this->exp_argtab[rand_idx].initialized = true; 
         n_initialized++;
     }
 
@@ -126,9 +126,9 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
     rnd->shuffle<std::string>(arg_id_accumulator);
     
     // Add the placeholder program name for the first element of argv
-    sc.argc = 0;
+    this->argc = 0;
     argv.push_back("PGM_PLACEHOLDER");
-    sc.argc++;
+    this->argc++;
 
     // Loop through the arguments and set random values (for non-FLAG types only)
     for(size_t i = 0; i < arg_id_accumulator.size(); i++){
@@ -141,13 +141,13 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
             // Find their index in the argument table
             if(arg_id[1] == '-'){
                 no_dashes_arg_id = arg_id.substr(2);
-                arg_table_idx = arg_table_find_arg_index(sc.exp_argtab, no_dashes_arg_id, false);
+                arg_table_idx = arg_table_find_arg_index(this->exp_argtab, no_dashes_arg_id, false);
             }
             else{
                 no_dashes_arg_id = arg_id.substr(1);
-                arg_table_idx = arg_table_find_arg_index(sc.exp_argtab, no_dashes_arg_id, true);
+                arg_table_idx = arg_table_find_arg_index(this->exp_argtab, no_dashes_arg_id, true);
             }
-            arg_data_type = sc.exp_argtab[arg_table_idx].data_type;
+            arg_data_type = this->exp_argtab[arg_table_idx].data_type;
         }
 
         // Generate data for arguments that need it
@@ -158,7 +158,7 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
         // Set argument value (only for valid arguments)
         if(arg_id != error_arg){
             // Set argument value
-            copy_APValue(arg_val_package.apv, sc.exp_argtab[arg_table_idx].value, sc.exp_argtab[arg_table_idx].data_type);
+            copy_APValue(arg_val_package.apv, this->exp_argtab[arg_table_idx].value, this->exp_argtab[arg_table_idx].data_type);
         }
 
         // Update the argv vector with argument we just created
@@ -166,43 +166,43 @@ void build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd, ScenarioData& sc){
         argv.push_back(arg_id);
         if(arg_data_type != APDataType::FLAG){
             argv.push_back(arg_val_package.stringified);
-            sc.argc += 2;
+            this->argc += 2;
         }
         else{
             use_flag_value = rnd->gen_bool();
             if(use_flag_value || !arg_val_package.apv.flag){
                 argv.push_back(arg_val_package.stringified);
-                sc.argc += 2;
+                this->argc += 2;
             }
             else{
-                sc.argc++;
+                this->argc++;
             }
         }
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, sc.argv);
+    vector_to_char_array(argv, this->argv);
 }
 
 
-void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er, ScenarioData& sc){
+void ScenarioData::validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er){
     std::string buffer{};
 
     er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.exp_argtab);
+    buffer = arg_table_to_string(this->exp_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
     er->log_it(">>> START OF ARGV <<<");
-    er->log_it(describe_argv(sc.argc, sc.argv));
+    er->log_it(describe_argv(this->argc, this->argv));
     er->log_it(">>> END OF ARGV <<<");
     er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.res_argtab);
+    buffer = arg_table_to_string(this->res_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
 
     // Result vs. Expected error mesage
-    validate_error_msg(er, sc.res_error_message, sc.exp_error_message);
+    validate_error_msg(er, this->res_error_message, this->exp_error_message);
     
     // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_ex_values(er, sc.res_argtab, sc.exp_argtab);
+    validate_arg_table_ex_values(er, this->res_argtab, this->exp_argtab);
 }
