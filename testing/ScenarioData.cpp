@@ -71,15 +71,15 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
         break;
     case ScenarioType::VALID_FLAG_GROUP:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
-        build_VALID_FLAG_GROUP_scenario(in_rnd, *this);
+        this->build_VALID_FLAG_GROUP_scenario(in_rnd);
         break;
     case ScenarioType::INVALID_FLAG_GROUP:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
-        build_INVALID_FLAG_GROUP_scenario(in_rnd, *this);
+        this->build_INVALID_FLAG_GROUP_scenario(in_rnd);
         break;
     case ScenarioType::EXPECTING_VALUE:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(2, this->exp_argtab.size());
-        build_EXPECTING_VALUE_scenario(in_rnd, *this);
+        this->build_EXPECTING_VALUE_scenario(in_rnd);
         break;
     default:
         std::cerr << "ERROR: Invalid ScenarioType provided to build_scenario(): " << (int)this->type << std::endl;
@@ -173,13 +173,13 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
         this->validate_EMPTY_ARG_LIST_scenario(er);
         break;
     case ScenarioType::VALID_FLAG_GROUP:
-        validate_VALID_FLAG_GROUP_scenario(er, *this);
+        this->validate_VALID_FLAG_GROUP_scenario(er);
         break;
     case ScenarioType::INVALID_FLAG_GROUP:
-        validate_INVALID_FLAG_GROUP_scenario(er, *this);
+        this->validate_INVALID_FLAG_GROUP_scenario(er);
         break;
     case ScenarioType::EXPECTING_VALUE:
-        validate_EXPECTING_VALUE_scenario(er, *this);
+        this->validate_EXPECTING_VALUE_scenario(er);
         break;
     default:
         std::cerr << "ERROR: Invalid ScenarioType provided to validate(): " << (int)this->type << std::endl;

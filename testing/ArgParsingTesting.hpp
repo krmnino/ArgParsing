@@ -108,6 +108,15 @@ class ScenarioData{
     // EMPTY_ARG_LIST_Scenario.cpp
     void build_EMPTY_ARG_LIST_scenario(Randomizer*);
     void validate_EMPTY_ARG_LIST_scenario(ErrorReporter*);
+    // VALID_FLAG_GROUP_Scenario.cpp
+    void build_VALID_FLAG_GROUP_scenario(Randomizer*);
+    void validate_VALID_FLAG_GROUP_scenario(ErrorReporter*);
+    // INVALID_FLAG_GROUP_Scenario.cpp
+    void build_INVALID_FLAG_GROUP_scenario(Randomizer*);
+    void validate_INVALID_FLAG_GROUP_scenario(ErrorReporter*);
+    // EXPECTING_VALUE_Scenario.cpp
+    void build_EXPECTING_VALUE_scenario(Randomizer*);
+    void validate_EXPECTING_VALUE_scenario(ErrorReporter*);
 
     public:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
@@ -203,21 +212,6 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
-
-
-// VALID_FLAG_GROUP_Scenario.cpp
-void build_VALID_FLAG_GROUP_scenario(Randomizer*, ScenarioData&);
-void validate_VALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
-
-
-// INVALID_FLAG_GROUP_Scenario.cpp
-void build_INVALID_FLAG_GROUP_scenario(Randomizer*, ScenarioData&);
-void validate_INVALID_FLAG_GROUP_scenario(ErrorReporter*, ScenarioData&);
-
-
-// EXPECTING_VALUE_Scenario.cpp
-void build_EXPECTING_VALUE_scenario(Randomizer*, ScenarioData&);
-void validate_EXPECTING_VALUE_scenario(ErrorReporter*, ScenarioData&);
 
 
 // Template utility functions
