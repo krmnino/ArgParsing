@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
+void ScenarioData::build_EMPTY_ARG_LIST_scenario(Randomizer* rnd){
     APValuePackage arg_val_package;
     std::vector<APTableEntry> non_empty_table{};
     std::vector<std::string> arg_id_accumulator{};
@@ -48,7 +48,7 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
             std::cerr << "ERROR: maximum build attempt for argument table reached." << std::endl;
             return;
         }
-        ret = build_arg_table(rnd, non_empty_table, sc.n_args);
+        ret = build_arg_table(rnd, non_empty_table, this->n_args);
         // If returned -1, try build another argument table
         if(ret != 0){
             invalid = true;
@@ -81,12 +81,12 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
     rnd->shuffle<std::string>(arg_id_accumulator);
 
     // Add the placeholder program name for the first element of argv
-    sc.argc = 0;
+    this->argc = 0;
     argv.push_back("PGM_PLACEHOLDER");
-    sc.argc++;
+    this->argc++;
 
     // Set expected error message 
-    sc.exp_error_message = APErrRsn_to_string(APErrRsn::UNKNOWN_ARGUMENT) + ": the provided argument " + arg_id_accumulator[0] + " is an unknown.";;
+    this->exp_error_message = APErrRsn_to_string(APErrRsn::UNKNOWN_ARGUMENT) + ": the provided argument " + arg_id_accumulator[0] + " is an unknown.";;
 
     // Loop through the arguments and set random values (for non-FLAG types only)
     for(size_t i = 0; i < arg_id_accumulator.size(); i++){
@@ -114,43 +114,43 @@ void build_EMPTY_ARG_LIST_scenario(Randomizer* rnd, ScenarioData& sc){
         argv.push_back(arg_id);
         if(non_empty_table[arg_table_idx].data_type != APDataType::FLAG){
             argv.push_back(arg_val_package.stringified);
-            sc.argc += 2;
+            this->argc += 2;
         }
         else{
             use_flag_value = rnd->gen_bool();
             if(use_flag_value || !non_empty_table[arg_table_idx].value.flag){
                 argv.push_back(arg_val_package.stringified);
-                sc.argc += 2;
+                this->argc += 2;
             }
             else{
-                sc.argc++;
+                this->argc++;
             }
         }
     }
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, sc.argv);
+    vector_to_char_array(argv, this->argv);
 }
 
 
-void validate_EMPTY_ARG_LIST_scenario(ErrorReporter* er, ScenarioData& sc){
+void ScenarioData::validate_EMPTY_ARG_LIST_scenario(ErrorReporter* er){
     std::string buffer{};
 
     er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.exp_argtab);
+    buffer = arg_table_to_string(this->exp_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
     er->log_it(">>> START OF ARGV <<<");
-    er->log_it(describe_argv(sc.argc, sc.argv));
+    er->log_it(describe_argv(this->argc, this->argv));
     er->log_it(">>> END OF ARGV <<<");
     er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(sc.res_argtab);
+    buffer = arg_table_to_string(this->res_argtab);
     er->log_it(buffer);
     er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
 
     // Result vs. Expected error mesage
-    validate_error_msg(er, sc.res_error_message, sc.exp_error_message);
+    validate_error_msg(er, this->res_error_message, this->exp_error_message);
     
     // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_ex_values(er, sc.res_argtab, sc.exp_argtab);
+    validate_arg_table_ex_values(er, this->res_argtab, this->exp_argtab);
 }
