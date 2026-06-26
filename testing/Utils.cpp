@@ -411,9 +411,3 @@ void copy_APValue(APValue& source, APValue& target, APDataType data_type){
         break;
     }
 }
-
-
-void collect_ap_data(ScenarioData& scenario, ArgParsing* ap){
-    ap->get_arg_table(scenario.res_argtab);
-    ap->get_error_msg(scenario.res_error_message);
-}

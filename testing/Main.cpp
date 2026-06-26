@@ -148,7 +148,7 @@ int main(int argc, char* argv[]){
             ap_test->set_input_args(loc_sc.argc, loc_sc.argv);
             ap_test->parse();
             // Collect the data from the ArgParsing object and delete ArgParsing object
-            collect_ap_data(loc_sc, ap_test);
+            loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
             rnd->root_seed_next();
             delete ap_test;
