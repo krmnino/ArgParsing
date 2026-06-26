@@ -55,11 +55,11 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
         // We need at least 1 argument to repeat it
         // Extra room (+1) for unknown argument
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab) + 1, this->exp_argtab.size()) + 1;
-        build_REPEATED_ARGUMENT_scenario(in_rnd, *this);
+        this->build_REPEATED_ARGUMENT_scenario(in_rnd);
         break;
     case ScenarioType::MUST_BE_FLAG:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
-        build_MUST_BE_FLAG_scenario(in_rnd, *this);
+        this->build_MUST_BE_FLAG_scenario(in_rnd);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
@@ -161,10 +161,10 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
         this->validate_UNKNOWN_ARGUMENT_scenario(er);
         break;
     case ScenarioType::REPEATED_ARGUMENT:
-        validate_REPEATED_ARGUMENT_scenario(er, *this);
+        this->validate_REPEATED_ARGUMENT_scenario(er);
         break;
     case ScenarioType::MUST_BE_FLAG:
-        validate_MUST_BE_FLAG_scenario(er, *this);
+        this->validate_MUST_BE_FLAG_scenario(er);
         break;
     case ScenarioType::BAD_NUMERIC_VALUE:
         validate_BAD_NUMERIC_VALUE_scenario(er, *this);

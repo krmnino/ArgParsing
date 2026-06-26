@@ -96,6 +96,12 @@ class ScenarioData{
     // UNKNOWN_ARGUMENT_Scenario.cpp
     void build_UNKNOWN_ARGUMENT_scenario(Randomizer*);
     void validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter*);
+    // REPEATED_ARGUMENT_Scenario.cpp
+    void build_REPEATED_ARGUMENT_scenario(Randomizer*);
+    void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*);
+    // MUST_BE_FLAG_Scenario.cpp
+    void build_MUST_BE_FLAG_scenario(Randomizer*);
+    void validate_MUST_BE_FLAG_scenario(ErrorReporter*);
 
     public:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
@@ -191,16 +197,6 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
 void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
-
-
-// REPEATED_ARGUMENT_Scenario.cpp
-void build_REPEATED_ARGUMENT_scenario(Randomizer*, ScenarioData&);
-void validate_REPEATED_ARGUMENT_scenario(ErrorReporter*, ScenarioData&);
-
-
-// MUST_BE_FLAG_Scenario.cpp
-void build_MUST_BE_FLAG_scenario(Randomizer*, ScenarioData&);
-void validate_MUST_BE_FLAG_scenario(ErrorReporter*, ScenarioData&);
 
 
 // BAD_NUMERIC_VALUE_Scenario.cpp
