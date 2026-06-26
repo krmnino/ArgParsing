@@ -44,12 +44,12 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
         break;
     case ScenarioType::MISSING_REQUIRED_ARG:
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size());
-        build_MISSING_REQUIRED_ARG_scenario(in_rnd, *this);
+        this->build_MISSING_REQUIRED_ARG_scenario(in_rnd);
         break;
     case ScenarioType::UNKNOWN_ARGUMENT:
         // Extra room (+1) for unknown argument
         this->n_args = in_rnd->gen_integral_range<uint32_t>(arg_table_count_required(this->exp_argtab), this->exp_argtab.size()) + 1;
-        build_UNKNOWN_ARGUMENT_scenario(in_rnd, *this);
+        this->build_UNKNOWN_ARGUMENT_scenario(in_rnd);
         break;
     case ScenarioType::REPEATED_ARGUMENT:
         // We need at least 1 argument to repeat it
@@ -149,16 +149,16 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     er->log_it(buffer);
     switch (this->type){
     case ScenarioType::OK:
-        validate_OK_scenario(er);
+        this->validate_OK_scenario(er);
         break;
     case ScenarioType::MISSING_FIRST_DASH:
-        validate_MISSING_FIRST_DASH_scenario(er);
+        this->validate_MISSING_FIRST_DASH_scenario(er);
         break;
     case ScenarioType::MISSING_REQUIRED_ARG:
-        validate_MISSING_REQUIRED_ARG_scenario(er, *this);
+        this->validate_MISSING_REQUIRED_ARG_scenario(er);
         break;
     case ScenarioType::UNKNOWN_ARGUMENT:
-        validate_UNKNOWN_ARGUMENT_scenario(er, *this);
+        this->validate_UNKNOWN_ARGUMENT_scenario(er);
         break;
     case ScenarioType::REPEATED_ARGUMENT:
         validate_REPEATED_ARGUMENT_scenario(er, *this);
