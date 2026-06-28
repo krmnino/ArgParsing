@@ -53,6 +53,19 @@ SOFTWARE.
 #define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
 
 
+static std::unordered_map<std::string, bool> valid_flag_values_dict = {
+    {"0"     , false },
+    {"false" , false },
+    {"FALSE" , false },
+    {"1"     , true  },
+    {"true"  , true  },
+    {"TRUE"  , true  },
+};
+
+
+/*===================================================================*/
+/*                         ScenarioData.cpp                          */
+/*===================================================================*/
 enum class ScenarioType {
     OK                    =  0x00000001,
     MISSING_FIRST_DASH    =  0x00000002,
@@ -68,19 +81,6 @@ enum class ScenarioType {
 };
 
 
-static std::unordered_map<std::string, bool> valid_flag_values_dict = {
-    {"0"     , false },
-    {"false" , false },
-    {"FALSE" , false },
-    {"1"     , true  },
-    {"true"  , true  },
-    {"TRUE"  , true  },
-};
-
-
-/*===================================================================*/
-/*                         ScenarioData.cpp                          */
-/*===================================================================*/
 class ScenarioData{
     private:
     std::vector<APTableEntry> res_argtab{}; // Result argument table
