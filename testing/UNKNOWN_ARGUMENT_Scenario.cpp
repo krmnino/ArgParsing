@@ -28,7 +28,7 @@ void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
     const char* alphanum_dict = ALPHANUM_DICT;
     APValuePackage arg_val_package;
     std::vector<std::string> arg_id_accumulator{};
-    std::vector<std::string> argv{};
+    std::vector<std::string> loc_argv{};
     std::string arg_id{};
     std::string no_dashes_arg_id{};
     std::string flag_value{};
@@ -126,9 +126,7 @@ void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
     rnd->shuffle<std::string>(arg_id_accumulator);
     
     // Add the placeholder program name for the first element of argv
-    this->argc = 0;
-    argv.push_back("PGM_PLACEHOLDER");
-    this->argc++;
+    loc_argv.push_back("PGM_PLACEHOLDER");
 
     // Loop through the arguments and set random values (for non-FLAG types only)
     for(size_t i = 0; i < arg_id_accumulator.size(); i++){
@@ -163,25 +161,21 @@ void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
 
         // Update the argv vector with argument we just created
         // Update argc appropiately
-        argv.push_back(arg_id);
+        loc_argv.push_back(arg_id);
         if(arg_data_type != APDataType::FLAG){
-            argv.push_back(arg_val_package.stringified);
-            this->argc += 2;
+            loc_argv.push_back(arg_val_package.stringified);
         }
         else{
             use_flag_value = rnd->gen_bool();
             if(use_flag_value || !arg_val_package.apv.flag){
-                argv.push_back(arg_val_package.stringified);
-                this->argc += 2;
-            }
-            else{
-                this->argc++;
+                loc_argv.push_back(arg_val_package.stringified);
             }
         }
     }
+    this->argc = loc_argv.size();
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, this->argv);
+    vector_to_char_array(loc_argv, this->argv);
 }
 
 

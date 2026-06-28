@@ -26,7 +26,7 @@ SOFTWARE.
 
 void ScenarioData::build_MISSING_FIRST_DASH_scenario(Randomizer* rnd){
     APValuePackage arg_val_package;
-    std::vector<std::string> argv{};
+    std::vector<std::string> loc_argv{};
     std::string arg_id{};
     std::string flag_value{};
     size_t rand_idx{};
@@ -37,9 +37,7 @@ void ScenarioData::build_MISSING_FIRST_DASH_scenario(Randomizer* rnd){
     bool use_flag_value{};
 
     // Add the placeholder program name for the first element of argv
-    this->argc = 0;
-    argv.push_back("PGM_PLACEHOLDER");
-    this->argc++;
+    loc_argv.push_back("PGM_PLACEHOLDER");
     
     // Find which argument to inject error and when to do it
     while(true){
@@ -98,27 +96,23 @@ void ScenarioData::build_MISSING_FIRST_DASH_scenario(Randomizer* rnd){
 
         // Update the argv vector with argument we just created
         // Update argc appropiately
-        argv.push_back(arg_id);
+        loc_argv.push_back(arg_id);
         if(this->exp_argtab[rand_idx].data_type != APDataType::FLAG){
-            argv.push_back(arg_val_package.stringified);
-            this->argc += 2;
+            loc_argv.push_back(arg_val_package.stringified);
         }
         else{
             use_flag_value = rnd->gen_bool();
             if(use_flag_value || !this->exp_argtab[rand_idx].value.flag){
-                argv.push_back(arg_val_package.stringified);
-                this->argc += 2;
-            }
-            else{
-                this->argc++;
+                loc_argv.push_back(arg_val_package.stringified);
             }
         }
         
         n_initialized++;
     }
+    this->argc = loc_argv.size();
 
     // Convert std::vector<std::string> to char** so it can simulate the char* argv[]
-    vector_to_char_array(argv, this->argv);
+    vector_to_char_array(loc_argv, this->argv);
 }
 
 
