@@ -138,6 +138,16 @@ ScenarioData::ScenarioData(const ScenarioData& in_data){
 }
 
 
+int ScenarioData::get_argc(){
+    return this->argc;
+}
+
+
+char** ScenarioData::get_argv(){
+    return this->argv;
+}
+
+
 void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     std::string buffer{};
 
