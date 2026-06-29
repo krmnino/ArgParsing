@@ -145,7 +145,7 @@ int main(int argc, char* argv[]){
             ScenarioData& loc_sc = testcase.get_scenario(i);
             ap_test = new ArgParsing();
             ap_test->set_arg_table(testcase.get_init_argtab());
-            ap_test->set_input_args(loc_sc.argc, loc_sc.argv);
+            ap_test->set_input_args(loc_sc.get_argc(), loc_sc.get_argv());
             ap_test->parse();
             // Collect the data from the ArgParsing object and delete ArgParsing object
             loc_sc.collect_ap_data(ap_test);
