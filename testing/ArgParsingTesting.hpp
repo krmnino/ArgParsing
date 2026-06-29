@@ -87,7 +87,9 @@ class ScenarioData{
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
     std::string res_error_message{};
     std::string exp_error_message{};
+    uint32_t n_args{};
     uint32_t seed{};
+    ScenarioType type{};
     // OK_Scenario.cpp
     void build_OK_scenario(Randomizer*);
     void validate_OK_scenario(ErrorReporter*);
@@ -124,9 +126,7 @@ class ScenarioData{
 
     public:
     char** argv{};
-    uint32_t n_args{};
     int argc{};
-    ScenarioType type{};
     // Methods
     ScenarioData();
     ScenarioData(Randomizer*, ScenarioType, std::vector<APTableEntry>&, uint32_t);
