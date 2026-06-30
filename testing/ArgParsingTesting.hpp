@@ -174,6 +174,7 @@ class TestcaseData{
     ScenarioData& get_scenario(size_t);
 };
 
+
 typedef struct APValuePackage APValuePackage;
 struct APValuePackage{
     APValue apv;                // Output
@@ -201,7 +202,6 @@ bool arg_table_is_abbr_form_available(std::vector<APTableEntry>&, size_t);
 size_t arg_table_count_abbr_form(std::vector<APTableEntry>&);
 int32_t arg_table_find_arg_index(std::vector<APTableEntry>&, std::string&, bool);
 void gen_arg_value(Randomizer*, APValuePackage&);
-void copy_APValue(APValue&, APValue&, APDataType);
 
 
 // ArgTableBuilder.cpp

@@ -391,23 +391,3 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
         break;
     }
 }
-
-
-void copy_APValue(APValue& source, APValue& target, APDataType data_type){
-    switch (data_type){
-    case APDataType::UNSIGNED_INT:
-        target.number_u64 = source.number_u64;
-        break;    
-    case APDataType::SIGNED_INT:
-        target.number_i64 = source.number_i64;
-        break;    
-    case APDataType::TEXT:
-        target.text = std::make_shared<std::string>(*source.text);
-        break;    
-    case APDataType::FLAG:
-        target.flag = source.flag;
-        break;    
-    default:
-        break;
-    }
-}

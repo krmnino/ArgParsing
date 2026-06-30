@@ -180,7 +180,7 @@ void ScenarioData::build_INVALID_FLAG_GROUP_scenario(Randomizer* rnd){
             gen_arg_value(rnd, arg_val_package);
 
             // Set argument value
-            copy_APValue(arg_val_package.apv, this->exp_argtab[arg_table_idx].value, this->exp_argtab[arg_table_idx].data_type);
+            this->exp_argtab[arg_table_idx].value = arg_val_package.apv;
 
             // Update the argv vector with argument we just created
             // Update argc appropiately

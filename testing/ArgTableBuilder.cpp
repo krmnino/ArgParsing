@@ -146,8 +146,8 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
         arg_val_package.data_type = new_entry.data_type;
         arg_val_package.to_string = false;
         gen_arg_value(rnd, arg_val_package);
-        // Copy argument value from package APTableEntry object 
-        copy_APValue(arg_val_package.apv, new_entry.value, arg_val_package.data_type);
+        // Copy argument value from package APTableEntry object
+        new_entry.value = arg_val_package.apv;
         new_entry.default_value = true;
     }
     
