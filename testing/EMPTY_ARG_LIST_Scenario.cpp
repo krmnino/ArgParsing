@@ -105,7 +105,7 @@ void ScenarioData::build_EMPTY_ARG_LIST_scenario(Randomizer* rnd){
         gen_arg_value(rnd, arg_val_package);
 
         // Set argument value
-        copy_APValue(arg_val_package.apv, non_empty_table[arg_table_idx].value, non_empty_table[arg_table_idx].data_type);
+        non_empty_table[arg_table_idx].value = arg_val_package.apv;
 
         // Update the argv vector with argument we just created
         // Update argc appropiately

@@ -92,7 +92,7 @@ void ScenarioData::build_MISSING_FIRST_DASH_scenario(Randomizer* rnd){
         gen_arg_value(rnd, arg_val_package);
 
         // Set argument value
-        copy_APValue(arg_val_package.apv, this->exp_argtab[rand_idx].value, this->exp_argtab[rand_idx].data_type);
+        this->exp_argtab[rand_idx].value = arg_val_package.apv;
 
         // Update the argv vector with argument we just created
         // Update argc appropiately

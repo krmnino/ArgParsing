@@ -156,7 +156,7 @@ void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
         // Set argument value (only for valid arguments)
         if(arg_id != error_arg){
             // Set argument value
-            copy_APValue(arg_val_package.apv, this->exp_argtab[arg_table_idx].value, this->exp_argtab[arg_table_idx].data_type);
+            this->exp_argtab[arg_table_idx].value = arg_val_package.apv;
         }
 
         // Update the argv vector with argument we just created

@@ -81,6 +81,13 @@ struct APValue{
     APValue() : text{}, number_u64(0) {}
 
 
+    APValue(const APValue& in_data){
+        this->text = in_data.text;
+        this->number_u64 = in_data.number_u64;
+        this->flag = in_data.flag;
+    }
+
+
     ~APValue() {}
 
 
