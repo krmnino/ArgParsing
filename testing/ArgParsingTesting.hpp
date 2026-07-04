@@ -81,10 +81,17 @@ enum class ScenarioType {
 };
 
 
+enum class ErrorType {
+    OK                    =  0x00000000,
+    ERROR_MSG             =  0x00000001,
+};
+
+
 class ScenarioData{
     private:
-    std::vector<APTableEntry> res_argtab{}; // Result argument table
+    std::unique_ptr<std::vector<APTableEntry>> ini_argtab{}; // Initial argument table reference
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
+    std::vector<APTableEntry> res_argtab{}; // Result argument table
     std::string res_error_message{};
     std::string exp_error_message{};
     char** argv{};
@@ -192,6 +199,7 @@ std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
 std::string APValue_to_string(APValue&, APDataType);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
+std::string arg_table_ini_exp_res(std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 std::string APErrRsn_to_string(APErrRsn);
 void vector_to_char_array(std::vector<std::string>&, char**&);
 size_t arg_table_count_data_type(std::vector<APTableEntry>&, APDataType);
