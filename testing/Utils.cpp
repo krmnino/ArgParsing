@@ -233,7 +233,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
     std::string initialized_str{};
     std::string value_str{};
 
-    buffer << " ";
     buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
     buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
     buffer << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
@@ -242,7 +241,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
     buffer << space_padding("DEFAULT_V", PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
     buffer << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
     buffer << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << "\n";
-    buffer << "-";
     buffer << space_padding("-", PRT_IDX_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_ABBR_FORM_STR_WIDTH, "-") << "-+-";
     buffer << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
@@ -265,7 +263,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         required_str = bool_to_string(ini_argtab[i].required);
         default_value_str = bool_to_string(ini_argtab[i].default_value);
         initialized_str = bool_to_string(ini_argtab[i].initialized);
-        buffer << " ";
         buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
         buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
         buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
@@ -287,7 +284,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         required_str = bool_to_string(exp_argtab[i].required);
         default_value_str = bool_to_string(exp_argtab[i].default_value);
         initialized_str = bool_to_string(exp_argtab[i].initialized);
-        buffer << " ";
         
         buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
         buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
@@ -310,7 +306,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         required_str = bool_to_string(res_argtab[i].required);
         default_value_str = bool_to_string(res_argtab[i].default_value);
         initialized_str = bool_to_string(res_argtab[i].initialized);
-        buffer << " ";
         
         buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
         buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
