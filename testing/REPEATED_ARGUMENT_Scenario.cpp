@@ -181,17 +181,13 @@ void ScenarioData::build_REPEATED_ARGUMENT_scenario(Randomizer* rnd){
 void ScenarioData::validate_REPEATED_ARGUMENT_scenario(ErrorReporter* er){
     std::string buffer{};
 
-    er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(this->exp_argtab);
+    er->log_it(">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
+    buffer = arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
     er->log_it(buffer);
-    er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
+    er->log_it(">>> END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
     er->log_it(">>> START OF ARGV <<<");
     er->log_it(describe_argv(this->argc, this->argv));
     er->log_it(">>> END OF ARGV <<<");
-    er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(this->res_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
 
     // Result vs. Expected error mesage
     validate_error_msg(er, this->res_error_message, this->exp_error_message);
