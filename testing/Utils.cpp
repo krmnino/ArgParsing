@@ -222,6 +222,109 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
 }
 
 
+std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::vector<APTableEntry>& exp_argtab, std::vector<APTableEntry>& res_argtab){
+    std::stringstream buffer{};
+    std::string idx_str{};
+    std::string abbr_form_str{};
+    std::string full_form_str{};
+    std::string data_type_str{};
+    std::string required_str{};
+    std::string default_value_str{};
+    std::string initialized_str{};
+    std::string value_str{};
+
+    buffer << " ";
+    buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("DATA TYPE", PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("REQUIRED", PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("DEFAULT_V", PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+    buffer << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << "\n";
+    buffer << "-";
+    buffer << space_padding("-", PRT_IDX_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_ABBR_FORM_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_DATA_TYPE_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_REQUIRED_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_DEFAULT_V_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_INITIALIZED_STR_WIDTH, "-") << "-+-";
+    buffer << space_padding("-", PRT_VALUE_STR_WIDTH, "-") << "\n";
+    for(size_t i = 0; i < ini_argtab.size(); i++){
+        idx_str = std::to_string(i);
+        abbr_form_str = ini_argtab[i].abbr_form;
+        full_form_str = ini_argtab[i].full_form;
+        if(ini_argtab[i].initialized || ini_argtab[i].default_value){
+            value_str = APValue_to_string(ini_argtab[i].value, ini_argtab[i].data_type);
+        }
+        else{
+            value_str = "";
+        }
+        data_type_str = APDataType_to_string(ini_argtab[i].data_type);
+        required_str = bool_to_string(ini_argtab[i].required);
+        default_value_str = bool_to_string(ini_argtab[i].default_value);
+        initialized_str = bool_to_string(ini_argtab[i].initialized);
+        buffer << " ";
+        buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
+
+        abbr_form_str = exp_argtab[i].abbr_form;
+        full_form_str = exp_argtab[i].full_form;
+        if(exp_argtab[i].initialized || exp_argtab[i].default_value){
+            value_str = APValue_to_string(exp_argtab[i].value, exp_argtab[i].data_type);
+        }
+        else{
+            value_str = "";
+        }
+        data_type_str = APDataType_to_string(exp_argtab[i].data_type);
+        required_str = bool_to_string(exp_argtab[i].required);
+        default_value_str = bool_to_string(exp_argtab[i].default_value);
+        initialized_str = bool_to_string(exp_argtab[i].initialized);
+        buffer << " ";
+        
+        buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
+        
+        abbr_form_str = res_argtab[i].abbr_form;
+        full_form_str = res_argtab[i].full_form;
+        if(res_argtab[i].initialized || res_argtab[i].default_value){
+            value_str = APValue_to_string(res_argtab[i].value, res_argtab[i].data_type);
+        }
+        else{
+            value_str = "";
+        }
+        data_type_str = APDataType_to_string(res_argtab[i].data_type);
+        required_str = bool_to_string(res_argtab[i].required);
+        default_value_str = bool_to_string(res_argtab[i].default_value);
+        initialized_str = bool_to_string(res_argtab[i].initialized);
+        buffer << " ";
+        
+        buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
+        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
+    }
+    return buffer.str();
+}
+
+
 std::string APErrRsn_to_string(APErrRsn rsn){
     switch (rsn){
     case APErrRsn::MISSING_FIRST_DASH:

@@ -30,6 +30,7 @@ ScenarioData::ScenarioData() {}
 ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector<APTableEntry>& in_init_table, uint32_t in_seed){
     this->type = in_type;
     this->seed = in_seed;
+    this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(in_init_table);
     // Copy initial arg table to scenario expected table data 
     this->exp_argtab.reserve(in_init_table.size());
     this->exp_argtab = in_init_table;
@@ -100,6 +101,7 @@ ScenarioData::~ScenarioData() {
 
 
 ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
+    this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(*in_data.ini_argtab);
     this->res_argtab = in_data.res_argtab;
     this->exp_argtab = in_data.exp_argtab;
     this->res_error_message = in_data.res_error_message;
@@ -120,6 +122,7 @@ ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
 
 
 ScenarioData::ScenarioData(const ScenarioData& in_data){
+    this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(*in_data.ini_argtab);
     this->res_argtab = in_data.res_argtab;
     this->exp_argtab = in_data.exp_argtab;
     this->res_error_message = in_data.res_error_message;
