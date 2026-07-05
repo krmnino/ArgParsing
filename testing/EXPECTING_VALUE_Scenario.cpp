@@ -167,29 +167,17 @@ void ScenarioData::build_EXPECTING_VALUE_scenario(Randomizer* rnd){
 void ScenarioData::validate_EXPECTING_VALUE_scenario(ErrorReporter* er){
     std::string buffer{};
 
-    // Result vs. Expected error mesage
-    er->log_it("Result   : res_error_message = \"" + this->res_error_message + "\"");
-    er->log_it("Expected : exp_error_message = \"" + this->exp_error_message + "\"");
-    if(this->res_error_message != this->exp_error_message){
-        er->mark_error();
-        er->log_it("!!! ERROR: error_message MISMATCH");
-    }
+    er->log_it(">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
+    buffer = arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
+    er->log_it(buffer);
+    er->log_it(">>> END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
     er->log_it(">>> START OF ARGV <<<");
     er->log_it(describe_argv(this->argc, this->argv));
     er->log_it(">>> END OF ARGV <<<");
-    // Result vs. Expected argument table size
-    er->log_it("Result   : size of result argtab = " + std::to_string(this->res_argtab.size()));
-    er->log_it("Expected : size of result argtab = " + std::to_string(this->exp_argtab.size()));
-    if(this->res_argtab.size() != this->exp_argtab.size()){
-        er->mark_error();
-        er->log_it("!!! ERROR: size of argtab MISMATCH");
-    }
-    er->log_it(">>> START OF RESULT ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(this->res_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF RESULT ARGUMENT TABLE <<<");
-    er->log_it(">>> START OF EXPECTED ARGUMENT TABLE <<<");
-    buffer = arg_table_to_string(this->exp_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF EXPECTED ARGUMENT TABLE <<<");
+    
+    // Result vs. Expected error mesage
+    validate_error_msg(er, this->res_error_message, this->exp_error_message);
+    
+    // Result vs. Expected argument tables (excluding values)
+    validate_arg_table_ex_values(er, this->res_argtab, this->exp_argtab);
 }
