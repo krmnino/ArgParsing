@@ -102,6 +102,7 @@ class ScenarioData{
     // OK_Scenario.cpp
     void build_OK_scenario(Randomizer*);
     void validate_OK_scenario(ErrorReporter*);
+    void display_OK_scenario();
     // MISSING_FIRST_DASH_Scenario.cpp
     void build_MISSING_FIRST_DASH_scenario(Randomizer*);
     void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*);
@@ -219,7 +220,7 @@ int build_entry(Randomizer*, std::vector<APTableEntry>&);
 
 // Validation.cpp
 void validate_error_msg(ErrorReporter*, std::string&, std::string&);
-void validate_arg_table_ex_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
+void validate_arg_table_excluding_values(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 void validate_arg_table_values_only(ErrorReporter*, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
 
 

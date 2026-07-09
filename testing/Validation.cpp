@@ -34,7 +34,7 @@ void validate_error_msg(ErrorReporter* er, std::string& res, std::string& exp){
 }
 
 
-void validate_arg_table_ex_values(ErrorReporter* er, std::vector<APTableEntry>& res, std::vector<APTableEntry>& exp){
+void validate_arg_table_excluding_values(ErrorReporter* er, std::vector<APTableEntry>& res, std::vector<APTableEntry>& exp){
     // Result vs. Expected argument table size
     er->log_it("Result   : size of argtab = " + std::to_string(res.size()));
     er->log_it("Expected : size of argtab = " + std::to_string(exp.size()));
