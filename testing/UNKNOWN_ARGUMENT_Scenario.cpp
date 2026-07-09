@@ -194,5 +194,5 @@ void ScenarioData::validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er){
     validate_error_msg(er, this->res_error_message, this->exp_error_message);
     
     // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_ex_values(er, this->res_argtab, this->exp_argtab);
+    validate_arg_table_excluding_values(er, this->res_argtab, this->exp_argtab);
 }

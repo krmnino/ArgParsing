@@ -51,6 +51,7 @@ int main(int argc, char* argv[]){
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
     bool infinite_loop{};
+    bool trace{};
 
     // Program argument table 
     APTableEntry arg_table[] = {
@@ -117,7 +118,8 @@ int main(int argc, char* argv[]){
     }
 
     // Allow tracing?
-    if(pgm_ap->get_arg_value<bool>("trace", false)){
+    trace = pgm_ap->get_arg_value<bool>("trace", false);
+    if(trace){
         er->log_everything(true);
     }
     else{
