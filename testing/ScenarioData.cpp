@@ -31,8 +31,8 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
     this->type = in_type;
     this->seed = in_seed;
     this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(in_init_table);
+    this->arg_tab_miscompare.reserve(in_init_table.size());
     // Copy initial arg table to scenario expected table data 
-    this->exp_argtab.reserve(in_init_table.size());
     this->exp_argtab = in_init_table;
     switch(this->type){
     case ScenarioType::OK:

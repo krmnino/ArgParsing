@@ -82,8 +82,16 @@ enum class ScenarioType {
 
 
 enum class ErrorType {
-    OK                    =  0x00000000,
-    ERROR_MSG             =  0x00000001,
+    OK          =  0x00000000,
+    ERROR_MSG   =  0x00000001,
+    ARGTAB_SIZE =  0x00000002,
+    ABBR_FORM   =  0x00000004,
+    FULL_FORM   =  0x00000008,
+    DATA_TYPE   =  0x00000010,
+    REQUIRED    =  0x00000020,
+    DEFAULT     =  0x00000040,
+    INITIALIZED =  0x00000080,
+    VALUE       =  0x00000100,
 };
 
 
@@ -92,9 +100,11 @@ class ScenarioData{
     std::unique_ptr<std::vector<APTableEntry>> ini_argtab{}; // Initial argument table reference
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
     std::vector<APTableEntry> res_argtab{}; // Result argument table
+    std::vector<ErrorType> arg_tab_miscompare{};
     std::string res_error_message{};
     std::string exp_error_message{};
     char** argv{};
+    ErrorType error_types;
     uint32_t n_args{};
     uint32_t seed{};
     ScenarioType type{};
