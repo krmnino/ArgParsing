@@ -162,6 +162,7 @@ class ScenarioData{
     ScenarioData& operator=(const ScenarioData&);
     int get_argc();
     char** get_argv();
+    ErrorType get_error_types();
     void validate(ErrorReporter*, size_t);
     void display();
     void collect_ap_data(ArgParsing*);
@@ -190,16 +191,18 @@ class TestcaseData{
     BuildStatus status{};
     std::vector<APTableEntry> init_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
+    size_t tc_number{};
 
     public:
     // Methods
     TestcaseData();
-    TestcaseData(Randomizer*, uint32_t, uint32_t);
+    TestcaseData(Randomizer*, uint32_t, uint32_t, size_t);
     ~TestcaseData();
     BuildStatus get_status();
     std::vector<APTableEntry>& get_init_argtab();
     size_t get_n_scenarios();
     ScenarioData& get_scenario(size_t);
+    void display();
 };
 
 

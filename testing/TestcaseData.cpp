@@ -134,7 +134,7 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
 TestcaseData::TestcaseData() {}
 
 
-TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types){
+TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types, size_t in_tc_counter){
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
     uint32_t attempt_counter{};
@@ -147,6 +147,8 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
         this->status = BuildStatus::ALREADY_INITIALIZED;
         return;
     }
+
+    this->tc_number = in_tc_counter;
     
     // Attempt building a argument table and check scenarios that can be tested
     attempt_counter = 0;
@@ -221,4 +223,10 @@ size_t TestcaseData::get_n_scenarios(){
 
 ScenarioData& TestcaseData::get_scenario(size_t idx){
     return this->s_arr[idx];
+}
+
+void TestcaseData::display(){
+    for(size_t i = 0; i < this->s_arr.size(); i++){
+        this->s_arr[i].display();
+    }
 }
