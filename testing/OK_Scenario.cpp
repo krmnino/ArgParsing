@@ -135,8 +135,6 @@ void ScenarioData::build_OK_scenario(Randomizer* rnd){
 
 
 void ScenarioData::validate_OK_scenario(){
-    std::string buffer{};
-
     // Validate error message
     if(this->res_error_message != this->exp_error_message){
         this->error_types = this->error_type_bitwise_or(error_types, ErrorType::ERROR_MSG);
