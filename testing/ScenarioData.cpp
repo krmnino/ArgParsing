@@ -59,7 +59,7 @@ ErrorType ScenarioData::error_type_bitwise_or(ErrorType in_type1, ErrorType in_t
 
 void ScenarioData::validate_arg_table_excluding_values2(){
     // Result vs. Expected argument table size
-    if(this->res_argtab.size() == this->exp_argtab.size()){
+    if(this->res_argtab.size() != this->exp_argtab.size()){
         this->error_types = error_type_bitwise_or(this->error_types, ErrorType::ARGTAB_SIZE);
     }
     // Result vs. Expected argument tables
@@ -349,13 +349,20 @@ void ScenarioData::display(){
     else{
         std::cout << "- NO ERRORS FOUND" << std::endl;
     }
+
+    std::cout << ">>> START ERROR MESSAGES" << std::endl;
+    std::cout << "Expected : \"" << this->exp_error_message << "\"" << std::endl;
+    std::cout << "Result   : \"" << this->res_error_message << "\"" << std::endl;
+    std::cout << "<<< END ERROR MESSAGES" << std::endl;
     
     std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
     std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab) << std::endl;
     std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
+    
     std::cout << ">>> START OF ARGV" << std::endl;
     std::cout << describe_argv(this->argc, this->argv) << std::endl;
     std::cout << "<<< END OF ARGV" << std::endl;
+    
     std::cout << "<<< END SCENARIO" << std::endl ;
 }
 
