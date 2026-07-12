@@ -40,7 +40,6 @@ SOFTWARE.
 #define BUILD_MAX_ATTEMPTS 1000
 #define MAX_TEXT_ARG_LEN 128
 #define MAX_ARGS 100
-#define MAX_SCENARIO_TYPES 11
 #define ALPHANUM_DICT "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 #define PRT_IDX_STR_WIDTH 5
@@ -79,6 +78,7 @@ enum class ScenarioType {
     INVALID_FLAG_GROUP    =  0x00000200,
     EXPECTING_VALUE       =  0x00000400,
 };
+#define MAX_SCENARIO_TYPES 11
 
 
 enum class ErrorType {
@@ -93,10 +93,15 @@ enum class ErrorType {
     INITIALIZED =  0x00000080,
     VALUE       =  0x00000100,
 };
+#define N_ERROR_TYPES 9
+
+
+std::string ErrorType_to_string(ErrorType);
 
 
 class ScenarioData{
     private:
+    // Attributes
     std::unique_ptr<std::vector<APTableEntry>> ini_argtab{}; // Initial argument table reference
     std::vector<APTableEntry> exp_argtab{}; // Expected argument table
     std::vector<APTableEntry> res_argtab{}; // Result argument table
@@ -109,10 +114,14 @@ class ScenarioData{
     uint32_t seed{};
     ScenarioType type{};
     int argc{};
+
+    // Methods
+    ErrorType error_type_bitwise_or(ErrorType, ErrorType);
+    void validate_arg_table_excluding_values2();
+    void validate_arg_table_values_only2();
     // OK_Scenario.cpp
     void build_OK_scenario(Randomizer*);
-    void validate_OK_scenario(ErrorReporter*);
-    void display_OK_scenario();
+    void validate_OK_scenario();
     // MISSING_FIRST_DASH_Scenario.cpp
     void build_MISSING_FIRST_DASH_scenario(Randomizer*);
     void validate_MISSING_FIRST_DASH_scenario(ErrorReporter*);
@@ -154,6 +163,7 @@ class ScenarioData{
     int get_argc();
     char** get_argv();
     void validate(ErrorReporter*, size_t);
+    void display();
     void collect_ap_data(ArgParsing*);
 };
 
