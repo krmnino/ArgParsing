@@ -46,6 +46,7 @@ int main(int argc, char* argv[]){
     uint64_t testcase_counter{};
     uint64_t n_tests{};
     uint64_t n_scenarios{};
+    uint64_t error_counter{};
     uint64_t max_errors{};
     BuildStatus td_status{};
     uint32_t init_seed{};
@@ -119,12 +120,6 @@ int main(int argc, char* argv[]){
 
     // Allow tracing?
     trace = pgm_ap->get_arg_value<bool>("trace", false);
-    if(trace){
-        er->log_everything(true);
-    }
-    else{
-        er->log_everything(false);
-    }
 
     // Set up signal handler to stop program
     sa_struct.sa_handler = terminating_handler;
@@ -135,9 +130,9 @@ int main(int argc, char* argv[]){
     std::cout << std::endl << "STARTING TEST MAIN LOOP... " << std::endl;    
     
     // Main loop
-    while((testcase_counter < n_tests || infinite_loop) && er->get_error_counter() < max_errors && running){
+    while((testcase_counter < n_tests || infinite_loop) && (error_counter < max_errors) && running){
         // Build a testcase and its multiple scenarios
-        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types);
+        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types, testcase_counter);
         td_status = testcase.get_status();
         if(td_status != BuildStatus::OK){
             std::cerr << "Testcase initialization ended with \'" << BuildStatus_to_string(td_status) << "\'." << std::endl;
@@ -152,8 +147,14 @@ int main(int argc, char* argv[]){
             // Collect the data from the ArgParsing object and delete ArgParsing object
             loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
+            if(loc_sc.get_error_types() != ErrorType::OK){
+                error_counter++;
+            }
             rnd->root_seed_next();
             delete ap_test;
+        }
+        if(trace){
+            testcase.display();
         }
         testcase_counter++;
         if(!running){
@@ -163,7 +164,6 @@ int main(int argc, char* argv[]){
     
     std::cout << std::endl;
     std::cout << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
-    er->print_report();
 
     delete pgm_ap;
     Randomizer::end_instance();

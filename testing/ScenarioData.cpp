@@ -270,6 +270,11 @@ char** ScenarioData::get_argv(){
 }
 
 
+ErrorType ScenarioData::get_error_types(){
+    return this->error_types;
+}
+
+
 void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     std::string buffer{};
 
@@ -325,12 +330,13 @@ void ScenarioData::display(){
     uint32_t shifter{};
     ErrorType curr_err;
 
-    std::cout << ">>> START TEST" << std::endl;
-    std::cout << "ArgParsingTesting - " + ScenarioType_to_string(this->type) << std::endl;
-    std::cout << "SEED             : " + std::to_string(this->seed) << std::endl;
+    std::cout << ">>> START SCENARIO" << std::endl;
+    std::cout << "SCENARIO TYPE : " + ScenarioType_to_string(this->type) << std::endl;
+    std::cout << "SEED          : " + std::to_string(this->seed) << std::endl;
 
     // Print error types
     if(this->error_types != ErrorType::OK){
+        std::cout << "!!! ERRORS FOUND" << std::endl;
         shifter = 1;
         for(size_t i = 0; i < N_ERROR_TYPES; i++){
             curr_err = (ErrorType)((int)this->error_types & shifter); 
@@ -341,17 +347,16 @@ void ScenarioData::display(){
         }
     }
     else{
-        std::cout << ">>> NO ERRORS FOUND" << std::endl;
+        std::cout << "- NO ERRORS FOUND" << std::endl;
     }
     
     std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
     std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab) << std::endl;
     std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
-    std::cout << ">>> START OF ARGV <<<" << std::endl;
+    std::cout << ">>> START OF ARGV" << std::endl;
     std::cout << describe_argv(this->argc, this->argv) << std::endl;
-    std::cout << "<<< END OF ARGV <<<" << std::endl;
-    std::cout << "<<< END TEST" << std::endl;
-    std::cout << "---------------------------------------------------" << std::endl;
+    std::cout << "<<< END OF ARGV" << std::endl;
+    std::cout << "<<< END SCENARIO" << std::endl ;
 }
 
 
