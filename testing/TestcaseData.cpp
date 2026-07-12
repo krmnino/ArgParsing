@@ -225,6 +225,17 @@ ScenarioData& TestcaseData::get_scenario(size_t idx){
     return this->s_arr[idx];
 }
 
+
+bool TestcaseData::get_contains_error(){
+    return this->contains_error;
+}
+
+
+void TestcaseData::set_contains_error(){
+    this->contains_error = true;
+}
+
+
 void TestcaseData::display(){
     for(size_t i = 0; i < this->s_arr.size(); i++){
         this->s_arr[i].display();
