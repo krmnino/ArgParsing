@@ -24,6 +24,121 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
+std::string ErrorType_to_string(ErrorType in_status){
+    switch (in_status){
+    case ErrorType::OK:
+        return "ErrorType::OK";
+    case ErrorType::ERROR_MSG:
+        return "ErrorType::ERROR_MSG";
+    case ErrorType::ARGTAB_SIZE:
+        return "ErrorType::ARGTAB_SIZE";
+    case ErrorType::ABBR_FORM:
+        return "ErrorType::ABBR_FORM";
+    case ErrorType::FULL_FORM:
+        return "ErrorType::FULL_FORM";
+    case ErrorType::DATA_TYPE:
+        return "ErrorType::DATA_TYPE";
+    case ErrorType::REQUIRED:
+        return "ErrorType::REQUIRED";
+    case ErrorType::DEFAULT:
+        return "ErrorType::DEFAULT";
+    case ErrorType::INITIALIZED:
+        return "ErrorType::INITIALIZED";
+    case ErrorType::VALUE:
+        return "ErrorType::VALUE";
+    default:
+        return "ErrorType::UNDEFINED";
+    }
+}
+
+
+ErrorType ScenarioData::error_type_bitwise_or(ErrorType in_type1, ErrorType in_type2){
+    return (ErrorType)((int)in_type1 | (int)in_type2);
+}
+
+
+void ScenarioData::validate_arg_table_excluding_values2(){
+    // Result vs. Expected argument table size
+    if(this->res_argtab.size() == this->exp_argtab.size()){
+        this->error_types = error_type_bitwise_or(this->error_types, ErrorType::ARGTAB_SIZE);
+    }
+    // Result vs. Expected argument tables
+    for(size_t i = 0; i < this->exp_argtab.size(); i++){
+        // abbr_form field should not be altered
+        if(this->res_argtab[i].abbr_form != this->exp_argtab[i].abbr_form){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::ABBR_FORM);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::ABBR_FORM);
+        }
+        // full_form field should not be altered
+        if(this->res_argtab[i].full_form != this->exp_argtab[i].full_form){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::FULL_FORM);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::FULL_FORM);
+        }
+        // data_type field should not be altered
+        if(this->res_argtab[i].data_type != this->exp_argtab[i].data_type){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::DATA_TYPE);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::DATA_TYPE);
+        }
+        // required field should not be altered
+        if(this->res_argtab[i].required != this->exp_argtab[i].required){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::REQUIRED);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::REQUIRED);
+        }
+        // default_value field should not be altered
+        if(this->res_argtab[i].default_value != this->exp_argtab[i].default_value){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::DEFAULT);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::DEFAULT);
+        }
+    }
+}
+
+
+void ScenarioData::validate_arg_table_values_only2(){
+    // Result vs. Expected argument tables
+    for(size_t i = 0; i < this->exp_argtab.size(); i++){
+        // initialized should match the expected
+        if(this->res_argtab[i].initialized != this->exp_argtab[i].initialized){
+            this->error_types = error_type_bitwise_or(this->error_types, ErrorType::INITIALIZED);
+            this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::INITIALIZED);
+        }
+        // value should match the expected
+        // uninitialized arguments with default values must remain unchanged
+        if(this->exp_argtab[i].initialized || (!this->exp_argtab[i].initialized && this->exp_argtab[i].default_value)){
+            switch(this->exp_argtab[i].data_type){
+            case APDataType::UNSIGNED_INT:
+                if(this->res_argtab[i].value.number_u64 != this->exp_argtab[i].value.number_u64){
+                    this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                    this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                }
+                break;
+            case APDataType::SIGNED_INT:
+                if(this->res_argtab[i].value.number_i64 != this->exp_argtab[i].value.number_i64){
+                    this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                    this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                }
+                break;
+            case APDataType::TEXT:
+                if(*this->res_argtab[i].value.text != *this->exp_argtab[i].value.text){
+                    this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                    this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                }
+                break;
+            case APDataType::FLAG:
+                if(this->res_argtab[i].value.flag != this->exp_argtab[i].value.flag){
+                    this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                    this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                }
+                break;
+            default:
+                this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                break;
+            }
+        }
+    }
+}
+
+
 ScenarioData::ScenarioData() {}
 
 
@@ -31,7 +146,11 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
     this->type = in_type;
     this->seed = in_seed;
     this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(in_init_table);
+    // Initialize vector of ErrorType elements
     this->arg_tab_miscompare.reserve(in_init_table.size());
+    for(size_t i = 0; i < this->arg_tab_miscompare.size(); i++){
+        this->arg_tab_miscompare.push_back(ErrorType::OK);
+    }
     // Copy initial arg table to scenario expected table data 
     this->exp_argtab = in_init_table;
     switch(this->type){
@@ -162,7 +281,7 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     er->log_it(buffer);
     switch (this->type){
     case ScenarioType::OK:
-        this->validate_OK_scenario(er);
+        this->validate_OK_scenario();
         break;
     case ScenarioType::MISSING_FIRST_DASH:
         this->validate_MISSING_FIRST_DASH_scenario(er);
@@ -199,6 +318,40 @@ void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     break;
     }
     er->end_test();
+}
+
+
+void ScenarioData::display(){
+    uint32_t shifter{};
+    ErrorType curr_err;
+
+    std::cout << ">>> START TEST" << std::endl;
+    std::cout << "ArgParsingTesting - " + ScenarioType_to_string(this->type) << std::endl;
+    std::cout << "SEED             : " + std::to_string(this->seed) << std::endl;
+
+    // Print error types
+    if(this->error_types != ErrorType::OK){
+        shifter = 1;
+        for(size_t i = 0; i < N_ERROR_TYPES; i++){
+            curr_err = (ErrorType)((int)this->error_types & shifter); 
+            if(curr_err != ErrorType::OK){
+                std::cout << "- " << ErrorType_to_string(curr_err) << std::endl;
+            }
+            shifter = shifter << 1;
+        }
+    }
+    else{
+        std::cout << ">>> NO ERRORS FOUND" << std::endl;
+    }
+    
+    std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
+    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab) << std::endl;
+    std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
+    std::cout << ">>> START OF ARGV <<<" << std::endl;
+    std::cout << describe_argv(this->argc, this->argv) << std::endl;
+    std::cout << "<<< END OF ARGV <<<" << std::endl;
+    std::cout << "<<< END TEST" << std::endl;
+    std::cout << "---------------------------------------------------" << std::endl;
 }
 
 
