@@ -192,6 +192,7 @@ class TestcaseData{
     std::vector<APTableEntry> init_argtab{}; // Initial argument table
     std::vector<ScenarioData> s_arr{};
     size_t tc_number{};
+    bool contains_error{};
 
     public:
     // Methods
@@ -202,6 +203,8 @@ class TestcaseData{
     std::vector<APTableEntry>& get_init_argtab();
     size_t get_n_scenarios();
     ScenarioData& get_scenario(size_t);
+    bool get_contains_error();
+    void set_contains_error();
     void display();
 };
 

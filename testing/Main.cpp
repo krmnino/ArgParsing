@@ -136,6 +136,7 @@ int main(int argc, char* argv[]){
         td_status = testcase.get_status();
         if(td_status != BuildStatus::OK){
             std::cerr << "Testcase initialization ended with \'" << BuildStatus_to_string(td_status) << "\'." << std::endl;
+            break;
         }
         // Run the scenarios on ArgParsing
         for(uint32_t i = 0; i < n_scenarios; i++){
@@ -148,12 +149,13 @@ int main(int argc, char* argv[]){
             loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
             if(loc_sc.get_error_types() != ErrorType::OK){
+                testcase.set_contains_error();
                 error_counter++;
             }
             rnd->root_seed_next();
             delete ap_test;
         }
-        if(trace){
+        if(trace || testcase.get_contains_error()){
             testcase.display();
         }
         testcase_counter++;
