@@ -134,33 +134,17 @@ void ScenarioData::build_OK_scenario(Randomizer* rnd){
 }
 
 
-void ScenarioData::validate_OK_scenario(ErrorReporter* er){
+void ScenarioData::validate_OK_scenario(){
     std::string buffer{};
 
-    //er->log_it(">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
-    //buffer = arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
-    //er->log_it(buffer);
-    //er->log_it(">>> END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
-    //er->log_it(">>> START OF ARGV <<<");
-    //er->log_it(describe_argv(this->argc, this->argv));
-    //er->log_it(">>> END OF ARGV <<<");
+    // Validate error message
+    if(this->res_error_message != this->exp_error_message){
+        this->error_types = this->error_type_bitwise_or(error_types, ErrorType::ERROR_MSG);
+    }
 
-    // Result vs. Expected error mesage
-    validate_error_msg(er, this->res_error_message, this->exp_error_message);
-    
-    // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_excluding_values(er, this->res_argtab, this->exp_argtab);
+    // Validate argument tables (excluding values)
+    this->validate_arg_table_excluding_values2();
         
     // Result vs. Expected argument tables (argument values only)
-    validate_arg_table_values_only(er, this->res_argtab, this->exp_argtab);
-}
-
-
-void ScenarioData::display_OK_scenario(){
-    std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
-    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab) << std::endl;
-    std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
-    std::cout << ">>> START OF ARGV <<<" << std::endl;
-    std::cout << describe_argv(this->argc, this->argv) << std::endl;
-    std::cout << ">>> END OF ARGV <<<" << std::endl;
+    this->validate_arg_table_values_only2();
 }
