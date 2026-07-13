@@ -180,19 +180,11 @@ void ScenarioData::build_UNKNOWN_ARGUMENT_scenario(Randomizer* rnd){
 
 
 void ScenarioData::validate_UNKNOWN_ARGUMENT_scenario(ErrorReporter* er){
-    std::string buffer{};
-    
-    er->log_it(">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
-    buffer = arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
-    er->log_it(buffer);
-    er->log_it(">>> END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT) <<<");
-    er->log_it(">>> START OF ARGV <<<");
-    er->log_it(describe_argv(this->argc, this->argv));
-    er->log_it(">>> END OF ARGV <<<");
+    // Validate error message
+    if(this->res_error_message != this->exp_error_message){
+        this->error_types = this->error_type_bitwise_or(error_types, ErrorType::ERROR_MSG);
+    }
 
-    // Result vs. Expected error mesage
-    validate_error_msg(er, this->res_error_message, this->exp_error_message);
-    
-    // Result vs. Expected argument tables (excluding values)
-    validate_arg_table_excluding_values(er, this->res_argtab, this->exp_argtab);
+    // Validate argument tables (excluding values)
+    this->validate_arg_table_excluding_values2();
 }
