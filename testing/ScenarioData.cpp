@@ -146,9 +146,10 @@ ScenarioData::ScenarioData(Randomizer* in_rnd, ScenarioType in_type, std::vector
     this->type = in_type;
     this->seed = in_seed;
     this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(in_init_table);
+    this->error_types = ErrorType::OK;
     // Initialize vector of ErrorType elements
     this->arg_tab_miscompare.reserve(in_init_table.size());
-    for(size_t i = 0; i < this->arg_tab_miscompare.size(); i++){
+    for(size_t i = 0; i < in_init_table.size(); i++){
         this->arg_tab_miscompare.push_back(ErrorType::OK);
     }
     // Copy initial arg table to scenario expected table data 
@@ -221,10 +222,15 @@ ScenarioData::~ScenarioData() {
 
 ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
     this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(*in_data.ini_argtab);
-    this->res_argtab = in_data.res_argtab;
     this->exp_argtab = in_data.exp_argtab;
+    this->res_argtab = in_data.res_argtab;
+    this->arg_tab_miscompare.reserve(in_data.arg_tab_miscompare.size());
+    for(size_t i = 0; i < in_data.arg_tab_miscompare.size(); i++){
+        this->arg_tab_miscompare.push_back(in_data.arg_tab_miscompare[i]);
+    }
     this->res_error_message = in_data.res_error_message;
     this->exp_error_message = in_data.exp_error_message;
+    this->error_types = in_data.error_types;
     this->seed = in_data.seed;
     this->n_args = in_data.n_args;
     this->argc = in_data.argc;
@@ -242,10 +248,15 @@ ScenarioData& ScenarioData::operator=(const ScenarioData& in_data){
 
 ScenarioData::ScenarioData(const ScenarioData& in_data){
     this->ini_argtab = std::make_unique<std::vector<APTableEntry>>(*in_data.ini_argtab);
-    this->res_argtab = in_data.res_argtab;
     this->exp_argtab = in_data.exp_argtab;
+    this->res_argtab = in_data.res_argtab;
+    this->arg_tab_miscompare.reserve(in_data.arg_tab_miscompare.size());
+    for(size_t i = 0; i < in_data.arg_tab_miscompare.size(); i++){
+        this->arg_tab_miscompare.push_back(in_data.arg_tab_miscompare[i]);
+    }
     this->res_error_message = in_data.res_error_message;
     this->exp_error_message = in_data.exp_error_message;
+    this->error_types = in_data.error_types;
     this->seed = in_data.seed;
     this->n_args = in_data.n_args;
     this->argc = in_data.argc;
@@ -356,14 +367,14 @@ void ScenarioData::display(){
     std::cout << "<<< END ERROR MESSAGES" << std::endl;
     
     std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
-    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab) << std::endl;
+    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
     std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
     
     std::cout << ">>> START OF ARGV" << std::endl;
-    std::cout << describe_argv(this->argc, this->argv) << std::endl;
+    std::cout << describe_argv(this->argc, this->argv);
     std::cout << "<<< END OF ARGV" << std::endl;
     
-    std::cout << "<<< END SCENARIO" << std::endl ;
+    std::cout << "<<< END SCENARIO" << std::endl << std::endl;
 }
 
 
