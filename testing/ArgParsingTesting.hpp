@@ -117,8 +117,8 @@ class ScenarioData{
 
     // Methods
     ErrorType error_type_bitwise_or(ErrorType, ErrorType);
-    void validate_arg_table_excluding_values2();
-    void validate_arg_table_values_only2();
+    void validate_arg_table_excluding_values();
+    void validate_arg_table_values_only();
     // OK_Scenario.cpp
     void build_OK_scenario(Randomizer*);
     void validate_OK_scenario();

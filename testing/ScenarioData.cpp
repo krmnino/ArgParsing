@@ -57,7 +57,7 @@ ErrorType ScenarioData::error_type_bitwise_or(ErrorType in_type1, ErrorType in_t
 }
 
 
-void ScenarioData::validate_arg_table_excluding_values2(){
+void ScenarioData::validate_arg_table_excluding_values(){
     // Result vs. Expected argument table size
     if(this->res_argtab.size() != this->exp_argtab.size()){
         this->error_types = error_type_bitwise_or(this->error_types, ErrorType::ARGTAB_SIZE);
@@ -93,7 +93,7 @@ void ScenarioData::validate_arg_table_excluding_values2(){
 }
 
 
-void ScenarioData::validate_arg_table_values_only2(){
+void ScenarioData::validate_arg_table_values_only(){
     // Result vs. Expected argument tables
     for(size_t i = 0; i < this->exp_argtab.size(); i++){
         // initialized should match the expected

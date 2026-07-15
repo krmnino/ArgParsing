@@ -7,7 +7,6 @@ SRC_FILES = ArgParsing.cpp
 TST_FILES = ArgTableBuilder.cpp					\
 			TestcaseData.cpp					\
 			ScenarioData.cpp					\
-			Validation.cpp						\
 			Utils.cpp							\
 			OK_Scenario.cpp						\
 			MISSING_FIRST_DASH_Scenario.cpp		\
