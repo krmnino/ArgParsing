@@ -238,5 +238,5 @@ void ScenarioData::validate_MUST_BE_FLAG_scenario(ErrorReporter* er){
     }
 
     // Validate argument tables (excluding values)
-    this->validate_arg_table_excluding_values2();
+    this->validate_arg_table_excluding_values();
 }

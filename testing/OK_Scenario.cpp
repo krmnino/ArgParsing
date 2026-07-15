@@ -141,8 +141,8 @@ void ScenarioData::validate_OK_scenario(){
     }
 
     // Validate argument tables (excluding values)
-    this->validate_arg_table_excluding_values2();
+    this->validate_arg_table_excluding_values();
         
     // Result vs. Expected argument tables (argument values only)
-    this->validate_arg_table_values_only2();
+    this->validate_arg_table_values_only();
 }
