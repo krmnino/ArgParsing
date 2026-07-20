@@ -202,7 +202,7 @@ class TestcaseData{
     std::vector<APTableEntry>& get_init_argtab();
     size_t get_n_scenarios();
     ScenarioData& get_scenario(size_t);
-    void display();
+    void display_errors();
 };
 
 

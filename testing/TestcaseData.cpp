@@ -226,8 +226,10 @@ ScenarioData& TestcaseData::get_scenario(size_t idx){
 }
 
 
-void TestcaseData::display(){
+void TestcaseData::display_errors(){
     for(size_t i = 0; i < this->s_arr.size(); i++){
-        this->s_arr[i].display();
+        if(this->s_arr[i].get_error_types() != ErrorType::OK){
+            this->s_arr[i].display();
+        }
     }
 }
