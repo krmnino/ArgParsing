@@ -36,6 +36,7 @@ void terminating_handler(int s){
 
 int main(int argc, char* argv[]){
     struct sigaction sa_struct{};
+    std::vector<TestcaseData> tcs_on_error{};
     std::string pgm_err_msg{};
     std::string seed_argval{};
     std::string types_argval{};
@@ -107,6 +108,7 @@ int main(int argc, char* argv[]){
 
     // Read max_errors argument
     max_errors = pgm_ap->get_arg_value<uint64_t>("max_errors", false);
+    tcs_on_error.reserve(max_errors);
     
     // Read n_scenarios argument
     n_scenarios = pgm_ap->get_arg_value<uint64_t>("n_scenarios", false);
@@ -127,8 +129,8 @@ int main(int argc, char* argv[]){
     sa_struct.sa_flags = 0;
     sigaction(SIGINT, &sa_struct, NULL);
 
-    std::cout << std::endl << "STARTING TEST MAIN LOOP... " << std::endl;    
-    
+    std::cout << std::endl << "STARTING TEST MAIN LOOP... " << std::endl;
+
     // Main loop
     while((testcase_counter < n_tests || infinite_loop) && (error_counter < max_errors) && running){
         // Build a testcase and its multiple scenarios
@@ -149,23 +151,31 @@ int main(int argc, char* argv[]){
             loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
             if(loc_sc.get_error_types() != ErrorType::OK){
-                testcase.set_contains_error();
+                tcs_on_error.push_back(testcase);
                 error_counter++;
+            }
+            else if(trace){
+                loc_sc.display();
             }
             rnd->root_seed_next();
             delete ap_test;
-        }
-        if(trace || testcase.get_contains_error()){
-            testcase.display();
         }
         testcase_counter++;
         if(!running){
             break;
         }
     }
-    
-    std::cout << std::endl;
-    std::cout << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
+    std::cout << std::endl << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
+
+    // Print any errors that may have been detected
+    for(size_t i = 0; i < tcs_on_error.size(); i++){
+        std::cout << "================ (START OF ERROR REPORT) ================" << std::endl;
+        std::cout << "Initial seed              : " << init_seed << std::endl;
+        std::cout << "Total tescases            : " << testcase_counter << std::endl;
+        std::cout << "Tescases containin errors : " << error_counter << std::endl;
+        tcs_on_error[i].display_errors();
+        std::cout << "================= (END OF ERROR REPORT) =================" << std::endl;
+    }
 
     delete pgm_ap;
     Randomizer::end_instance();
