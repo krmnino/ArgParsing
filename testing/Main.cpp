@@ -47,13 +47,15 @@ int main(int argc, char* argv[]){
     uint64_t testcase_counter{};
     uint64_t n_tests{};
     uint64_t n_scenarios{};
-    uint64_t error_counter{};
-    uint64_t max_errors{};
+    uint64_t tc_error_counter{};
+    uint64_t sc_error_counter{};
+    uint64_t tc_max_errors{};
     BuildStatus td_status{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
     bool infinite_loop{};
     bool trace{};
+    bool tc_error;
 
     // Program argument table 
     APTableEntry arg_table[] = {
@@ -107,8 +109,8 @@ int main(int argc, char* argv[]){
     }
 
     // Read max_errors argument
-    max_errors = pgm_ap->get_arg_value<uint64_t>("max_errors", false);
-    tcs_on_error.reserve(max_errors);
+    tc_max_errors = pgm_ap->get_arg_value<uint64_t>("max_errors", false);
+    tcs_on_error.reserve(tc_max_errors);
     
     // Read n_scenarios argument
     n_scenarios = pgm_ap->get_arg_value<uint64_t>("n_scenarios", false);
@@ -132,7 +134,8 @@ int main(int argc, char* argv[]){
     std::cout << std::endl << "STARTING TEST MAIN LOOP... " << std::endl;
 
     // Main loop
-    while((testcase_counter < n_tests || infinite_loop) && (error_counter < max_errors) && running){
+    while((testcase_counter < n_tests || infinite_loop) && (tc_error_counter < tc_max_errors) && running){
+        tc_error = false;
         // Build a testcase and its multiple scenarios
         TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types, testcase_counter);
         td_status = testcase.get_status();
@@ -151,14 +154,19 @@ int main(int argc, char* argv[]){
             loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
             if(loc_sc.get_error_types() != ErrorType::OK){
-                tcs_on_error.push_back(testcase);
-                error_counter++;
+                tc_error = true;
+                sc_error_counter++;
             }
-            else if(trace){
+            if(trace){
                 loc_sc.display();
             }
             rnd->root_seed_next();
             delete ap_test;
+        }
+        // If Testcase contains errors, then save it
+        if(tc_error == true){
+            tcs_on_error.push_back(testcase);
+            tc_error_counter++;
         }
         testcase_counter++;
         if(!running){
@@ -168,12 +176,16 @@ int main(int argc, char* argv[]){
     std::cout << std::endl << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
 
     // Print any errors that may have been detected
-    for(size_t i = 0; i < tcs_on_error.size(); i++){
+    if(tcs_on_error.size() != 0){
         std::cout << "================ (START OF ERROR REPORT) ================" << std::endl;
-        std::cout << "Initial seed              : " << init_seed << std::endl;
-        std::cout << "Total tescases            : " << testcase_counter << std::endl;
-        std::cout << "Tescases containin errors : " << error_counter << std::endl;
-        tcs_on_error[i].display_errors();
+        std::cout << "Initial seed                : " << init_seed << std::endl;
+        std::cout << "Total tescases              : " << testcase_counter << std::endl;
+        std::cout << "Total scenarios             : " << testcase_counter * n_scenarios << std::endl;
+        std::cout << "Testcases containing errors : " << tc_error_counter << std::endl;
+        std::cout << "Scenarios containing errors : " << sc_error_counter << std::endl;
+        for(size_t i = 0; i < tcs_on_error.size(); i++){
+            tcs_on_error[i].display_errors();
+        }
         std::cout << "================= (END OF ERROR REPORT) =================" << std::endl;
     }
 
