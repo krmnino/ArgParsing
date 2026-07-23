@@ -62,6 +62,21 @@ static std::unordered_map<std::string, bool> valid_flag_values_dict = {
 };
 
 
+static struct Counters{
+    size_t ctr_OK{};
+    size_t ctr_MISSING_FIRST_DASH{};
+    size_t ctr_MISSING_REQUIRED_ARG{};
+    size_t ctr_UNKNOWN_ARGUMENT{};
+    size_t ctr_REPEATED_ARGUMENT{};
+    size_t ctr_MUST_BE_FLAG{};
+    size_t ctr_BAD_NUMERIC_VALUE{};
+    size_t ctr_EMPTY_ARG_LIST{};
+    size_t ctr_VALID_FLAG_GROUP{};
+    size_t ctr_INVALID_FLAG_GROUP{};
+    size_t ctr_EXPECTING_VALUE{};
+} counters;
+
+
 /*===================================================================*/
 /*                         ScenarioData.cpp                          */
 /*===================================================================*/
@@ -163,6 +178,7 @@ class ScenarioData{
     int get_argc();
     char** get_argv();
     ErrorType get_error_types();
+    ScenarioType get_type();
     void validate(ErrorReporter*, size_t);
     void display();
     void collect_ap_data(ArgParsing*);

@@ -34,8 +34,65 @@ void terminating_handler(int s){
 }
 
 
+void update_sc_counters(ScenarioData& sc){
+    switch (sc.get_type()){
+    case ScenarioType::OK:
+        counters.ctr_OK++;
+        break;
+    case ScenarioType::MISSING_FIRST_DASH:
+        counters.ctr_MISSING_FIRST_DASH++;
+        break;
+    case ScenarioType::MISSING_REQUIRED_ARG:
+        counters.ctr_MISSING_REQUIRED_ARG++;
+        break;
+    case ScenarioType::UNKNOWN_ARGUMENT:
+        counters.ctr_UNKNOWN_ARGUMENT++;
+        break;
+    case ScenarioType::REPEATED_ARGUMENT:
+        counters.ctr_REPEATED_ARGUMENT++;
+        break;
+    case ScenarioType::MUST_BE_FLAG:
+        counters.ctr_MUST_BE_FLAG++;
+        break;
+    case ScenarioType::BAD_NUMERIC_VALUE:
+        counters.ctr_BAD_NUMERIC_VALUE++;
+        break;
+    case ScenarioType::EMPTY_ARG_LIST:
+        counters.ctr_EMPTY_ARG_LIST++;
+        break;
+    case ScenarioType::VALID_FLAG_GROUP:
+        counters.ctr_VALID_FLAG_GROUP++;
+        break;
+    case ScenarioType::INVALID_FLAG_GROUP:
+        counters.ctr_INVALID_FLAG_GROUP++;
+        break;
+    case ScenarioType::EXPECTING_VALUE:
+        counters.ctr_EXPECTING_VALUE++;
+        break;
+    default:
+        break;
+    }
+}
+
+
+void print_sc_counters(){
+    std::cout << "- OK                        : " << counters.ctr_OK << std::endl;
+    std::cout << "- MISSING_FIRST_DASH        : " << counters.ctr_MISSING_FIRST_DASH << std::endl;
+    std::cout << "- MISSING_REQUIRED_ARG      : " << counters.ctr_MISSING_REQUIRED_ARG << std::endl;
+    std::cout << "- UNKNOWN_ARGUMENT          : " << counters.ctr_UNKNOWN_ARGUMENT << std::endl;
+    std::cout << "- REPEATED_ARGUMENT         : " << counters.ctr_REPEATED_ARGUMENT << std::endl;
+    std::cout << "- MUST_BE_FLAG              : " << counters.ctr_MUST_BE_FLAG << std::endl;
+    std::cout << "- BAD_NUMERIC_VALUE         : " << counters.ctr_BAD_NUMERIC_VALUE << std::endl;
+    std::cout << "- EMPTY_ARG_LIST            : " << counters.ctr_EMPTY_ARG_LIST << std::endl;
+    std::cout << "- VALID_FLAG_GROUP          : " << counters.ctr_VALID_FLAG_GROUP << std::endl;
+    std::cout << "- INVALID_FLAG_GROUP        : " << counters.ctr_INVALID_FLAG_GROUP << std::endl;
+    std::cout << "- EXPECTING_VALUE           : " << counters.ctr_EXPECTING_VALUE << std::endl;
+}
+
+
 int main(int argc, char* argv[]){
     struct sigaction sa_struct{};
+
     std::vector<TestcaseData> tcs_on_error{};
     std::string pgm_err_msg{};
     std::string seed_argval{};
@@ -150,7 +207,6 @@ int main(int argc, char* argv[]){
             ap_test->set_arg_table(testcase.get_init_argtab());
             ap_test->set_input_args(loc_sc.get_argc(), loc_sc.get_argv());
             ap_test->parse();
-            // Collect the data from the ArgParsing object and delete ArgParsing object
             loc_sc.collect_ap_data(ap_test);
             loc_sc.validate(er, testcase_counter);
             if(loc_sc.get_error_types() != ErrorType::OK){
@@ -160,6 +216,7 @@ int main(int argc, char* argv[]){
             if(trace){
                 loc_sc.display();
             }
+            update_sc_counters(loc_sc);
             rnd->root_seed_next();
             delete ap_test;
         }
@@ -173,16 +230,18 @@ int main(int argc, char* argv[]){
             break;
         }
     }
-    std::cout << std::endl << "TERMINATING... " << "Testcase Counter: " << testcase_counter << std::endl;
+    std::cout << std::endl << "TERMINATING... " << testcase_counter << std::endl;
+    std::cout << "Initial seed                : 0x" << std::hex << init_seed << std::dec << std::endl;
+    std::cout << "Total tescases              : " << testcase_counter << std::endl;
+    std::cout << "Total scenarios             : " << testcase_counter * n_scenarios << std::endl;
+    std::cout << "Scenario Type Counters        " << init_seed << std::endl;
+    print_sc_counters();
+    std::cout << "Testcases containing errors : " << tc_error_counter << std::endl;
+    std::cout << "Scenarios containing errors : " << sc_error_counter << std::endl;
 
     // Print any errors that may have been detected
     if(tcs_on_error.size() != 0){
         std::cout << "================ (START OF ERROR REPORT) ================" << std::endl;
-        std::cout << "Initial seed                : " << init_seed << std::endl;
-        std::cout << "Total tescases              : " << testcase_counter << std::endl;
-        std::cout << "Total scenarios             : " << testcase_counter * n_scenarios << std::endl;
-        std::cout << "Testcases containing errors : " << tc_error_counter << std::endl;
-        std::cout << "Scenarios containing errors : " << sc_error_counter << std::endl;
         for(size_t i = 0; i < tcs_on_error.size(); i++){
             tcs_on_error[i].display_errors();
         }
