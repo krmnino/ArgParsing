@@ -286,6 +286,11 @@ ErrorType ScenarioData::get_error_types(){
 }
 
 
+ScenarioType ScenarioData::get_type(){
+    return this->type;
+}
+
+
 void ScenarioData::validate(ErrorReporter* er, size_t tc_counter){
     std::string buffer{};
 
