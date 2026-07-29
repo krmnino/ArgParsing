@@ -77,6 +77,7 @@ int ArgParsing_C_get_value_TEXT(ArgParsing_C*, const char*, bool, char*, size_t)
 bool ArgParsing_C_get_value_FLAG(ArgParsing_C*, const char*, bool);
 uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C*, const char*, bool);
 int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C*, const char*, bool);
+double ArgParsing_C_get_value_FLOAT(ArgParsing_C*, const char*, bool);
 
 
 #ifdef __cplusplus

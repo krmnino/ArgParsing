@@ -62,9 +62,10 @@ enum class APDataType {
     FLAG         = 0x00000002,
     UNSIGNED_INT = 0x00000004,
     SIGNED_INT   = 0x00000008,
+    FLOAT        = 0x00000010,
 };
 #ifdef DEBUG
-#define MAX_TYPES (uint32_t)4
+#define MAX_TYPES (uint32_t)5
 #endif
 
 
@@ -74,7 +75,8 @@ struct APValue{
     union{
         uint64_t number_u64;
         int64_t  number_i64;
-        bool flag;
+        double   number_fpt;
+        bool     flag;
     };
 
 
@@ -84,7 +86,6 @@ struct APValue{
     APValue(const APValue& in_data){
         this->text = in_data.text;
         this->number_u64 = in_data.number_u64;
-        this->flag = in_data.flag;
     }
 
 
@@ -94,7 +95,6 @@ struct APValue{
     APValue& operator=(const APValue& in_data){
         this->text = in_data.text;
         this->number_u64 = in_data.number_u64;
-        this->flag = in_data.flag;
         return *this;
     }
 };
@@ -205,6 +205,7 @@ private:
     int32_t get_index_in_arg_table(std::string&, bool);
     bool is_valid_hex(std::string&);
     bool is_valid_dec(std::string&);
+    bool is_valid_float(std::string&);
     void arg_begin();
     void arg_abbr_form();
     void arg_full_form();

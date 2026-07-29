@@ -200,6 +200,9 @@ size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input
     case APDataType::SIGNED_INT:
         ret_size = sizeof(int64_t);    
         break;
+    case APDataType::FLOAT:
+        ret_size = sizeof(double);    
+        break;
     default:
         break;
     }
@@ -209,7 +212,6 @@ size_t ArgParsing::get_arg_value_bytesize(std::string arg_id, bool is_abbr_input
 
 bool ArgParsing::is_valid_hex(std::string& input){
     std::string input_copy{};
-    bool valid{};
     
     // Validate input
     if(input.size() == 0){
@@ -217,27 +219,25 @@ bool ArgParsing::is_valid_hex(std::string& input){
     }
        
     input_copy = input;
-    valid = true;
     // A hex number must always start with '0x'
     if(input_copy[0] != '0' || input_copy[1] != 'x'){
         return false;
     }
     input_copy = input_copy.substr(2);
     // Check each character is a hex digit
-    for(size_t i = 0; i < input_copy.size() && valid; i++){
+    for(size_t i = 0; i < input_copy.size(); i++){
         if(!((input_copy[i] >= '0' && input_copy[i] <= '9') ||
              (input_copy[i] >= 'A' && input_copy[i] <= 'F') ||
              (input_copy[i] >= 'a' && input_copy[i] <= 'f'))){
-            valid = false;
+            return false;
         }
     }
-    return valid;
+    return true;
 }
 
 
 bool ArgParsing::is_valid_dec(std::string& input){
     std::string input_copy{};
-    bool valid{};
 
     // Validate input
     if(input.size() == 0){
@@ -245,18 +245,44 @@ bool ArgParsing::is_valid_dec(std::string& input){
     }
 
     input_copy = input;
-    valid = true;
     // Might be a negative number. If so, skip the minus sign
     if(input_copy[0] == '-'){
         input_copy = input_copy.substr(1);
     }
     // Check each character is a decimal digit
-    for(size_t i = 0; i < input_copy.size() && valid; i++){
+    for(size_t i = 0; i < input_copy.size(); i++){
         if(!(input_copy[i] >= '0' && input_copy[i] <= '9')){
-            valid = false;
+            return false;
         }
     }
-    return valid;
+    return true;
+}
+
+
+bool ArgParsing::is_valid_float(std::string& input){
+    std::string input_copy{};
+    bool found_decpt;
+
+    found_decpt = false;
+    input_copy = input;
+    // Might be a negative number. If so, skip the minus sign
+    if(input_copy[0] == '-'){
+        input_copy = input_copy.substr(1);
+    }
+    for(size_t i = 0; i < input_copy.size(); i++){
+        if(!((input_copy[i] >= '0' && input_copy[i] <= '9') || input_copy[i] == '.')){
+            return false;
+        }
+        if(input_copy[i] == '.'){
+            if(!found_decpt){
+                found_decpt = true;
+            }
+            else{
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -429,6 +455,17 @@ void ArgParsing::arg_value(){
             }
         }
         break;
+    case APDataType::FLOAT:
+        if(this->is_valid_float(value)){
+            this->arg_table[this->eval_arg_idx].value.number_u64 = std::stod(value);
+        }
+        else{
+            this->state = APState::ERROR;
+            this->reason = APErrRsn::BAD_NUMERIC_VALUE;
+            this->err_msg_data.push_back(value);
+            this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
+            return;
+        }
     case APDataType::TEXT:
         this->arg_table[this->eval_arg_idx].value.text = std::make_shared<std::string>(value);
         break;
@@ -747,6 +784,9 @@ void ArgParsing::display_arg_table(){
         case APDataType::SIGNED_INT:
             data_type_str = "SIGNED_INT";
             break;        
+        case APDataType::FLOAT:
+            data_type_str = "FLOAT";
+            break;        
         case APDataType::TEXT:
             data_type_str = "TEXT";
             break;        
@@ -770,6 +810,9 @@ void ArgParsing::display_arg_table(){
                 break;        
             case APDataType::SIGNED_INT:
                 value_str = std::to_string(this->arg_table[i].value.number_i64);
+                break;        
+            case APDataType::FLOAT:
+                value_str = std::to_string(this->arg_table[i].value.number_fpt);
                 break;        
             case APDataType::TEXT:
                 value_str = *this->arg_table[i].value.text;
@@ -914,4 +957,8 @@ uint64_t ArgParsing_C_get_value_UNSIGNED_INT(ArgParsing_C* apc, const char* arg_
 
 int64_t ArgParsing_C_get_value_SIGNED_INT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
     return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<int64_t>((std::string)arg_key, is_abbr_input);
+}
+
+double ArgParsing_C_get_value_FLOAT(ArgParsing_C* apc, const char* arg_key, bool is_abbr_input){
+    return reinterpret_cast<ArgParsing*>(apc)->get_arg_value<double>((std::string)arg_key, is_abbr_input);
 }
