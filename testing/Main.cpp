@@ -116,12 +116,13 @@ int main(int argc, char* argv[]){
 
     // Program argument table 
     APTableEntry arg_table[] = {
-        { "s", "seed"       , APDataType::UNSIGNED_INT , true  },
-        { "n", "n_tests"    , APDataType::UNSIGNED_INT , true  },
-        { "" , "n_scenarios", (uint64_t)1                      },
-        { "e", "max_errors" , (uint64_t)1                      },
-        { "" , "types"      , (uint64_t)0x7FF                  },
-        { "t", "trace"      , APDataType::FLAG         , false },
+        { "s", "seed"          , APDataType::UNSIGNED_INT , true  },
+        { "n", "n_tests"       , (uint64_t)0                      },
+        { "" , "n_scenarios"   , (uint64_t)1                      },
+        { "e", "max_errors"    , (uint64_t)1                      },
+        { "" , "scenario_types", (uint64_t)0x7FF                  },
+        { "" , "data_types"    , (uint64_t)0x1F                   },
+        { "t", "trace"         , false                            },
     };
     
     // Start the argument parser
@@ -173,9 +174,9 @@ int main(int argc, char* argv[]){
     n_scenarios = pgm_ap->get_arg_value<uint64_t>("n_scenarios", false);
     
     // Read and validate types argument
-    user_allowed_scenario_types = pgm_ap->get_arg_value<uint32_t>("types", false);
+    user_allowed_scenario_types = pgm_ap->get_arg_value<uint32_t>("scenario_types", false);
     if(user_allowed_scenario_types == 0){
-        std::cerr << "ERROR: --types argument cannot be zero." << std::endl;
+        std::cerr << "ERROR: --scenario_types argument cannot be zero." << std::endl;
         return -1;
     }
 
