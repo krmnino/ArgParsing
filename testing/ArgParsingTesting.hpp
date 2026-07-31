@@ -51,6 +51,12 @@ SOFTWARE.
 #define PRT_INITIALIZED_STR_WIDTH 11
 #define PRT_VALUE_STR_WIDTH MAX_TEXT_ARG_LEN
 
+#define ALL_DATA_TYPES ((uint32_t)APDataType::TEXT |           \
+                        (uint32_t)APDataType::FLAG |           \
+                        (uint32_t)APDataType::UNSIGNED_INT |   \
+                        (uint32_t)APDataType::SIGNED_INT |     \
+                        (uint32_t)APDataType::FLOAT) 
+
 
 static std::unordered_map<std::string, bool> valid_flag_values_dict = {
     {"0"     , false },
@@ -212,7 +218,7 @@ class TestcaseData{
     public:
     // Methods
     TestcaseData();
-    TestcaseData(Randomizer*, uint32_t, uint32_t, size_t);
+    TestcaseData(Randomizer*, uint32_t, uint32_t, uint32_t, size_t);
     ~TestcaseData();
     BuildStatus get_status();
     std::vector<APTableEntry>& get_init_argtab();
@@ -253,8 +259,8 @@ void gen_arg_value(Randomizer*, APValuePackage&);
 
 
 // ArgTableBuilder.cpp
-int build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t);
-int build_entry(Randomizer*, std::vector<APTableEntry>&);
+int build_arg_table(Randomizer*, std::vector<APTableEntry>&, uint32_t, uint32_t);
+int build_entry(Randomizer*, std::vector<APTableEntry>&, uint32_t);
 
 
 // Validation.cpp

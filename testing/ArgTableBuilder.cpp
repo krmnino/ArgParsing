@@ -24,7 +24,7 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t n_args){
+int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table, uint32_t n_args, uint32_t in_data_types){
     uint32_t attempt_counter{};
                                   
     // Empty the vector and reserve space
@@ -37,18 +37,17 @@ int build_arg_table(Randomizer* rnd, std::vector<APTableEntry>& table,  uint32_t
             if(attempt_counter > BUILD_MAX_ATTEMPTS){
                 return -1;
             }
-            if(build_entry(rnd, table) == 0){
+            if(build_entry(rnd, table, in_data_types) == 0){
                 break;
             }
             attempt_counter++;
         }
     }
-
     return 0;
 }
 
 
-int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
+int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t in_data_types){
     const char* alphanum_dict = ALPHANUM_DICT;
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
     APValuePackage arg_val_package;
@@ -127,7 +126,12 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table){
     }
 
     // APTableEntry.data_type
-    shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
+    while(true){
+        shifter = rnd->gen_integral_range<uint32_t>(0, MAX_TYPES - 1);
+        if((in_data_types & (1 << shifter)) != 0){
+            break;
+        }
+    }
     new_entry.data_type = (APDataType)(1 << shifter);
 
     // APTableEntry.required -> Make it not required 60% of the time

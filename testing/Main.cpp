@@ -110,6 +110,7 @@ int main(int argc, char* argv[]){
     BuildStatus td_status{};
     uint32_t init_seed{};
     uint32_t user_allowed_scenario_types{};
+    uint32_t user_allowed_data_types{};
     bool infinite_loop{};
     bool trace{};
     bool tc_error;
@@ -173,10 +174,17 @@ int main(int argc, char* argv[]){
     // Read n_scenarios argument
     n_scenarios = pgm_ap->get_arg_value<uint64_t>("n_scenarios", false);
     
-    // Read and validate types argument
+    // Read and validate scenario_types argument
     user_allowed_scenario_types = pgm_ap->get_arg_value<uint32_t>("scenario_types", false);
     if(user_allowed_scenario_types == 0){
         std::cerr << "ERROR: --scenario_types argument cannot be zero." << std::endl;
+        return -1;
+    }
+    
+    // Read and validate data_types argument
+    user_allowed_data_types = pgm_ap->get_arg_value<uint32_t>("data_types", false);
+    if(user_allowed_data_types == 0){
+        std::cerr << "ERROR: --data_types argument cannot be zero." << std::endl;
         return -1;
     }
 
@@ -195,7 +203,7 @@ int main(int argc, char* argv[]){
     while((testcase_counter < n_tests || infinite_loop) && (tc_error_counter < tc_max_errors) && running){
         tc_error = false;
         // Build a testcase and its multiple scenarios
-        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types, testcase_counter);
+        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types, user_allowed_data_types, testcase_counter);
         td_status = testcase.get_status();
         if(td_status != BuildStatus::OK){
             std::cerr << "Testcase initialization ended with \'" << BuildStatus_to_string(td_status) << "\'." << std::endl;

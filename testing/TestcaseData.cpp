@@ -134,7 +134,7 @@ uint32_t check_allowed_scenarios(std::vector<APTableEntry>& arg_table, uint32_t 
 TestcaseData::TestcaseData() {}
 
 
-TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types, size_t in_tc_counter){
+TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t in_scenario_types, uint32_t in_data_types, size_t in_tc_counter){
     uint32_t scenario_type_pool{};
     uint32_t picked_scenario_type{};
     uint32_t attempt_counter{};
@@ -159,7 +159,7 @@ TestcaseData::TestcaseData(Randomizer* in_rnd, uint32_t in_n_scenarios, uint32_t
             return;
         }
         n_args = in_rnd->gen_integral_range<uint32_t>(0, MAX_ARGS);
-        ret = build_arg_table(in_rnd, this->init_argtab, n_args);
+        ret = build_arg_table(in_rnd, this->init_argtab, n_args, in_data_types);
         // If returned -1, set invalid on
         if(ret != 0){
             invalid = true;

@@ -48,7 +48,7 @@ void ScenarioData::build_EMPTY_ARG_LIST_scenario(Randomizer* rnd){
             std::cerr << "ERROR: maximum build attempt for argument table reached." << std::endl;
             return;
         }
-        ret = build_arg_table(rnd, non_empty_table, this->n_args);
+        ret = build_arg_table(rnd, non_empty_table, this->n_args, ALL_DATA_TYPES);
         // If returned -1, try build another argument table
         if(ret != 0){
             invalid = true;
