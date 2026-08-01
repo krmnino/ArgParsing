@@ -120,6 +120,9 @@ std::string APDataType_to_string(APDataType apdt){
     case APDataType::SIGNED_INT:
         ret += "SIGNED_INT";
         break;  
+    case APDataType::FLOAT:
+        ret += "FLOAT";
+        break;  
     case APDataType::FLAG:
         ret += "FLAG";
         break;
