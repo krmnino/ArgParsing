@@ -1,8 +1,10 @@
 RD = $(realpath ../res)
 BD = $(realpath ../bin)
 SD = $(realpath ../src)
+TD = $(realpath ../testing)
 
 SRC_FILES = ArgParsing.cpp
+SRC_PATHS = $(addprefix $(SD)/,$(SRC_FILES))
 
 TST_FILES = ArgTableBuilder.cpp					\
 			TestcaseData.cpp					\
@@ -20,6 +22,7 @@ TST_FILES = ArgTableBuilder.cpp					\
 			INVALID_FLAG_GROUP_Scenario.cpp		\
 			EXPECTING_VALUE_Scenario.cpp		\
 			Main.cpp
+TST_PATHS = $(addprefix $(TD)/,$(TST_FILES))
 
 OBJ_FILES = $(patsubst %.cpp,%.o,$(TST_FILES) $(SRC_FILES))
 OBJ_PATHS = $(addprefix $(BD)/,$(OBJ_FILES))
@@ -29,7 +32,7 @@ OBJ_PATHS = $(addprefix $(BD)/,$(OBJ_FILES))
 all: compile link
 
 compile:
-	g++ -g -c -Wall -D DEBUG -std=c++17 $(SD)/$(SRC_FILES) $(TST_FILES)
+	g++ -g -c -Wall -D DEBUG -std=c++17 $(SRC_PATHS) $(TST_PATHS)
 	mv *.o $(BD)
 
 link: 
