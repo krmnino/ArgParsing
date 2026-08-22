@@ -134,18 +134,18 @@ int build_entry(Randomizer* rnd, std::vector<APTableEntry>& arg_table, uint32_t 
     }
     new_entry.data_type = (APDataType)(1 << shifter);
 
-    // APTableEntry.required -> Make it not required 60% of the time
+    // APTableEntry.required -> Make it not required 50% of the time
     result_u32 = rnd->gen_integral_range<uint32_t>(1, 10);
-    if(result_u32 <= 6){
+    if(result_u32 <= 5){
         new_entry.required = false;
     }
     else{
         new_entry.required = true;
     }
     
-    // If APTableEntry.required -> Make it have a default value 60% of the time
+    // If APTableEntry.required -> Make it have a default value 50% of the time
     result_u32 = rnd->gen_integral_range<uint32_t>(1, 10);
-    if(!new_entry.required && result_u32 <= 6){
+    if(!new_entry.required && result_u32 <= 5){
         // Prepare package before generating argument default value
         arg_val_package.data_type = new_entry.data_type;
         arg_val_package.to_string = false;

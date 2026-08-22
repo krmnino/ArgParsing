@@ -28,6 +28,7 @@ SOFTWARE.
 #include "ErrorReporter.hpp"
 
 #include <atomic>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <signal.h>

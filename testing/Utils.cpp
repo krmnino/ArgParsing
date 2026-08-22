@@ -141,6 +141,7 @@ std::string bool_to_string(bool data){
 
 std::string APValue_to_string(APValue& value, APDataType data_type){
     std::string ret{};
+    std::stringstream stream;
 
     switch (data_type){
     case APDataType::UNSIGNED_INT:
@@ -159,6 +160,10 @@ std::string APValue_to_string(APValue& value, APDataType data_type){
         break;
     case APDataType::FLAG:
         ret = bool_to_string(value.flag);
+        break;
+    case APDataType::FLOAT:
+        stream << std::fixed << std::setprecision(8) << value.number_fpt;
+        ret = stream.str(); 
         break;
     default:
         ret = "";
@@ -437,6 +442,7 @@ int32_t arg_table_find_arg_index(std::vector<APTableEntry>& arg_table, std::stri
 
 void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     const char* valid_flag_values[] = VALID_FLAG_VALUES;
+    std::stringstream stream;
     uint32_t result_u32;
     bool result_bool;
 
@@ -484,7 +490,14 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
         else{
             package.apv.flag = rnd->gen_bool();
         }
-        break;    
+        break;
+    case APDataType::FLOAT:
+        package.apv.number_fpt = rnd->gen_float<double>();
+        if(package.to_string){
+            stream << std::fixed << std::setprecision(8) << package.apv.number_fpt;
+            package.stringified = stream.str(); 
+        }
+        break;
     default:
         break;
     }
