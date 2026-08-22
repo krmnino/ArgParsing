@@ -24,7 +24,6 @@ SOFTWARE.
 #include "ArgParsingTesting.hpp"
 
 
-Randomizer* Randomizer::rnd_ptr = nullptr;
 ErrorReporter* ErrorReporter::er_ptr = nullptr;
 volatile sig_atomic_t running = true;
 
@@ -99,7 +98,6 @@ int main(int argc, char* argv[]){
     std::string types_argval{};
     ArgParsing* pgm_ap{};
     ArgParsing* ap_test{};
-    Randomizer* rnd{};
     ErrorReporter* er{};
     uint64_t testcase_counter{};
     uint64_t n_tests{};
@@ -144,11 +142,7 @@ int main(int argc, char* argv[]){
     }
 
     // Start the Randomizer
-    rnd = Randomizer::get_instance(init_seed);
-    if(rnd == nullptr){
-        std::cerr << "ERROR: Could not initialize Randomizer." << std::endl;
-        return -1;
-    }
+    Randomizer rnd(init_seed);
 
     // Start the ErrorReporter
     er = ErrorReporter::get_instance();
@@ -203,7 +197,7 @@ int main(int argc, char* argv[]){
     while((testcase_counter < n_tests || infinite_loop) && (tc_error_counter < tc_max_errors) && running){
         tc_error = false;
         // Build a testcase and its multiple scenarios
-        TestcaseData testcase(rnd, n_scenarios, user_allowed_scenario_types, user_allowed_data_types, testcase_counter);
+        TestcaseData testcase(&rnd, n_scenarios, user_allowed_scenario_types, user_allowed_data_types, testcase_counter);
         td_status = testcase.get_status();
         if(td_status != BuildStatus::OK){
             std::cerr << "Testcase initialization ended with \'" << BuildStatus_to_string(td_status) << "\'." << std::endl;
@@ -226,7 +220,7 @@ int main(int argc, char* argv[]){
                 loc_sc.display();
             }
             update_sc_counters(loc_sc);
-            rnd->root_seed_next();
+            rnd.root_seed_next();
             delete ap_test;
         }
         // If Testcase contains errors, then save it
@@ -258,7 +252,6 @@ int main(int argc, char* argv[]){
     }
 
     delete pgm_ap;
-    Randomizer::end_instance();
     ErrorReporter::end_instance();
 
     return 0;
