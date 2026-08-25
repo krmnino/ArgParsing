@@ -457,7 +457,7 @@ void ArgParsing::arg_value(){
         break;
     case APDataType::FLOAT:
         if(this->is_valid_float(value)){
-            this->arg_table[this->eval_arg_idx].value.number_u64 = std::stod(value);
+            this->arg_table[this->eval_arg_idx].value.number_fpt = std::stod(value);
         }
         else{
             this->state = APState::ERROR;
