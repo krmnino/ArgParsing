@@ -466,6 +466,7 @@ void ArgParsing::arg_value(){
             this->err_msg_data.push_back("--" + this->arg_table[this->eval_arg_idx].full_form);
             return;
         }
+        break;
     case APDataType::TEXT:
         this->arg_table[this->eval_arg_idx].value.text = std::make_shared<std::string>(value);
         break;
