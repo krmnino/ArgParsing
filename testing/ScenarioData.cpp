@@ -129,6 +129,12 @@ void ScenarioData::validate_arg_table_values_only(){
                     this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
                 }
                 break;
+            case APDataType::FLOAT:
+                if(this->res_argtab[i].value.number_fpt != this->exp_argtab[i].value.number_fpt){
+                    this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
+                    this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
+                }
+                break;
             default:
                 this->error_types = error_type_bitwise_or(this->error_types, ErrorType::VALUE);
                 this->arg_tab_miscompare[i] = error_type_bitwise_or(this->arg_tab_miscompare[i], ErrorType::VALUE);
