@@ -27,8 +27,8 @@ SOFTWARE.
 #include "../res/Randomizer.hpp"
 #include "ErrorReporter.hpp"
 
+#include <array>
 #include <atomic>
-#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <signal.h>
@@ -43,6 +43,7 @@ SOFTWARE.
 #define MAX_ARGS 100
 #define ALPHANUM_DICT "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
+#define INIEXPRES_TABLE_FIELDS 8
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
 #define PRT_FULL_FORM_STR_WIDTH 10
@@ -242,9 +243,7 @@ struct APValuePackage{
 std::string space_padding(std::string, size_t, std::string);
 std::string describe_argv(int, char**);
 std::string ScenarioType_to_string(ScenarioType);
-std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
-std::string APValue_to_string(APValue&, APDataType);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
 std::string arg_table_ini_exp_res(std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<ErrorType>&);
 std::string APErrRsn_to_string(APErrRsn);

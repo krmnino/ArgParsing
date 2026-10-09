@@ -32,6 +32,11 @@ SOFTWARE.
 #include <vector>
 
 
+#ifdef DEBUG
+#include <iomanip>
+#endif
+
+
 #define VALID_FLAG_VALUES {"0", "1", "true", "false", "TRUE", "FALSE"}
 
 
@@ -176,6 +181,92 @@ struct APTableEntry {
 
 
     ~APTableEntry() {}
+
+
+    #ifdef DEBUG
+    std::string APDataType_to_string(){
+        std::string ret{};
+        
+        ret = "APDataType::";
+        switch (this->data_type){
+        case APDataType::TEXT:
+            ret += "TEXT";
+            break;
+        case APDataType::UNSIGNED_INT:
+            ret += "UNSIGNED_INT";
+            break;        
+        case APDataType::SIGNED_INT:
+            ret += "SIGNED_INT";
+            break;  
+        case APDataType::FLOAT:
+            ret += "FLOAT";
+            break;  
+        case APDataType::FLAG:
+            ret += "FLAG";
+            break;
+        default:
+            ret += "UNDEFINED";
+            break;
+        }
+        return ret;
+    }
+
+
+    std::string APValue_to_string(){
+        std::string ret{};
+        std::stringstream stream;
+
+        switch (this->data_type){
+        case APDataType::UNSIGNED_INT:
+            ret = std::to_string(this->value.number_u64);
+            break;
+        case APDataType::SIGNED_INT:
+            ret = std::to_string(this->value.number_i64);
+            break;
+        case APDataType::TEXT:
+            if(this->value.text == nullptr){
+                ret = "";
+            }
+            else{
+                ret = *this->value.text;
+            }
+            break;
+        case APDataType::FLAG:
+            ret = (this->value.flag) ? "true" : "false";;
+            break;
+        case APDataType::FLOAT:
+            stream << std::fixed << std::setprecision(8) << this->value.number_fpt;
+            ret = stream.str(); 
+            break;
+        default:
+            ret = "";
+            break;
+        }
+        return ret;
+    }
+
+
+    std::string get_by_idx_for_iniexpres_tab(size_t idx){
+        switch (idx){
+        case 1:
+            return this->abbr_form;
+        case 2:
+            return this->full_form;
+        case 3:
+            return this->APDataType_to_string();
+        case 4:
+            return (this->required) ? "true" : "false";
+        case 5:
+            return (this->default_value) ? "true" : "false";
+        case 6:
+            return (this->initialized) ? "true" : "false";
+        case 7:
+            return this->APValue_to_string();
+        default:
+            break;
+        }
+    }
+    #endif
 };
 
 

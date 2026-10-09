@@ -106,70 +106,8 @@ std::string ScenarioType_to_string(ScenarioType st){
 }
 
 
-std::string APDataType_to_string(APDataType apdt){
-    std::string ret{};
-    
-    ret = "APDataType::";
-    switch (apdt){
-    case APDataType::TEXT:
-        ret += "TEXT";
-        break;
-    case APDataType::UNSIGNED_INT:
-        ret += "UNSIGNED_INT";
-        break;        
-    case APDataType::SIGNED_INT:
-        ret += "SIGNED_INT";
-        break;  
-    case APDataType::FLOAT:
-        ret += "FLOAT";
-        break;  
-    case APDataType::FLAG:
-        ret += "FLAG";
-        break;
-    default:
-        ret += "UNDEFINED";
-        break;
-    }
-    return ret;
-}
-
-
 std::string bool_to_string(bool data){
     return (data) ? "true" : "false";
-}
-
-
-std::string APValue_to_string(APValue& value, APDataType data_type){
-    std::string ret{};
-    std::stringstream stream;
-
-    switch (data_type){
-    case APDataType::UNSIGNED_INT:
-        ret = std::to_string(value.number_u64);
-        break;
-    case APDataType::SIGNED_INT:
-        ret = std::to_string(value.number_i64);
-        break;
-    case APDataType::TEXT:
-        if(value.text == nullptr){
-            ret = "";
-        }
-        else{
-            ret = *value.text;
-        }
-        break;
-    case APDataType::FLAG:
-        ret = bool_to_string(value.flag);
-        break;
-    case APDataType::FLOAT:
-        stream << std::fixed << std::setprecision(8) << value.number_fpt;
-        ret = stream.str(); 
-        break;
-    default:
-        ret = "";
-        break;
-    }
-    return ret;
 }
 
 
@@ -205,12 +143,13 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
         abbr_form_str = arg_table[i].abbr_form;
         full_form_str = arg_table[i].full_form;
         if(arg_table[i].initialized || arg_table[i].default_value){
-            value_str = APValue_to_string(arg_table[i].value, arg_table[i].data_type);
+            value_str = arg_table[i].APValue_to_string();
+            //value_str = APValue_to_string(arg_table[i].value, arg_table[i].data_type);
         }
         else{
             value_str = "";
         }
-        data_type_str = APDataType_to_string(arg_table[i].data_type);
+        data_type_str = arg_table[i].APDataType_to_string();
         required_str = bool_to_string(arg_table[i].required);
         default_value_str = bool_to_string(arg_table[i].default_value);
         initialized_str = bool_to_string(arg_table[i].initialized);
@@ -227,7 +166,10 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
 }
 
 
-std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::vector<APTableEntry>& exp_argtab, std::vector<APTableEntry>& res_argtab){
+std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
+                                  std::vector<APTableEntry>& exp_argtab,
+                                  std::vector<APTableEntry>& res_argtab,
+                                  std::vector<ErrorType>& arg_tab_miscompare){
     std::stringstream buffer{};
     std::string idx_str{};
     std::string abbr_form_str{};
@@ -237,6 +179,29 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
     std::string default_value_str{};
     std::string initialized_str{};
     std::string value_str{};
+
+    // Validate initial/expected/result table lengths
+    if(ini_argtab.size() != exp_argtab.size() && exp_argtab.size() != res_argtab.size()){
+        return "";
+    }
+
+    std::array<std::string, INIEXPRES_TABLE_FIELDS> table_header = {
+        "INDEX",
+        "ABBR. FORM",
+        "FULL FORM",
+        "DATA TYPE",
+        "REQUIRED",
+        "DEFAULT_V",
+        "INITIALIZED",
+        "VALUE"
+    };
+    std::vector<size_t> table_max_lengths;
+    table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
+    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+        table_max_lengths.push_back(table_header[i].size());
+    }
+    for(size_t i = 0; i < ini_argtab.size(); i++){
+    }
 
     buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
     buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
@@ -259,12 +224,12 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         abbr_form_str = ini_argtab[i].abbr_form;
         full_form_str = ini_argtab[i].full_form;
         if(ini_argtab[i].initialized || ini_argtab[i].default_value){
-            value_str = APValue_to_string(ini_argtab[i].value, ini_argtab[i].data_type);
+            value_str = ini_argtab[i].APValue_to_string();
         }
         else{
             value_str = "";
         }
-        data_type_str = APDataType_to_string(ini_argtab[i].data_type);
+        data_type_str = ini_argtab[i].APDataType_to_string();
         required_str = bool_to_string(ini_argtab[i].required);
         default_value_str = bool_to_string(ini_argtab[i].default_value);
         initialized_str = bool_to_string(ini_argtab[i].initialized);
@@ -280,12 +245,12 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         abbr_form_str = exp_argtab[i].abbr_form;
         full_form_str = exp_argtab[i].full_form;
         if(exp_argtab[i].initialized || exp_argtab[i].default_value){
-            value_str = APValue_to_string(exp_argtab[i].value, exp_argtab[i].data_type);
+            value_str = exp_argtab[i].APValue_to_string();
         }
         else{
             value_str = "";
         }
-        data_type_str = APDataType_to_string(exp_argtab[i].data_type);
+        data_type_str = exp_argtab[i].APDataType_to_string();
         required_str = bool_to_string(exp_argtab[i].required);
         default_value_str = bool_to_string(exp_argtab[i].default_value);
         initialized_str = bool_to_string(exp_argtab[i].initialized);
@@ -302,12 +267,12 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab, std::ve
         abbr_form_str = res_argtab[i].abbr_form;
         full_form_str = res_argtab[i].full_form;
         if(res_argtab[i].initialized || res_argtab[i].default_value){
-            value_str = APValue_to_string(res_argtab[i].value, res_argtab[i].data_type);
+            value_str = res_argtab[i].APValue_to_string();
         }
         else{
             value_str = "";
         }
-        data_type_str = APDataType_to_string(res_argtab[i].data_type);
+        data_type_str = res_argtab[i].APDataType_to_string();
         required_str = bool_to_string(res_argtab[i].required);
         default_value_str = bool_to_string(res_argtab[i].default_value);
         initialized_str = bool_to_string(res_argtab[i].initialized);
@@ -490,7 +455,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
         else{
             package.apv.flag = rnd->gen_bool();
         }
-        break;
+        break;    
     case APDataType::FLOAT:
         package.apv.number_fpt = rnd->gen_float<double>();
         if(package.to_string){

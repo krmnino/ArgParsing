@@ -378,7 +378,7 @@ void ScenarioData::display(){
     std::cout << "<<< END ERROR MESSAGES" << std::endl;
     
     std::cout << ">>> START OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
-    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab);
+    std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab, this->arg_tab_miscompare);
     std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
     
     std::cout << ">>> START OF ARGV" << std::endl;
