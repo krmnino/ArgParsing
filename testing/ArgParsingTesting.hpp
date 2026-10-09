@@ -246,7 +246,7 @@ std::string APDataType_to_string(APDataType);
 std::string bool_to_string(bool);
 std::string APValue_to_string(APValue&, APDataType);
 std::string arg_table_to_string(std::vector<APTableEntry>&);
-std::string arg_table_ini_exp_res(std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<APTableEntry>&);
+std::string arg_table_ini_exp_res(std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<APTableEntry>&, std::vector<ErrorType>&);
 std::string APErrRsn_to_string(APErrRsn);
 void vector_to_char_array(std::vector<std::string>&, char**&);
 size_t arg_table_count_data_type(std::vector<APTableEntry>&, APDataType);
