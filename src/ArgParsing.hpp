@@ -40,6 +40,9 @@ SOFTWARE.
 #define VALID_FLAG_VALUES {"0", "1", "true", "false", "TRUE", "FALSE"}
 
 
+#define BOOL_TO_STRING(data) (data) ? "true" : "false"
+
+
 enum class APState {
     DONE,
     ERROR,
@@ -232,7 +235,7 @@ struct APTableEntry {
             }
             break;
         case APDataType::FLAG:
-            ret = (this->value.flag) ? "true" : "false";;
+            ret = BOOL_TO_STRING(this->value.flag);
             break;
         case APDataType::FLOAT:
             stream << std::fixed << std::setprecision(8) << this->value.number_fpt;
@@ -255,11 +258,11 @@ struct APTableEntry {
         case 3:
             return this->APDataType_to_string();
         case 4:
-            return (this->required) ? "true" : "false";
+            return BOOL_TO_STRING(this->required);
         case 5:
-            return (this->default_value) ? "true" : "false";
+            return BOOL_TO_STRING(this->default_value);
         case 6:
-            return (this->initialized) ? "true" : "false";
+            return BOOL_TO_STRING(this->initialized);
         case 7:
             return this->APValue_to_string();
         default:
