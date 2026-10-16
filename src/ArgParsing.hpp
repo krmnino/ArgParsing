@@ -250,24 +250,34 @@ struct APTableEntry {
 
 
     std::string get_by_idx_for_iniexpres_tab(size_t idx){
+        std::string ret{};
+
         switch (idx){
         case 1:
-            return this->abbr_form;
+            ret = this->abbr_form;
+            break;
         case 2:
-            return this->full_form;
+            ret = this->full_form;
+            break;
         case 3:
-            return this->APDataType_to_string();
+            ret = this->APDataType_to_string();
+            break;
         case 4:
-            return BOOL_TO_STRING(this->required);
+            ret = BOOL_TO_STRING(this->required);
+            break;
         case 5:
-            return BOOL_TO_STRING(this->default_value);
+            ret = BOOL_TO_STRING(this->default_value);
+            break;
         case 6:
-            return BOOL_TO_STRING(this->initialized);
+            ret = BOOL_TO_STRING(this->initialized);
+            break;
         case 7:
-            return this->APValue_to_string();
+            ret = this->APValue_to_string();
+            break;
         default:
             break;
         }
+        return ret;
     }
     #endif
 };

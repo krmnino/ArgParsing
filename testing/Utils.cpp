@@ -179,6 +179,7 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
     std::string default_value_str{};
     std::string initialized_str{};
     std::string value_str{};
+    std::vector<size_t> table_max_lengths{};
 
     // Validate initial/expected/result table lengths
     if(ini_argtab.size() != exp_argtab.size() && exp_argtab.size() != res_argtab.size()){
@@ -195,12 +196,16 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
         "INITIALIZED",
         "VALUE"
     };
-    std::vector<size_t> table_max_lengths;
     table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
     for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
         table_max_lengths.push_back(table_header[i].size());
     }
     for(size_t i = 0; i < ini_argtab.size(); i++){
+        for(size_t j = 0; j < INIEXPRES_TABLE_FIELDS; j++){
+            table_max_lengths[j] = std::max(ini_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
+            table_max_lengths[j] = std::max(exp_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
+            table_max_lengths[j] = std::max(res_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
+        }
     }
 
     buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
