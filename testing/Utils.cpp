@@ -38,6 +38,30 @@ std::string space_padding(std::string input_str, size_t width, std::string pad){
     return ret;
 }
 
+std::string row_print(std::vector<std::string>& row_contents, std::vector<size_t>& row_widths, std::string padding, std::string delimiter){
+    std::stringstream buffer{};
+
+    // Validate both vectors' lengths match
+    if(row_contents.size() != row_widths.size()){
+        return "";
+    }
+
+    // Print elements 
+    for(size_t i = 0; i < row_contents.size(); i++){
+        buffer << row_contents[i];
+        for(size_t j = 0; j < (row_widths[i] - row_contents[i].size()); j++){
+            buffer << padding;
+        }
+        if(i < row_contents.size() - 1){
+            buffer << delimiter;
+        }
+        else{   
+            buffer << std::endl;
+        }
+    }
+    return buffer.str();
+}
+
 
 std::string describe_argv(int input_argc, char** input_argv){
     std::string buffer{};
@@ -121,47 +145,51 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     std::string default_value_str{};
     std::string initialized_str{};
     std::string value_str{};
+    std::vector<size_t> table_max_lengths{};
+    std::vector<std::string> row_print_buffer{};
+    std::vector<std::string> table_header = {
+        "INDEX",
+        "ABBR. FORM",
+        "FULL FORM",
+        "DATA TYPE",
+        "REQUIRED",
+        "DEFAULT_V",
+        "INITIALIZED",
+        "VALUE"
+    };
 
-    buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("DATA TYPE", PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("REQUIRED", PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("DEFAULT_V", PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << "\n";
-    buffer << space_padding("-", PRT_IDX_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_ABBR_FORM_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_DATA_TYPE_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_REQUIRED_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_DEFAULT_V_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_INITIALIZED_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_VALUE_STR_WIDTH, "-") << "\n";
-    for(size_t i = 0; i < arg_table.size(); i++){
-        idx_str = std::to_string(i);
-        abbr_form_str = arg_table[i].abbr_form;
-        full_form_str = arg_table[i].full_form;
-        if(arg_table[i].initialized || arg_table[i].default_value){
-            value_str = arg_table[i].APValue_to_string();
-            //value_str = APValue_to_string(arg_table[i].value, arg_table[i].data_type);
-        }
-        else{
-            value_str = "";
-        }
-        data_type_str = arg_table[i].APDataType_to_string();
-        required_str = bool_to_string(arg_table[i].required);
-        default_value_str = bool_to_string(arg_table[i].default_value);
-        initialized_str = bool_to_string(arg_table[i].initialized);
-        buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
+    // Initialize vectors of field lengths and buffer for row printing
+    table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
+    row_print_buffer.reserve(INIEXPRES_TABLE_FIELDS);
+    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+        table_max_lengths.push_back(table_header[i].size());
+        row_print_buffer.push_back("");
     }
+
+    // Find largest values for initial/expected/result table's rows, for each row field
+    for(size_t i = 0; i < arg_table.size(); i++){
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            table_max_lengths[j] = std::max(arg_table[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
+        }
+    }
+    
+    // Print table header
+    buffer << row_print(table_header, table_max_lengths, " ", " | ");
+    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+        row_print_buffer[i] = "";
+    }
+    buffer << row_print(row_print_buffer, table_max_lengths, "-", "-+-");
+
+    // Print table contents
+    for(size_t i = 0; i < arg_table.size(); i++){
+        row_print_buffer[0] = std::to_string(i);
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            row_print_buffer[j] = arg_table[i].get_by_idx_for_iniexpres_tab(j);
+        }
+        buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
+        row_print_buffer[0] = "";
+    } 
+
     return buffer.str();
 }
 
@@ -180,13 +208,8 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
     std::string initialized_str{};
     std::string value_str{};
     std::vector<size_t> table_max_lengths{};
-
-    // Validate initial/expected/result table lengths
-    if(ini_argtab.size() != exp_argtab.size() && exp_argtab.size() != res_argtab.size()){
-        return "";
-    }
-
-    std::array<std::string, INIEXPRES_TABLE_FIELDS> table_header = {
+    std::vector<std::string> row_print_buffer{};
+    std::vector<std::string> table_header = {
         "INDEX",
         "ABBR. FORM",
         "FULL FORM",
@@ -196,101 +219,54 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
         "INITIALIZED",
         "VALUE"
     };
+
+    // Validate initial/expected/result table lengths
+    if(ini_argtab.size() != exp_argtab.size() && exp_argtab.size() != res_argtab.size()){
+        return "";
+    }
+
+    // Initialize vectors of field lengths and buffer for row printing
     table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
+    row_print_buffer.reserve(INIEXPRES_TABLE_FIELDS);
     for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
         table_max_lengths.push_back(table_header[i].size());
-    }
-    for(size_t i = 0; i < ini_argtab.size(); i++){
-        for(size_t j = 0; j < INIEXPRES_TABLE_FIELDS; j++){
-            table_max_lengths[j] = std::max(ini_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
-            table_max_lengths[j] = std::max(exp_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
-            table_max_lengths[j] = std::max(res_argtab[i].get_by_idx_for_iniexpres_tab(i).size(), table_max_lengths[j]);
-        }
+        row_print_buffer.push_back("");
     }
 
-    buffer << space_padding("INDEX", PRT_IDX_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("ABBR. FORM", PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("FULL FORM", PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("DATA TYPE", PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("REQUIRED", PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("DEFAULT_V", PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("INITIALIZED", PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-    buffer << space_padding("VALUE", PRT_VALUE_STR_WIDTH, " ") << "\n";
-    buffer << space_padding("-", PRT_IDX_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_ABBR_FORM_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_FULL_FORM_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_DATA_TYPE_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_REQUIRED_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_DEFAULT_V_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_INITIALIZED_STR_WIDTH, "-") << "-+-";
-    buffer << space_padding("-", PRT_VALUE_STR_WIDTH, "-") << "\n";
+    // Find largest values for initial/expected/result table's rows, for each row field
     for(size_t i = 0; i < ini_argtab.size(); i++){
-        idx_str = std::to_string(i);
-        abbr_form_str = ini_argtab[i].abbr_form;
-        full_form_str = ini_argtab[i].full_form;
-        if(ini_argtab[i].initialized || ini_argtab[i].default_value){
-            value_str = ini_argtab[i].APValue_to_string();
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            table_max_lengths[j] = std::max(ini_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
+            table_max_lengths[j] = std::max(exp_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
+            table_max_lengths[j] = std::max(res_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
         }
-        else{
-            value_str = "";
-        }
-        data_type_str = ini_argtab[i].APDataType_to_string();
-        required_str = bool_to_string(ini_argtab[i].required);
-        default_value_str = bool_to_string(ini_argtab[i].default_value);
-        initialized_str = bool_to_string(ini_argtab[i].initialized);
-        buffer << space_padding(idx_str, PRT_IDX_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
-
-        abbr_form_str = exp_argtab[i].abbr_form;
-        full_form_str = exp_argtab[i].full_form;
-        if(exp_argtab[i].initialized || exp_argtab[i].default_value){
-            value_str = exp_argtab[i].APValue_to_string();
-        }
-        else{
-            value_str = "";
-        }
-        data_type_str = exp_argtab[i].APDataType_to_string();
-        required_str = bool_to_string(exp_argtab[i].required);
-        default_value_str = bool_to_string(exp_argtab[i].default_value);
-        initialized_str = bool_to_string(exp_argtab[i].initialized);
-        
-        buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
-        
-        abbr_form_str = res_argtab[i].abbr_form;
-        full_form_str = res_argtab[i].full_form;
-        if(res_argtab[i].initialized || res_argtab[i].default_value){
-            value_str = res_argtab[i].APValue_to_string();
-        }
-        else{
-            value_str = "";
-        }
-        data_type_str = res_argtab[i].APDataType_to_string();
-        required_str = bool_to_string(res_argtab[i].required);
-        default_value_str = bool_to_string(res_argtab[i].default_value);
-        initialized_str = bool_to_string(res_argtab[i].initialized);
-        
-        buffer << space_padding("", PRT_IDX_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(abbr_form_str, PRT_ABBR_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(full_form_str, PRT_FULL_FORM_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(data_type_str, PRT_DATA_TYPE_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(required_str, PRT_REQUIRED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(default_value_str, PRT_DEFAULT_V_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(initialized_str, PRT_INITIALIZED_STR_WIDTH, " ") << " | ";
-        buffer << space_padding(value_str, PRT_VALUE_STR_WIDTH, " ") << "\n";
     }
+    
+    // Print table header
+    buffer << row_print(table_header, table_max_lengths, " ", " | ");
+    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+        row_print_buffer[i] = "";
+    }
+    buffer << row_print(row_print_buffer, table_max_lengths, "-", "-+-");
+
+    // Print table contents
+    for(size_t i = 0; i < ini_argtab.size(); i++){
+        row_print_buffer[0] = std::to_string(i);
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            row_print_buffer[j] = ini_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        }
+        buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
+        row_print_buffer[0] = "";
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            row_print_buffer[j] = exp_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        }
+        buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
+        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+            row_print_buffer[j] = res_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        }
+        buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
+    } 
+
     return buffer.str();
 }
 

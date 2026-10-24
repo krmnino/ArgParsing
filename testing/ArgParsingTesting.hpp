@@ -241,6 +241,7 @@ struct APValuePackage{
 
 // Utils.cpp
 std::string space_padding(std::string, size_t, std::string);
+std::string row_print(std::vector<std::string>&, std::vector<size_t>&, std::string, std::string);
 std::string describe_argv(int, char**);
 std::string ScenarioType_to_string(ScenarioType);
 std::string bool_to_string(bool);
