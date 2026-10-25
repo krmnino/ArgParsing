@@ -253,25 +253,25 @@ struct APTableEntry {
         std::string ret{};
 
         switch (idx){
-        case 1:
+        case 0:
             ret = this->abbr_form;
             break;
-        case 2:
+        case 1:
             ret = this->full_form;
             break;
-        case 3:
+        case 2:
             ret = this->APDataType_to_string();
             break;
-        case 4:
+        case 3:
             ret = BOOL_TO_STRING(this->required);
             break;
-        case 5:
+        case 4:
             ret = BOOL_TO_STRING(this->default_value);
             break;
-        case 6:
+        case 5:
             ret = BOOL_TO_STRING(this->initialized);
             break;
-        case 7:
+        case 6:
             ret = this->APValue_to_string();
             break;
         default:

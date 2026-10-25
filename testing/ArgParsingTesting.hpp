@@ -43,7 +43,6 @@ SOFTWARE.
 #define MAX_ARGS 100
 #define ALPHANUM_DICT "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-#define INIEXPRES_TABLE_FIELDS 8
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
 #define PRT_FULL_FORM_STR_WIDTH 10
@@ -58,6 +57,31 @@ SOFTWARE.
                         (uint32_t)APDataType::UNSIGNED_INT |   \
                         (uint32_t)APDataType::SIGNED_INT |     \
                         (uint32_t)APDataType::FLOAT) 
+
+
+static std::vector<std::string> argtab_header = {
+    "INDEX",
+    "ABBR. FORM",
+    "FULL FORM",
+    "DATA TYPE",
+    "REQUIRED",
+    "DEFAULT_V",
+    "INITIALIZED",
+    "VALUE"
+};
+
+
+static std::vector<std::string> argtab_err_header = {
+    "INDEX",
+    "ERRORS",
+    "ABBR. FORM",
+    "FULL FORM",
+    "DATA TYPE",
+    "REQUIRED",
+    "DEFAULT_V",
+    "INITIALIZED",
+    "VALUE"
+};
 
 
 static std::unordered_map<std::string, bool> valid_flag_values_dict = {

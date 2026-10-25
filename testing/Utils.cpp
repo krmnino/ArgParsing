@@ -147,35 +147,25 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     std::string value_str{};
     std::vector<size_t> table_max_lengths{};
     std::vector<std::string> row_print_buffer{};
-    std::vector<std::string> table_header = {
-        "INDEX",
-        "ABBR. FORM",
-        "FULL FORM",
-        "DATA TYPE",
-        "REQUIRED",
-        "DEFAULT_V",
-        "INITIALIZED",
-        "VALUE"
-    };
 
     // Initialize vectors of field lengths and buffer for row printing
-    table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
-    row_print_buffer.reserve(INIEXPRES_TABLE_FIELDS);
-    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
-        table_max_lengths.push_back(table_header[i].size());
+    table_max_lengths.reserve(argtab_header.size());
+    row_print_buffer.reserve(argtab_header.size());
+    for(size_t i = 0; i < argtab_header.size(); i++){
+        table_max_lengths.push_back(argtab_header[i].size());
         row_print_buffer.push_back("");
     }
 
     // Find largest values for initial/expected/result table's rows, for each row field
     for(size_t i = 0; i < arg_table.size(); i++){
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+        for(size_t j = 1; j < argtab_header.size(); j++){
             table_max_lengths[j] = std::max(arg_table[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
         }
     }
     
     // Print table header
-    buffer << row_print(table_header, table_max_lengths, " ", " | ");
-    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+    buffer << row_print(argtab_header, table_max_lengths, " ", " | ");
+    for(size_t i = 0; i < argtab_header.size(); i++){
         row_print_buffer[i] = "";
     }
     buffer << row_print(row_print_buffer, table_max_lengths, "-", "-+-");
@@ -183,7 +173,7 @@ std::string arg_table_to_string(std::vector<APTableEntry>& arg_table){
     // Print table contents
     for(size_t i = 0; i < arg_table.size(); i++){
         row_print_buffer[0] = std::to_string(i);
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
+        for(size_t j = 1; j < argtab_header.size(); j++){
             row_print_buffer[j] = arg_table[i].get_by_idx_for_iniexpres_tab(j);
         }
         buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
@@ -209,16 +199,6 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
     std::string value_str{};
     std::vector<size_t> table_max_lengths{};
     std::vector<std::string> row_print_buffer{};
-    std::vector<std::string> table_header = {
-        "INDEX",
-        "ABBR. FORM",
-        "FULL FORM",
-        "DATA TYPE",
-        "REQUIRED",
-        "DEFAULT_V",
-        "INITIALIZED",
-        "VALUE"
-    };
 
     // Validate initial/expected/result table lengths
     if(ini_argtab.size() != exp_argtab.size() && exp_argtab.size() != res_argtab.size()){
@@ -226,43 +206,72 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
     }
 
     // Initialize vectors of field lengths and buffer for row printing
-    table_max_lengths.reserve(INIEXPRES_TABLE_FIELDS);
-    row_print_buffer.reserve(INIEXPRES_TABLE_FIELDS);
-    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
-        table_max_lengths.push_back(table_header[i].size());
+    table_max_lengths.reserve(argtab_err_header.size());
+    row_print_buffer.reserve(argtab_err_header.size());
+    for(size_t i = 0; i < argtab_err_header.size(); i++){
+        table_max_lengths.push_back(argtab_err_header[i].size());
         row_print_buffer.push_back("");
     }
 
     // Find largest values for initial/expected/result table's rows, for each row field
     for(size_t i = 0; i < ini_argtab.size(); i++){
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
-            table_max_lengths[j] = std::max(ini_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
-            table_max_lengths[j] = std::max(exp_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
-            table_max_lengths[j] = std::max(res_argtab[i].get_by_idx_for_iniexpres_tab(j).size(), table_max_lengths[j]);
+        for(size_t j = 0; j < argtab_err_header.size(); j++){
+            if(argtab_err_header[j] == "INDEX"){
+                table_max_lengths[j] = std::max(std::to_string(j).size(), table_max_lengths[j]);
+            }
+            else if(argtab_err_header[j] == "ERRORS"){
+                if((arg_tab_miscompare[j]) != ErrorType::OK){
+                    table_max_lengths[j] = std::max(std::string("-").size(), table_max_lengths[j]);
+                }
+                else{
+                    table_max_lengths[j] = std::max(ErrorType_to_string(arg_tab_miscompare[j]).size(), table_max_lengths[j]);
+                }
+            }
+            else{
+                table_max_lengths[j] = std::max(ini_argtab[i].get_by_idx_for_iniexpres_tab(j - 2).size(), table_max_lengths[j]);
+                table_max_lengths[j] = std::max(exp_argtab[i].get_by_idx_for_iniexpres_tab(j - 2).size(), table_max_lengths[j]);
+                table_max_lengths[j] = std::max(res_argtab[i].get_by_idx_for_iniexpres_tab(j - 2).size(), table_max_lengths[j]);
+            }
         }
     }
     
     // Print table header
-    buffer << row_print(table_header, table_max_lengths, " ", " | ");
-    for(size_t i = 0; i < INIEXPRES_TABLE_FIELDS; i++){
+    buffer << row_print(argtab_err_header, table_max_lengths, " ", " | ");
+    for(size_t i = 0; i < argtab_err_header.size(); i++){
         row_print_buffer[i] = "";
     }
     buffer << row_print(row_print_buffer, table_max_lengths, "-", "-+-");
 
     // Print table contents
     for(size_t i = 0; i < ini_argtab.size(); i++){
+        // Index value to string
         row_print_buffer[0] = std::to_string(i);
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
-            row_print_buffer[j] = ini_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        
+        // ErrorTypes to string if not ErrorType::OK
+        if(arg_tab_miscompare[i] != ErrorType::OK){
+            row_print_buffer[1] = ErrorType_to_string(arg_tab_miscompare[i]);
+        }
+        else{
+            row_print_buffer[1] = "-";
+        }
+
+        // Print contents from initial argument table
+        for(size_t j = 2; j < argtab_err_header.size(); j++){
+            row_print_buffer[j] = ini_argtab[i].get_by_idx_for_iniexpres_tab(j - 2);
         }
         buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
         row_print_buffer[0] = "";
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
-            row_print_buffer[j] = exp_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        row_print_buffer[1] = "";
+
+        // Print contents from expected argument table
+        for(size_t j = 2; j < argtab_err_header.size(); j++){
+            row_print_buffer[j] = exp_argtab[i].get_by_idx_for_iniexpres_tab(j - 2);
         }
         buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
-        for(size_t j = 1; j < INIEXPRES_TABLE_FIELDS; j++){
-            row_print_buffer[j] = res_argtab[i].get_by_idx_for_iniexpres_tab(j);
+        
+        // Print contents from result argument table
+        for(size_t j = 2; j < argtab_err_header.size(); j++){
+            row_print_buffer[j] = res_argtab[i].get_by_idx_for_iniexpres_tab(j - 2);
         }
         buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
     } 
