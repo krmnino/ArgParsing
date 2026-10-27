@@ -381,6 +381,14 @@ void ScenarioData::display(){
     std::cout << arg_table_ini_exp_res(*this->ini_argtab, this->exp_argtab, this->res_argtab, this->arg_tab_miscompare);
     std::cout << "<<< END OF ARGUMENT TABLES (INITIAL/EXPECTED/RESULT)" << std::endl;
     
+    std::cout << ">>> START OF ARGUMENT TABLE ELEMENTS MISMATCH" << std::endl;
+    for(size_t i = 0; i < this->arg_tab_miscompare.size(); i++){
+        if(this->arg_tab_miscompare[i] != ErrorType::OK){
+            std::cout << "Argument Table Mismatch at index: " << i << std::endl;
+        }
+    }
+    std::cout << "<<< END OF ARGUMENT TABLE ELEMENTS MISMATCH" << std::endl;
+    
     std::cout << ">>> START OF ARGV" << std::endl;
     std::cout << describe_argv(this->argc, this->argv);
     std::cout << "<<< END OF ARGV" << std::endl;
