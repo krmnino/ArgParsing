@@ -42,6 +42,7 @@ SOFTWARE.
 #define MAX_TEXT_ARG_LEN 128
 #define MAX_ARGS 100
 #define ALPHANUM_DICT "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+#define ERR_EYECATCHER std::string("!! ERRORS FOUND")
 
 #define PRT_IDX_STR_WIDTH 5
 #define PRT_ABBR_FORM_STR_WIDTH 10
@@ -140,7 +141,7 @@ enum class ErrorType {
     INITIALIZED =  0x00000080,
     VALUE       =  0x00000100,
 };
-#define N_ERROR_TYPES 9
+#define N_ERROR_TYPES 10
 
 
 std::string ErrorType_to_string(ErrorType);

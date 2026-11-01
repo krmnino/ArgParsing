@@ -385,6 +385,14 @@ void ScenarioData::display(){
     for(size_t i = 0; i < this->arg_tab_miscompare.size(); i++){
         if(this->arg_tab_miscompare[i] != ErrorType::OK){
             std::cout << "Argument Table Mismatch at index: " << i << std::endl;
+            shifter = 1;
+            for(size_t j = 0; j < N_ERROR_TYPES; j++){
+                curr_err = (ErrorType)((int)this->error_types & shifter); 
+                if(curr_err != ErrorType::OK){
+                    std::cout << "- " << ErrorType_to_string(curr_err) << std::endl;
+                }
+                shifter = shifter << 1;
+            }
         }
     }
     std::cout << "<<< END OF ARGUMENT TABLE ELEMENTS MISMATCH" << std::endl;

@@ -221,10 +221,10 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
             }
             else if(argtab_err_header[j] == "ERRORS"){
                 if((arg_tab_miscompare[j]) != ErrorType::OK){
-                    table_max_lengths[j] = std::max(std::string("-").size(), table_max_lengths[j]);
+                    table_max_lengths[j] = std::max(ERR_EYECATCHER.size(), table_max_lengths[j]);
                 }
                 else{
-                    table_max_lengths[j] = std::max(ErrorType_to_string(arg_tab_miscompare[j]).size(), table_max_lengths[j]);
+                    table_max_lengths[j] = std::max(std::string("-").size(), table_max_lengths[j]);
                 }
             }
             else{
@@ -249,12 +249,12 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
         
         // ErrorTypes to string if not ErrorType::OK
         if(arg_tab_miscompare[i] != ErrorType::OK){
-            row_print_buffer[1] = ErrorType_to_string(arg_tab_miscompare[i]);
+            row_print_buffer[1] = ERR_EYECATCHER;
         }
         else{
             row_print_buffer[1] = "-";
         }
-
+        
         // Print contents from initial argument table
         for(size_t j = 2; j < argtab_err_header.size(); j++){
             row_print_buffer[j] = ini_argtab[i].get_by_idx_for_iniexpres_tab(j - 2);
@@ -262,7 +262,7 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
         buffer << row_print(row_print_buffer, table_max_lengths, " ", " | ");
         row_print_buffer[0] = "";
         row_print_buffer[1] = "";
-
+        
         // Print contents from expected argument table
         for(size_t j = 2; j < argtab_err_header.size(); j++){
             row_print_buffer[j] = exp_argtab[i].get_by_idx_for_iniexpres_tab(j - 2);
