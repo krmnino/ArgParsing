@@ -449,7 +449,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     case APDataType::FLOAT:
         package.apv.number_fpt = rnd->gen_float<double>();
         if(package.to_string){
-            stream << std::fixed << std::setprecision(8) << package.apv.number_fpt;
+            stream << std::fixed << std::setprecision(6) << package.apv.number_fpt;
             package.stringified = stream.str(); 
         }
         break;
