@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include <array>
 #include <atomic>
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <signal.h>
