@@ -220,7 +220,7 @@ std::string arg_table_ini_exp_res(std::vector<APTableEntry>& ini_argtab,
                 table_max_lengths[j] = std::max(std::to_string(j).size(), table_max_lengths[j]);
             }
             else if(argtab_err_header[j] == "ERRORS"){
-                if((arg_tab_miscompare[j]) != ErrorType::OK){
+                if(arg_tab_miscompare[i] != ErrorType::OK){
                     table_max_lengths[j] = std::max(ERR_EYECATCHER.size(), table_max_lengths[j]);
                 }
                 else{
@@ -449,7 +449,7 @@ void gen_arg_value(Randomizer* rnd, APValuePackage& package){
     case APDataType::FLOAT:
         package.apv.number_fpt = rnd->gen_float<double>();
         if(package.to_string){
-            stream << std::fixed << std::setprecision(6) << package.apv.number_fpt;
+            stream << std::fixed << std::setprecision(8) << package.apv.number_fpt;
             package.stringified = stream.str(); 
         }
         break;
